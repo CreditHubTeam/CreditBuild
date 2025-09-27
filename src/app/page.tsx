@@ -1,103 +1,82 @@
-import Image from "next/image";
+"use client";
+import Header from "@/components/Header";
+import BottomNav from "@/components/BottomNav";
+import ConnectionPanel from "@/components/Dashboard/ConnectionPanel";
+import CreditScore from "@/components/Dashboard/CreditScore";
+import ChallengesGrid from "@/components/Dashboard/ChallengesGrid";
+import AchievementsPreview from "@/components/Dashboard/AchievementsPreview";
+import AchievementsPage from "@/components/Pages/AchievementsPage";
+import ProgressPage from "@/components/Pages/ProgressPage";
+import EducationPage from "@/components/Pages/EducationPage";
+import WalletSelectionModal from "@/components/Modals/WalletSelectionModal";
+import NetworkSwitchModal from "@/components/Modals/NetworkSwitchModal";
+import RegistrationModal from "@/components/Modals/RegistrationModal";
+import ChallengeModal from "@/components/Modals/ChallengeModal";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import Notification from "@/components/UI/Notification";
+import { useApp } from "@/context/AppContext";
 
-export default function Home() {
+export default function Page() {
+  const { currentPage, isWalletConnected, handleGetStarted } = useApp();
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <>
+      <Header />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      {/* Landing */}
+      {currentPage === "landingPage" && (
+        <section className="container mx-auto px-4 py-12">
+          <div className="pixel-card p-8">
+            <h1 className="text-2xl mb-3">
+              Build Your Credit Score Like in Minecraft!
+            </h1>
+            <p className="opacity-90 mb-4">
+              Complete daily challenges, earn achievements, and level up your
+              financial life!
+            </p>
+            <div className="grid grid-cols-3 gap-3 mb-6 text-center">
+              <div className="bg-mc-oak text-black border-3 border-black rounded-pixel p-3">
+                🎯<div className="text-[10px]">Daily Challenges</div>
+              </div>
+              <div className="bg-mc-oak text-black border-3 border-black rounded-pixel p-3">
+                🏆<div className="text-[10px]">Achievements</div>
+              </div>
+              <div className="bg-mc-oak text-black border-3 border-black rounded-pixel p-3">
+                📈<div className="text-[10px]">Track Progress</div>
+              </div>
+            </div>
+            <button
+              className="pixel-btn pixel-btn--primary w-full md:w-auto"
+              onClick={handleGetStarted}
+            >
+              {isWalletConnected ? "Continue" : "Get Started"}
+            </button>
+          </div>
+        </section>
+      )}
+
+      {/* Dashboard */}
+      {currentPage === "dashboard" && (
+        <section className="container mx-auto px-4 py-6 pb-24">
+          <ConnectionPanel />
+          <CreditScore />
+          <ChallengesGrid />
+          <AchievementsPreview />
+        </section>
+      )}
+
+      {currentPage === "achievementsPage" && <AchievementsPage />}
+      {currentPage === "progressPage" && <ProgressPage />}
+      {currentPage === "educationPage" && <EducationPage />}
+
+      {/* Nav + Modals + Overlays */}
+      {currentPage !== "landingPage" && <BottomNav />}
+      <WalletSelectionModal />
+      <NetworkSwitchModal />
+      <RegistrationModal />
+      <ChallengeModal />
+      <LoadingIndicator />
+      <Notification />
+    </>
   );
 }

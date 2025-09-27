@@ -1,6 +1,152 @@
 @import "tailwindcss";
 
-:root {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ====== 8-bit Minecraft theme (tokens) ====== */
+@theme {
+  /* font families */
+  --font-pixel: "Press Start 2P", monospace;
+
+  /* colors (mc-*) */
+  --color-mc-brown: #8B4513;
+  --color-mc-darkbrown: #654321;
+  --color-mc-green: #228B22;
+  --color-mc-gold: #FFD700;
+  --color-mc-stone: #696969;
+  --color-mc-darkstone: #4A4A4A;
+  --color-mc-lightstone: #808080;
+  --color-mc-dirt: #8B5A2B;
+  --color-mc-oak: #DEB887;
+  --color-mc-red: #CD5C5C;
+  --color-mc-blue: #4682B4;
+
+  /* radius & border */
+  --radius-pixel: 4px;
+  --border-3: 3px;
+  --border-4: 4px;
+
+  /* shadows */
+  --shadow-pixel: 4px 4px 0 rgba(0, 0, 0, 0.3);
+  --shadow-pixel-inset:
+    inset 2px 2px 0 rgba(255, 255, 255, 0.3),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.3);
+
+  /* keyframes */
+  @keyframes pulse2 {
+    0% {
+      opacity: 1
+    }
+
+    50% {
+      opacity: .5
+    }
+
+    100% {
+      opacity: 1
+    }
+  }
+}
+
+/* ====== base layout ====== */
+html,
+body {
+  min-height: 100dvh
+}
+
+body {
+  /* nền “khối đá” 8-bit */
+  background:
+    linear-gradient(45deg, var(--color-mc-stone) 25%, var(--color-mc-lightstone) 25%,
+      var(--color-mc-lightstone) 50%, var(--color-mc-stone) 50%,
+      var(--color-mc-stone) 75%, var(--color-mc-lightstone) 75%);
+  background-size: 40px 40px;
+  font-family: var(--font-pixel);
+  color: white;
+}
+
+/* ====== utilities 8-bit tuỳ biến (v4 dùng @utility) ====== */
+@utility pixel-box {
+  @apply border-[var(--border-4)] border-black rounded-[var(--radius-pixel)];
+  box-shadow: var(--shadow-pixel);
+}
+
+@utility pixel-inset {
+  box-shadow: var(--shadow-pixel-inset);
+}
+
+@utility pixel-btn {
+  @apply text-xs px-4 py-2 rounded-[var(--radius-pixel)] border-[var(--border-3)] border-black;
+  box-shadow: var(--shadow-pixel);
+}
+
+@utility pixel-btn-primary {
+  @apply bg-mc-gold text-black;
+}
+
+@utility pixel-btn-secondary {
+  @apply bg-mc-dirt text-white;
+}
+
+@utility pixel-card {
+  @apply bg-mc-dirt rounded-[var(--radius-pixel)] border-[var(--border-3)] border-mc-darkbrown;
+  box-shadow: var(--shadow-pixel);
+}
+
+@utility pixel-badge {
+  @apply text-[10px] px-2 py-1 rounded;
+}
+
+@utility animate-pulse2 {
+  animation: pulse2 2s infinite;
+}
+
+
+
+
+/* Nền khối đá 8-bit (từ CSS gốc) */
+html,
+body {
+  @apply min-h-screen;
+}
+
+body {
+  background: linear-gradient(45deg, #696969 25%, #808080 25%, #808080 50%, #696969 50%, #696969 75%, #808080 75%);
+  background-size: 40px 40px;
+}
+
+/* Utility 8-bit tái dùng */
+.pixel-box {
+  @apply border-4 border-black shadow-pixel rounded-pixel;
+  box-shadow: var(--pixel-shadow, 4px 4px 0 rgba(0, 0, 0, 0.3));
+}
+
+.pixel-inset {
+  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, .3), inset -2px -2px 0 rgba(0, 0, 0, .3);
+}
+
+.pixel-btn {
+  @apply font-pixel text-xs px-4 py-2 border-3 rounded-pixel border-black bg-mc-gold shadow-pixel active:translate-y-[1px];
+}
+
+.pixel-btn--primary {
+  @apply bg-mc-gold text-black;
+}
+
+.pixel-btn--secondary {
+  @apply bg-mc-dirt text-white;
+}
+
+.pixel-card {
+  @apply bg-mc-dirt border-3 border-mc-darkbrown rounded-pixel shadow-pixel;
+}
+
+.pixel-badge {
+  @apply text-[10px] px-2 py-1 rounded;
+}
+
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -23,4 +169,4 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-}
+} */

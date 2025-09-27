@@ -1,0 +1,402 @@
+"use client";
+
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { appData } from "@/lib/appData";
+import type { Achievement, AppData, Challenge, User, WalletProvider } from "@/lib/types";
+
+type PageId =
+  | "landingPage"
+  | "dashboard"
+  | "achievementsPage"
+  | "progressPage"
+  | "educationPage";
+type ModalId =
+  | "walletSelectionModal"
+  | "networkSwitchModal"
+  | "registrationModal"
+  | "challengeModal";
+
+type Ctx = {
+  // state
+  currentUser: User;
+  isWalletConnected: boolean;
+  currentWalletType: string | null;
+  currentChainId: string | null;
+  availableWallets: WalletProvider[];
+  currentPage: PageId;
+  openModal: ModalId | null;
+  currentChallenge: Challenge | null;
+  loading: { visible: boolean; message: string };
+  notification: {
+    visible: boolean;
+    message: string;
+    type: "success" | "error" | "warning" | "info";
+  };
+  creditPercentage: number;
+
+  // data
+  challenges: Challenge[];
+  achievements: Achievement[];
+  educationalContent: AppData["educationalContent"];
+  network: AppData["creditcoinNetwork"];
+
+  // actions
+  detectWallets: () => void;
+  connectToWallet: (wallet: WalletProvider) => Promise<void>;
+  switchToCorrectNetwork: () => Promise<void>;
+  disconnectWallet: () => void;
+  showPage: (p: PageId) => void;
+  navigateToPage: (p: PageId) => void;
+  handleGetStarted: () => void;
+  showModal: (m: ModalId) => void;
+  closeModals: () => void;
+  handleRegistration: (e?: React.FormEvent) => Promise<void>;
+  openChallenge: (c: Challenge) => void;
+  completeChallenge: (amount: number) => Promise<void>;
+  showNotification: (
+    msg: string,
+    type?: "success" | "error" | "warning" | "info"
+  ) => void;
+  hideNotification: () => void;
+};
+
+const AppContext = createContext<Ctx | null>(null);
+
+export function AppProvider({ children }: { children: React.ReactNode }) {
+  // ---------- STATE ----------
+  const [currentUser, setCurrentUser] = useState<User>({
+    ...appData.sampleUser,
+    isRegistered: false,
+  });
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
+  const [currentWalletType, setCurrentWalletType] = useState<string | null>(
+    null
+  );
+  const [currentChainId, setCurrentChainId] = useState<string | null>(null);
+  const [availableWallets, setAvailableWallets] = useState<WalletProvider[]>(
+    []
+  );
+  const [currentPage, setCurrentPage] = useState<PageId>("landingPage");
+  const [openModal, setOpenModal] = useState<ModalId | null>(null);
+  const [currentChallenge, setCurrentChallenge] = useState<Challenge | null>(
+    null
+  );
+  const [loading, setLoading] = useState<{ visible: boolean; message: string }>(
+    { visible: false, message: "Processing..." }
+  );
+  const [notification, setNotification] = useState<{
+    visible: boolean;
+    message: string;
+    type: "success" | "error" | "warning" | "info";
+  }>({
+    visible: false,
+    message: "",
+    type: "info",
+  });
+
+  // ---------- HELPERS ----------
+  const isCorrectNetwork = useCallback(
+    (cid: string | null) => cid === appData.creditcoinNetwork.chainId,
+    []
+  );
+  const showNotification = useCallback(
+    (
+      message: string,
+      type: "success" | "error" | "warning" | "info" = "info"
+    ) => {
+      setNotification({ visible: true, message, type });
+    },
+    []
+  );
+  const hideNotification = useCallback(
+    () => setNotification((s) => ({ ...s, visible: false })),
+    []
+  );
+  const showLoading = useCallback(
+    (msg?: string) =>
+      setLoading({ visible: true, message: msg ?? "Processing..." }),
+    []
+  );
+  const hideLoading = useCallback(
+    () => setLoading({ visible: false, message: "Processing..." }),
+    []
+  );
+  const showPage = useCallback((p: PageId) => setCurrentPage(p), []);
+
+  // ---------- INIT ----------
+  const detectWallets = useCallback(() => {
+    const base: WalletProvider[] = [];
+    if (typeof window !== "undefined" && "ethereum" in window) {
+      base.push({
+        name: "MetaMask",
+        type: "metamask",
+        icon: "🦊",
+        description: "Most popular Ethereum wallet",
+        available: true,
+      });
+    }
+    appData.walletProviders.forEach((w) => {
+      if (!base.find((b) => b.type === w.type))
+        base.push({ ...w, available: false });
+    });
+    setAvailableWallets(base);
+  }, []);
+
+  useEffect(() => {
+    setCurrentPage("landingPage");
+    detectWallets();
+  }, [detectWallets]);
+
+  // ---------- NAV ----------
+  const navigateToPage = useCallback(
+    (page: PageId) => {
+      if (!isWalletConnected && page !== "landingPage") {
+        showNotification("Please connect your wallet first!", "warning");
+        return;
+      }
+      if (isWalletConnected && !isCorrectNetwork(currentChainId)) {
+        showNotification(
+          "Please switch to Creditcoin Testnet first!",
+          "warning"
+        );
+        return;
+      }
+      showPage(page);
+    },
+    [
+      isWalletConnected,
+      currentChainId,
+      isCorrectNetwork,
+      showNotification,
+      showPage,
+    ]
+  );
+
+  const handleGetStarted = useCallback(() => {
+    if (!isWalletConnected) {
+      showModal("walletSelectionModal");
+    } else if (!isCorrectNetwork(currentChainId)) {
+      showModal("networkSwitchModal");
+    } else if (!currentUser.isRegistered) {
+      showModal("registrationModal");
+    } else {
+      showPage("dashboard");
+    }
+  }, [
+    isWalletConnected,
+    currentChainId,
+    currentUser.isRegistered,
+    isCorrectNetwork,
+    showPage,
+  ]);
+
+  // ---------- MODALS ----------
+  const showModal = useCallback((id: ModalId) => setOpenModal(id), []);
+  const closeModals = useCallback(() => setOpenModal(null), []);
+
+  // ---------- WALLET / NETWORK ----------
+  const connectToWallet = useCallback(
+    async (wallet: WalletProvider) => {
+      closeModals();
+      showLoading("Connecting to wallet...");
+      try {
+        await new Promise((r) => setTimeout(r, 500));
+        const mock = "0x" + Math.random().toString(16).slice(2, 42);
+        const short = `${mock.slice(0, 6)}...${mock.slice(-4)}`;
+        setIsWalletConnected(true);
+        setCurrentWalletType(wallet.type);
+        setCurrentUser((u) => ({ ...u, address: short }));
+        setCurrentChainId("0x1"); // mock sai network trước
+        hideLoading();
+        showNotification(
+          `${wallet.name} connected successfully! 🎉`,
+          "success"
+        );
+        setTimeout(() => showModal("networkSwitchModal"), 300);
+      } catch {
+        hideLoading();
+        showNotification(
+          "Connection rejected - Please approve in your wallet",
+          "error"
+        );
+      }
+    },
+    [closeModals, hideLoading, showLoading, showNotification, showModal]
+  );
+
+  const switchToCorrectNetwork = useCallback(async () => {
+    showLoading("Switching network...");
+    try {
+      await new Promise((r) => setTimeout(r, 500));
+      setCurrentChainId(appData.creditcoinNetwork.chainId);
+      hideLoading();
+      showNotification(
+        "Successfully switched to Creditcoin Testnet! ⛓️",
+        "success"
+      );
+      closeModals();
+      if (!currentUser.isRegistered) {
+        setTimeout(() => showModal("registrationModal"), 200);
+      } else {
+        showPage("dashboard");
+      }
+    } catch {
+      hideLoading();
+      showNotification(
+        "Network switch rejected - Please approve in your wallet",
+        "error"
+      );
+    }
+  }, [
+    closeModals,
+    currentUser.isRegistered,
+    hideLoading,
+    showLoading,
+    showNotification,
+    showModal,
+    showPage,
+  ]);
+
+  const disconnectWallet = useCallback(() => {
+    setIsWalletConnected(false);
+    setCurrentWalletType(null);
+    setCurrentChainId(null);
+    setCurrentUser({ ...appData.sampleUser, isRegistered: false });
+    showPage("landingPage");
+    showNotification("Wallet disconnected", "info");
+  }, [showNotification, showPage]);
+
+  // ---------- REGISTRATION ----------
+  const handleRegistration = useCallback(
+    async (e?: React.FormEvent) => {
+      e?.preventDefault?.();
+      if (!isCorrectNetwork(currentChainId)) {
+        showNotification(
+          "Please switch to Creditcoin Testnet first!",
+          "warning"
+        );
+        showModal("networkSwitchModal");
+        return;
+      }
+      showLoading("Registering on blockchain...");
+      await new Promise((r) => setTimeout(r, 600));
+      setCurrentUser((u) => ({
+        ...u,
+        isRegistered: true,
+        creditScore: 300,
+        streakDays: 0,
+        totalChallenges: 0,
+        totalPointsEarned: 0,
+      }));
+      hideLoading();
+      closeModals();
+      showPage("dashboard");
+      showNotification(
+        "Welcome to CreditBuild! Your journey begins now. 🎉",
+        "success"
+      );
+    },
+    [
+      closeModals,
+      currentChainId,
+      hideLoading,
+      isCorrectNetwork,
+      showLoading,
+      showModal,
+      showNotification,
+      showPage,
+    ]
+  );
+
+  // ---------- CHALLENGES ----------
+  const openChallenge = useCallback(
+    (c: Challenge) => {
+      if (!isCorrectNetwork(currentChainId)) {
+        showNotification(
+          "Please switch to Creditcoin Testnet first!",
+          "warning"
+        );
+        showModal("networkSwitchModal");
+        return;
+      }
+      setCurrentChallenge(c);
+      showModal("challengeModal");
+    },
+    [currentChainId, isCorrectNetwork, showModal, showNotification]
+  );
+
+  const completeChallenge = useCallback(
+    async (_amount: number) => {
+      showLoading("Submitting challenge...");
+      await new Promise((r) => setTimeout(r, 500));
+      setCurrentUser((u) => ({
+        ...u,
+        creditScore: Math.min(
+          850,
+          u.creditScore + (currentChallenge?.creditImpact ?? 0)
+        ),
+        totalPointsEarned:
+          u.totalPointsEarned + (currentChallenge?.points ?? 0),
+        totalChallenges: u.totalChallenges + 1,
+        streakDays: Math.max(u.streakDays, 1),
+      }));
+      hideLoading();
+      showNotification("Challenge Completed! 🎉", "success");
+      closeModals();
+    },
+    [currentChallenge, closeModals, hideLoading, showLoading, showNotification]
+  );
+
+  // ---------- DERIVED ----------
+  const creditPercentage = useMemo(
+    () => Math.max(5, ((currentUser.creditScore - 300) / 550) * 100),
+    [currentUser.creditScore]
+  );
+
+  const value: Ctx = {
+    currentUser,
+    isWalletConnected,
+    currentWalletType,
+    currentChainId,
+    availableWallets,
+    currentPage,
+    openModal,
+    currentChallenge,
+    loading,
+    notification,
+    creditPercentage,
+    challenges: appData.challenges,
+    achievements: appData.achievements,
+    educationalContent: appData.educationalContent,
+    network: appData.creditcoinNetwork,
+    detectWallets,
+    connectToWallet,
+    switchToCorrectNetwork,
+    disconnectWallet,
+    showPage,
+    navigateToPage,
+    handleGetStarted,
+    showModal,
+    closeModals,
+    handleRegistration,
+    openChallenge,
+    completeChallenge,
+    showNotification,
+    hideNotification,
+  };
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+}
+
+export function useApp() {
+  const ctx = useContext(AppContext);
+  if (!ctx) throw new Error("useApp must be used inside <AppProvider>");
+  return ctx;
+}
