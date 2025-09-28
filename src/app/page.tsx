@@ -34,7 +34,7 @@ export default function Page() {
               Complete daily challenges, earn achievements, and level up your
               financial life!
             </p>
-            <div className="grid grid-cols-3 gap-3 mb-6 text-center">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 text-center">
               <div className="bg-mc-oak text-black border-3 border-black rounded-pixel p-3">
                 🎯<div className="text-[10px]">Daily Challenges</div>
               </div>
@@ -57,7 +57,7 @@ export default function Page() {
 
       {/* Dashboard */}
       {currentPage === "dashboard" && (
-        <section className="container mx-auto px-4 py-6 pb-24">
+        <section className="container mx-auto px-4 py-6 pb-20 sm:pb-24">
           <ConnectionPanel />
           <CreditScore />
           <ChallengesGrid />
