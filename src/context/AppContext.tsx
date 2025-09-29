@@ -9,7 +9,13 @@ import React, {
   useState,
 } from "react";
 import { appData } from "@/lib/appData";
-import type { Achievement, AppData, Challenge, User, WalletProvider } from "@/lib/types";
+import type {
+  Achievement,
+  AppData,
+  Challenge,
+  User,
+  WalletProvider,
+} from "@/lib/types";
 
 type PageId =
   | "landingPage"

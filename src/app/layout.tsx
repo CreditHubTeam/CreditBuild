@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Press_Start_2P } from "next/font/google";
 import Providers from "./providers";
+import AppLayout from "@/components/AppLayout";
 
 const pressStart = Press_Start_2P({
   subsets: ["latin"],
@@ -21,8 +22,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={pressStart.variable}>
-      <body className="font-pixel text-[12px] leading-6 text-white">
-        <Providers>{children}</Providers>
+      <body
+        className={`${pressStart.className} text-[12px] leading-6 text-white bg-transparent`}
+      >
+        <Providers>
+          <AppLayout>{children}</AppLayout>
+        </Providers>
       </body>
     </html>
   );
