@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { appData } from "@/lib/appData";
-import type { Achievement, Challenge, User, WalletProvider } from "@/lib/types";
+import type { Challenge, User, WalletProvider } from "@/lib/types";
 
 type PageId =
   | "landingPage"
@@ -140,6 +140,7 @@ export function useApp() {
     } else {
       showPage("dashboard");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isWalletConnected,
     currentChainId,
@@ -292,7 +293,7 @@ export function useApp() {
   );
 
   const completeChallenge = useCallback(
-    async (amount: number) => {
+    async (_amount: number) => {
       showLoading("Submitting challenge...");
       await new Promise((r) => setTimeout(r, 800));
       setCurrentUser((u) => ({

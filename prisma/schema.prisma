@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int               @id @default(autoincrement())
+  walletAddress   String            @unique
+  username        String?           @db.VarChar(64)
+  creditScore     Int               @default(300)
+  streakDays      Int               @default(0)
+  totalChallenges Int               @default(0)
+  totalPoints     BigInt            @default(0)
+  registeredAt    DateTime          @default(now())
+  challenges      UserChallenge[]
+  achievements    UserAchievement[]
+  ledger          PointLedger[]
+}
+
+model Challenge {
+  id           Int             @id @default(autoincrement())
+  type         String          @db.VarChar(64)
+  name         String          @db.VarChar(128)
+  description  String?
+  points       Int
+  creditImpact Int
+  category     String?         @db.VarChar(64)
+  rules        Json
+  icon         String?         @db.VarChar(8)
+  createdAt    DateTime        @default(now())
+  attempts     UserChallenge[]
+}
+
+enum AttemptStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CLAIMED
+}
+
+model UserChallenge {
+  id            Int           @id @default(autoincrement())
+  user          User          @relation(fields: [userId], references: [id])
+  userId        Int
+  challenge     Challenge     @relation(fields: [challengeId], references: [id])
+  challengeId   Int
+  amount        Decimal?
+  status        AttemptStatus @default(PENDING)
+  proof         Json?
+  pointsAwarded Int           @default(0)
+  creditChange  Int           @default(0)
+  txHash        String?       @db.VarChar(128)
+  completionKey String?       @unique
+  createdAt     DateTime      @default(now())
+
+  @@index([userId, challengeId, createdAt])
+}
+
+model Achievement {
+  id          String            @id @db.VarChar(64)
+  name        String            @db.VarChar(128)
+  description String?
+  icon        String?           @db.VarChar(8)
+  users       UserAchievement[]
+}
+
+model UserAchievement {
+  id            Int         @id @default(autoincrement())
+  user          User        @relation(fields: [userId], references: [id])
+  userId        Int
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  achievementId String
+  unlockedAt    DateTime    @default(now())
+
+  @@unique([userId, achievementId])
+}
+
+model PointLedger {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  delta     BigInt
+  reason    String   @db.VarChar(128)
+  source    String   @db.VarChar(64)
+  txHash    String?  @db.VarChar(128)
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model ContractConfig {
+  id           Int      @id @default(autoincrement())
+  networkName  String   @db.VarChar(64)
+  chainId      Int
+  rpcUrl       String
+  pointsToken  String?  @db.VarChar(66)
+  questAddress String?  @db.VarChar(66)
+  paused       Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model EducationItem {
+  id        Int      @id @default(autoincrement())
+  slug      String   @unique @db.VarChar(64)
+  title     String   @db.VarChar(128)
+  bodyMd    String
+  category  String   @db.VarChar(64)
+  tags      String[] @db.VarChar(32)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  featured  Boolean  @default(false)
+}
