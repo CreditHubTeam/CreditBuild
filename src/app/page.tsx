@@ -1,18 +1,41 @@
 "use client";
-import { useApp } from "@/context/AppContext";
+import { useWallet } from "@/state/wallet";
+import { useUI } from "@/state/ui";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function LandingPage() {
-  const { isWalletConnected, handleGetStarted } = useApp();
+  const { isConnected, networkOk, connectors, connect, ensureCreditcoin } =
+    useWallet();
+  const { notify } = useUI();
   const router = useRouter();
 
-  // Auto redirect to dashboard if wallet is connected
+  // Auto redirect to dashboard if wallet is connected and network is correct
   useEffect(() => {
-    if (isWalletConnected) {
+    if (isConnected && networkOk) {
       router.push("/dashboard");
     }
-  }, [isWalletConnected, router]);
+  }, [isConnected, networkOk, router]);
+
+  const handleGetStarted = async () => {
+    if (!isConnected) {
+      // Connect wallet
+      const injected =
+        connectors.find((c) => c.id === "injected") ?? connectors[0];
+      if (!injected) return notify("No wallet connector found", "warning");
+      try {
+        await connect({ connector: injected });
+      } catch {
+        notify("Connection failed", "error");
+      }
+    } else if (!networkOk) {
+      // Switch network
+      await ensureCreditcoin();
+    } else {
+      // Go to dashboard
+      router.push("/dashboard");
+    }
+  };
 
   return (
     <section className="container mx-auto px-4 py-12">
@@ -39,7 +62,11 @@ export default function LandingPage() {
           className="pixel-btn pixel-btn--primary w-full md:w-auto"
           onClick={handleGetStarted}
         >
-          {isWalletConnected ? "Continue" : "Get Started"}
+          {isConnected
+            ? networkOk
+              ? "Continue"
+              : "Switch Network"
+            : "Get Started"}
         </button>
       </div>
     </section>

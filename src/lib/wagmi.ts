@@ -1,32 +1,44 @@
-//src/wagmi.ts
-import { cookieStorage, createConfig, createStorage, http } from 'wagmi'
-import { mainnet, sepolia } from 'wagmi/chains'
-import { baseAccount, injected, walletConnect } from 'wagmi/connectors'
+import { cookieStorage, createConfig, createStorage, http } from "wagmi";
+import { defineChain } from "viem";
+import { injected, walletConnect } from "wagmi/connectors";
+
+export const creditcoinTestnet = defineChain({
+  id: 102031,
+  name: "Creditcoin Testnet",
+  nativeCurrency: { name: "Creditcoin", symbol: "tCTC", decimals: 18 },
+  rpcUrls: {
+    default: { http: ["https://rpc.cc3-testnet.creditcoin.network/"] },
+  },
+  blockExplorers: {
+    default: {
+      name: "Blockscout",
+      url: "https://creditcoin-testnet.blockscout.com",
+    },
+  },
+  testnet: true,
+});
 
 export function getConfig() {
   return createConfig({
-  //đang hardcode mainnet + sepolia => muốn chạy trên Creditcoin testnet → cần add chain custom (dùng defineChain)
-    chains: [mainnet, sepolia],
-    
-    //Đây là nơi bạn có thể add thêm connector (SUI, Aptos extension khi support).
+    chains: [creditcoinTestnet],
     connectors: [
-      injected(), //MetaMask, Brave, Rabby
-      baseAccount(), //connector riêng cho Base ecosystem (nếu bạn không cần có thể bỏ).
-      walletConnect({ projectId: process.env.NEXT_PUBLIC_REOWN_PROJECT_ID! }), //cần WalletConnect ProjectId từ cloud.walletconnect.com.
+      injected(),
+      ...(process.env.NEXT_PUBLIC_WC_PROJECT_ID
+        ? [walletConnect({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID! })]
+        : []),
     ],
-    storage: createStorage({
-      storage: cookieStorage,
-    }),
-    ssr: true, //Quan trọng khi dùng App Router + Server Components.
-    transports: { //với Creditcoin → bạn phải truyền RPC URL custom (VD: "https://rpc.testnet.creditcoin.network").
-      [mainnet.id]: http(),
-      [sepolia.id]: http(), 
+    ssr: true,
+    storage: createStorage({ storage: cookieStorage }),
+    transports: {
+      [creditcoinTestnet.id]: http(
+        "https://rpc.cc3-testnet.creditcoin.network/"
+      ),
     },
-  })
+  });
 }
 
-declare module 'wagmi' {
+declare module "wagmi" {
   interface Register {
-    config: ReturnType<typeof getConfig>
+    config: ReturnType<typeof getConfig>;
   }
 }

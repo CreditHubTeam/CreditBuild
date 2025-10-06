@@ -1,9 +1,27 @@
-# Codebase: 10:32-290925
+# Codebase: 2025-10-06
 
-## Directory Structure: main src folder
+## Directory Structure (full project)
 
 ```text
 fe-credit-build/
+  .gitignore
+  Codebase_instruction.md
+  CreditBuild_Document.md
+  README.md
+  TODO.md
+  eslint.config.mjs
+  next-env.d.ts
+  next.config.ts
+  package.json
+  package-lock.json
+  postcss.config.mjs
+  tsconfig.json
+  public/
+    file.svg
+    globe.svg
+    next.svg
+    vercel.svg
+    window.svg
   src/
     app/
       achievements/
@@ -12,23 +30,23 @@ fe-credit-build/
         page.tsx
       education/
         page.tsx
+      progress/
+        page.tsx
       favicon.ico
       globals.css
       layout.tsx
       page.tsx
-      progress/
-        page.tsx
       providers.tsx
     components/
       AppLayout.tsx
       BottomNav.tsx
+      Header.tsx
+      LoadingIndicator.tsx
       Dashboard/
         AchievementsPreview.tsx
         ChallengesGrid.tsx
         ConnectionPanel.tsx
         CreditScore.tsx
-      Header.tsx
-      LoadingIndicator.tsx
       Modals/
         ChallengeModal.tsx
         NetworkSwitchModal.tsx
@@ -48,11 +66,12 @@ fe-credit-build/
     lib/
       appData.ts
       types.ts
+      wagmi.ts
 ```
 
 ## Files
 
-### package.json
+### package.json (current)
 
 ```json
 {
@@ -66,32 +85,195 @@ fe-credit-build/
     "lint": "eslint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.2",
+    "next": "15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.4"
+    "viem": "^2.37.12",
+    "wagmi": "^2.17.5"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
+```
+
+### next.config.ts
+
+```ts
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+```
+
+### eslint.config.mjs
+
+```js
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import { FlatCompat } from "@eslint/eslintrc";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
+
+const eslintConfig = [
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    ignores: [
+      "node_modules/**",
+      ".next/**",
+      "out/**",
+      "build/**",
+      "next-env.d.ts",
+    ],
+  },
+];
+
+export default eslintConfig;
+```
+
+### postcss.config.mjs
+
+```js
+const config = {
+  plugins: ["@tailwindcss/postcss"],
+};
+
+export default config;
+```
+
+### tsconfig.json
+
+```jsonc
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [{ "name": "next" }],
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+```
+
+### .gitignore
+
+```ignore
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# env files
+.env*
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+.vercel
+```
+
+### next-env.d.ts
+
+```ts
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+/// <reference path="./.next/types/routes.d.ts" />
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
 ```
 
 ### src/app/layout.tsx
 
 ```tsx
-import type { Metadata } from "next";
-import "./globals.css";
-import { Press_Start_2P } from "next/font/google";
-import Providers from "./providers";
-import AppLayout from "@/components/AppLayout";
+// import type { Metadata } from "next";
+// import "./globals.css";
+// import { Press_Start_2P } from "next/font/google";
+// import Providers from "./providers";
+// import AppLayout from "@/components/AppLayout";
+
+// const pressStart = Press_Start_2P({
+//   subsets: ["latin"],
+//   weight: "400",
+//   variable: "--font-press-start",
+// });
+
+// export const metadata: Metadata = {
+//   title: "CreditBuild - Gamified Credit Builder",
+//   description: "Build your credit like Minecraft!",
+// };
+
+// export default function RootLayout({
+//   children,
+// }: {
+//   children: React.ReactNode;
+// }) {
+//   return (
+//     <html lang="en" className={pressStart.variable}>
+//       <body
+//         className={`${pressStart.className} text-[12px] leading-6 text-white bg-transparent`}
+//       >
+//         <Providers>
+//           <AppLayout>{children}</AppLayout>
+//         </Providers>
+//       </body>
+//     </html>
+//   );
+// }
+
+//app/layout.tsx
+import type { Metadata } from 'next'
+import { Press_Start_2P } from "next/font/google"
+import { headers } from 'next/headers'
+import { type ReactNode } from 'react'
+import { cookieToInitialState } from 'wagmi'
+import './globals.css'
+
+import AppLayout from "@/components/AppLayout"
+import { getConfig } from '@/lib/wagmi'
+import { Providers } from './providers'
 
 const pressStart = Press_Start_2P({
   subsets: ["latin"],
@@ -99,20 +281,105 @@ const pressStart = Press_Start_2P({
   variable: "--font-press-start",
 });
 
+
 export const metadata: Metadata = {
   title: "CreditBuild - Gamified Credit Builder",
   description: "Build your credit like Minecraft!",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode; }) {
+export default async function RootLayout(props: { children: ReactNode }) {
+  const initialState = cookieToInitialState(
+    getConfig(), //Quan trọng vì config phải đồng bộ giữa server (SSR) và client (hydration).
+    (await headers()).get('cookie'), //Dùng wagmi util để chuyển cookie → initial wagmi state. Nếu không có → mỗi lần refresh SSR sẽ “mất connect state”, user phải reconnect.
+  )
   return (
     <html lang="en" className={pressStart.variable}>
-      <body className={`${pressStart.className} text-[12px] leading-6 text-white bg-transparent`}>
-        <Providers>
-          <AppLayout>{children}</AppLayout>
+      <body className={pressStart.className}>
+        <Providers initialState={initialState}>
+          <AppLayout>{props.children}</AppLayout>
         </Providers>
       </body>
     </html>
+  )
+}
+
+```
+
+### src/lib/wagmi.ts
+
+```ts
+//src/wagmi.ts
+import { cookieStorage, createConfig, createStorage, http } from 'wagmi'
+import { mainnet, sepolia } from 'wagmi/chains'
+import { baseAccount, injected, walletConnect } from 'wagmi/connectors'
+
+export function getConfig() {
+  return createConfig({
+  //đang hardcode mainnet + sepolia => muốn chạy trên Creditcoin testnet → cần add chain custom (dùng defineChain)
+    chains: [mainnet, sepolia],
+    
+    //Đây là nơi bạn có thể add thêm connector (SUI, Aptos extension khi support).
+    connectors: [
+      injected(), //MetaMask, Brave, Rabby
+      baseAccount(), //connector riêng cho Base ecosystem (nếu bạn không cần có thể bỏ).
+      walletConnect({ projectId: process.env.NEXT_PUBLIC_REOWN_PROJECT_ID! }), //cần WalletConnect ProjectId từ cloud.walletconnect.com.
+    ],
+    storage: createStorage({
+      storage: cookieStorage,
+    }),
+    ssr: true, //Quan trọng khi dùng App Router + Server Components.
+    transports: { //với Creditcoin → bạn phải truyền RPC URL custom (VD: "https://rpc.testnet.creditcoin.network").
+      [mainnet.id]: http(),
+      [sepolia.id]: http(), 
+    },
+  })
+}
+
+declare module 'wagmi' {
+  interface Register {
+    config: ReturnType<typeof getConfig>
+  }
+}
+```
+
+### src/components/Modals/PixelModal.tsx
+
+```tsx
+"use client";
+export default function PixelModal({
+  open,
+  title,
+  children,
+  onClose,
+}: {
+  open: boolean;
+  title: string;
+  children: React.ReactNode;
+  onClose: () => void;
+}) {
+  if (!open) return null;
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 z-50"
+      onClick={onClose}
+    >
+      <div
+        className="pixel-card bg-mc-stone w-full max-w-sm sm:max-w-lg max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between p-2 sm:p-4 border-b-3 border-black bg-mc-oak text-black">
+          <h2 className="text-sm sm:text-base truncate flex-1 mr-2">{title}</h2>
+          <button
+            onClick={onClose}
+            className="pixel-btn pixel-btn--secondary text-[8px] sm:text-[10px] px-2 py-1 flex-shrink-0"
+          >
+            <span className="hidden sm:inline">&times;</span>
+            <span className="sm:hidden">✕</span>
+          </button>
+        </div>
+        <div className="p-2 sm:p-4">{children}</div>
+      </div>
+    </div>
   );
 }
 ```
@@ -264,12 +531,43 @@ export default function LandingPage() {
 ### src/app/providers.tsx
 
 ```tsx
-"use client";
-import { AppProvider } from "@/context/AppContext";
+// "use client";
+// import { AppProvider } from "@/context/AppContext";
 
-export default function Providers({ children }: { children: React.ReactNode }) {
-  return <AppProvider>{children}</AppProvider>;
+// export default function Providers({ children }: { children: React.ReactNode }) {
+//   return <AppProvider>{children}</AppProvider>;
+// }
+
+//app/provider.tsx
+'use client'
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { type ReactNode, useState } from 'react'
+import { type State, WagmiProvider } from 'wagmi'
+
+import { AppProvider } from '@/context/AppContext'
+import { getConfig } from '@/lib/wagmi'
+
+export function Providers(props: {
+  children: ReactNode
+  initialState?: State
+}) {
+  const [config] = useState(() => getConfig()) //Tạo config 1 lần duy nhất khi component mount.
+  const [queryClient] = useState(() => new QueryClient()) //Dùng useState để tránh bị tạo lại khi re-render (giữ client stable).
+
+  return (
+   //config: chính là wagmi config bạn định nghĩa (chain, connector, storage)
+
+      <WagmiProvider config={config} initialState={props.initialState}>      
+
+          <QueryClientProvider client={queryClient}>
+              <AppProvider>{props.children}</AppProvider>
+          </QueryClientProvider>
+
+      </WagmiProvider>
+ )
 }
+
 ```
 
 ### src/app/dashboard/page.tsx
@@ -625,37 +923,96 @@ export default function AchievementsPreview() {
 ```tsx
 "use client";
 import { useApp } from "@/context/AppContext";
+import { WalletProvider } from "@/lib/types";
+import { useEffect } from "react";
+import { useConnect } from "wagmi";
 import PixelModal from "./PixelModal";
 
 export default function WalletSelectionModal() {
-  const { openModal, closeModals, availableWallets, connectToWallet } = useApp();
+  const { openModal, closeModals, availableWallets, detectWallets } = useApp();
+  const { connectors, connect, status, error } = useConnect();
+
+  // console.log("Connectors:", connectors);
+
+  //============================DUYET QUA CAC WALLET==================
+  //duyet qua tat ca cac walletProviders trong appData de tao danh sach wallet hien thi
+  // const conntectorWallets = appData.walletProviders.map((wallet) => {
+  //   if (connectors.find((connector) => connector.id === wallet.id)) {
+  //     //neu trong connectors co cac wallet do => doi thanh available = true
+  //     wallet.available = true;
+  //   }
+  //   return wallet;
+  // });
+  // availableWallets = conntectorWallets;
+
+    useEffect(() => {
+      if (openModal === "walletSelectionModal") {
+        detectWallets();
+      }
+    }, [openModal, detectWallets]);
+
+  //=========================KET NOI VOI WALLET======================
+  const handleWalletClick = async (wallet: WalletProvider) => {
+    if (wallet.available) {
+      await connect({ connector: connectors.find((c) => c.id === wallet.id)! });
+    } else {
+      window.open(wallet.downloadUrl, "_blank");
+    }
+  };
+
   return (
-    <PixelModal open={openModal === "walletSelectionModal"} title="Connect Your Wallet" onClose={closeModals}>
+    <PixelModal
+      open={openModal === "walletSelectionModal"}
+      title="Connect Your Wallet"
+      onClose={closeModals}
+    >
       <div className="grid gap-3">
         {availableWallets.map((w) => (
           <button
-            key={w.type}
-            onClick={() => (w.available ? connectToWallet(w) : window.open(w.downloadUrl, "_blank"))}
-            className={`pixel-card p-2 sm:p-3 flex items-center gap-2 sm:gap-3 min-w-0 ${w.available ? "" : "opacity-60 cursor-not-allowed"}`}
+            key={w.id}
+            onClick={() =>
+              w.available
+                ? handleWalletClick(w)
+                : window.open(w.downloadUrl, "_blank")
+            }
+            className={`pixel-card p-2 sm:p-3 flex items-center gap-2 sm:gap-3 min-w-0 ${
+              w.available ? "" : "opacity-60 cursor-not-allowed"
+            }`}
           >
-            <div className="text-lg sm:text-2xl bg-mc-gold px-2 sm:px-3 py-1 sm:py-2 border-2 border-mc-darkbrown rounded-pixel flex-shrink-0">{w.icon}</div>
-            <div className="flex-1 text-left min-w-0">
-              <div className="text-xs sm:text-sm font-bold truncate">{w.name}</div>
-              <div className="text-[8px] sm:text-[10px] opacity-80 line-clamp-2 sm:line-clamp-none">{w.description}</div>
+            <div className="text-lg sm:text-2xl bg-mc-gold px-2 sm:px-3 py-1 sm:py-2 border-2 border-mc-darkbrown rounded-pixel flex-shrink-0">
+              {w.icon}
             </div>
-            <div className={`text-[8px] sm:text-[10px] px-1 sm:px-2 py-1 rounded flex-shrink-0 ${w.available ? "bg-mc-green text-white" : "bg-mc-red text-white"}`}>
-              <span className="hidden sm:inline">{w.available ? "Available" : "Install"}</span>
+            <div className="flex-1 text-left min-w-0">
+              <div className="text-xs sm:text-sm font-bold truncate">
+                {w.name}
+              </div>
+              <div className="text-[8px] sm:text-[10px] opacity-80 line-clamp-2 sm:line-clamp-none">
+                {w.description}
+              </div>
+            </div>
+            <div
+              className={`text-[8px] sm:text-[10px] px-1 sm:px-2 py-1 rounded flex-shrink-0 ${
+                w.available ? "bg-mc-green text-white" : "bg-mc-red text-white"
+              }`}
+            >
+              <span className="hidden sm:inline">
+                {w.available ? "Available" : "Install"}
+              </span>
               <span className="sm:hidden">{w.available ? "✓" : "↓"}</span>
             </div>
           </button>
         ))}
       </div>
       <p className="text-center text-[10px] opacity-80 mt-3">
-        Don&apos;t have a wallet? <a className="underline" href="https://metamask.io" target="_blank">Download MetaMask</a>
+        Don&apos;t have a wallet?{" "}
+        <a className="underline" href="https://metamask.io" target="_blank">
+          Download MetaMask
+        </a>
       </p>
     </PixelModal>
   );
 }
+
 ```
 
 ### src/components/Modals/NetworkSwitchModal.tsx
@@ -857,14 +1214,6 @@ export default function EducationPage() {
 ```tsx
 "use client";
 
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
 import { appData } from "@/lib/appData";
 import type {
   Achievement,
@@ -873,6 +1222,15 @@ import type {
   User,
   WalletProvider,
 } from "@/lib/types";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { useConnect } from "wagmi";
 
 type PageId =
   | "landingPage"
@@ -887,6 +1245,7 @@ type ModalId =
   | "challengeModal";
 
 type Ctx = {
+  // state
   currentUser: User;
   isWalletConnected: boolean;
   currentWalletType: string | null;
@@ -896,12 +1255,20 @@ type Ctx = {
   openModal: ModalId | null;
   currentChallenge: Challenge | null;
   loading: { visible: boolean; message: string };
-  notification: { visible: boolean; message: string; type: "success" | "error" | "warning" | "info" };
+  notification: {
+    visible: boolean;
+    message: string;
+    type: "success" | "error" | "warning" | "info";
+  };
   creditPercentage: number;
+
+  // data
   challenges: Challenge[];
   achievements: Achievement[];
   educationalContent: AppData["educationalContent"];
   network: AppData["creditcoinNetwork"];
+
+  // actions
   detectWallets: () => void;
   connectToWallet: (wallet: WalletProvider) => Promise<void>;
   switchToCorrectNetwork: () => Promise<void>;
@@ -914,80 +1281,178 @@ type Ctx = {
   handleRegistration: (e?: React.FormEvent) => Promise<void>;
   openChallenge: (c: Challenge) => void;
   completeChallenge: (amount: number) => Promise<void>;
-  showNotification: (msg: string, type?: "success" | "error" | "warning" | "info") => void;
+  showNotification: (
+    msg: string,
+    type?: "success" | "error" | "warning" | "info"
+  ) => void;
   hideNotification: () => void;
 };
 
 const AppContext = createContext<Ctx | null>(null);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
+  // ---------- STATE ----------
   const [currentUser, setCurrentUser] = useState<User>({
     ...appData.sampleUser,
     isRegistered: false,
   });
   const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [currentWalletType, setCurrentWalletType] = useState<string | null>(null);
+  const [currentWalletType, setCurrentWalletType] = useState<string | null>(
+    null
+  );
   const [currentChainId, setCurrentChainId] = useState<string | null>(null);
-  const [availableWallets, setAvailableWallets] = useState<WalletProvider[]>([]);
+  const [availableWallets, setAvailableWallets] = useState<WalletProvider[]>(
+    []
+  );
   const [currentPage, setCurrentPage] = useState<PageId>("landingPage");
   const [openModal, setOpenModal] = useState<ModalId | null>(null);
-  const [currentChallenge, setCurrentChallenge] = useState<Challenge | null>(null);
-  const [loading, setLoading] = useState<{ visible: boolean; message: string }>({ visible: false, message: "Processing..." });
-  const [notification, setNotification] = useState<{ visible: boolean; message: string; type: "success" | "error" | "warning" | "info" }>({ visible: false, message: "", type: "info" });
+  const [currentChallenge, setCurrentChallenge] = useState<Challenge | null>(
+    null
+  );
+  const [loading, setLoading] = useState<{ visible: boolean; message: string }>(
+    { visible: false, message: "Processing..." }
+  );
+  const [notification, setNotification] = useState<{
+    visible: boolean;
+    message: string;
+    type: "success" | "error" | "warning" | "info";
+  }>({
+    visible: false,
+    message: "",
+    type: "info",
+  });
 
-  const isCorrectNetwork = useCallback((cid: string | null) => cid === appData.creditcoinNetwork.chainId, []);
-  const showNotification = useCallback((message: string, type: "success" | "error" | "warning" | "info" = "info") => { setNotification({ visible: true, message, type }); }, []);
-  const hideNotification = useCallback(() => setNotification((s) => ({ ...s, visible: false })), []);
-  const showLoading = useCallback((msg?: string) => setLoading({ visible: true, message: msg ?? "Processing..." }), []);
-  const hideLoading = useCallback(() => setLoading({ visible: false, message: "Processing..." }), []);
+  // <-- add: wagmi connectors hook at top-level (hooks must be top-level)
+  const { connectors } = useConnect();
+
+  // ---------- HELPERS ----------
+  const isCorrectNetwork = useCallback(
+    (cid: string | null) => cid === appData.creditcoinNetwork.chainId,
+    []
+  );
+  const showNotification = useCallback(
+    (
+      message: string,
+      type: "success" | "error" | "warning" | "info" = "info"
+    ) => {
+      setNotification({ visible: true, message, type });
+    },
+    []
+  );
+  const hideNotification = useCallback(
+    () => setNotification((s) => ({ ...s, visible: false })),
+    []
+  );
+  const showLoading = useCallback(
+    (msg?: string) =>
+      setLoading({ visible: true, message: msg ?? "Processing..." }),
+    []
+  );
+  const hideLoading = useCallback(
+    () => setLoading({ visible: false, message: "Processing..." }),
+    []
+  );
   const showPage = useCallback((p: PageId) => setCurrentPage(p), []);
 
+  // ---------- INIT ----------
+  // <-- replace detectWallets with mapping that uses connectors and doesn't mutate appData
   const detectWallets = useCallback(() => {
     const base: WalletProvider[] = [];
-    if (typeof window !== "undefined" && "ethereum" in window) {
-      base.push({ name: "MetaMask", type: "metamask", icon: "🦊", description: "Most popular Ethereum wallet", available: true });
-    }
-    appData.walletProviders.forEach((w) => { if (!base.find((b) => b.type === w.type)) base.push({ ...w, available: false }); });
+    console.log(connectors);
+
+    appData.walletProviders.forEach((w) => {
+      if (!base.find((b) => b.id === w.id))
+        base.push({ ...w, available: false });
+
+      if (connectors.find((connector) => connector.id === w.id)) {
+        //neu trong connectors co cac wallet do => doi thanh available = true
+        w.available = true;
+      }
+    });
     setAvailableWallets(base);
-  }, []);
+  }, [connectors]);
 
-  useEffect(() => { setCurrentPage("landingPage"); detectWallets(); }, [detectWallets]);
+  useEffect(() => {
+    setCurrentPage("landingPage");
+    detectWallets();
+  }, [detectWallets]);
 
-  const navigateToPage = useCallback((page: PageId) => {
-    if (!isWalletConnected && page !== "landingPage") { showNotification("Please connect your wallet first!", "warning"); return; }
-    if (isWalletConnected && !isCorrectNetwork(currentChainId)) { showNotification("Please switch to Creditcoin Testnet first!", "warning"); return; }
-    showPage(page);
-  }, [isWalletConnected, currentChainId, isCorrectNetwork, showNotification, showPage]);
+  // ---------- NAV ----------
+  const navigateToPage = useCallback(
+    (page: PageId) => {
+      if (!isWalletConnected && page !== "landingPage") {
+        showNotification("Please connect your wallet first!", "warning");
+        return;
+      }
+      if (isWalletConnected && !isCorrectNetwork(currentChainId)) {
+        showNotification(
+          "Please switch to Creditcoin Testnet first!",
+          "warning"
+        );
+        return;
+      }
+      showPage(page);
+    },
+    [
+      isWalletConnected,
+      currentChainId,
+      isCorrectNetwork,
+      showNotification,
+      showPage,
+    ]
+  );
 
   const handleGetStarted = useCallback(() => {
-    if (!isWalletConnected) { showModal("walletSelectionModal"); }
-    else if (!isCorrectNetwork(currentChainId)) { showModal("networkSwitchModal"); }
-    else if (!currentUser.isRegistered) { showModal("registrationModal"); }
-    else { showPage("dashboard"); }
-  }, [isWalletConnected, currentChainId, currentUser.isRegistered, isCorrectNetwork, showPage]);
+    if (!isWalletConnected) {
+      showModal("walletSelectionModal");
+    } else if (!isCorrectNetwork(currentChainId)) {
+      showModal("networkSwitchModal");
+    } else if (!currentUser.isRegistered) {
+      showModal("registrationModal");
+    } else {
+      showPage("dashboard");
+    }
+  }, [
+    isWalletConnected,
+    currentChainId,
+    currentUser.isRegistered,
+    isCorrectNetwork,
+    showPage,
+  ]);
 
+  // ---------- MODALS ----------
   const showModal = useCallback((id: ModalId) => setOpenModal(id), []);
   const closeModals = useCallback(() => setOpenModal(null), []);
 
-  const connectToWallet = useCallback(async (wallet: WalletProvider) => {
-    closeModals();
-    showLoading("Connecting to wallet...");
-    try {
-      await new Promise((r) => setTimeout(r, 500));
-      const mock = "0x" + Math.random().toString(16).slice(2, 42);
-      const short = `${mock.slice(0, 6)}...${mock.slice(-4)}`;
-      setIsWalletConnected(true);
-      setCurrentWalletType(wallet.type);
-      setCurrentUser((u) => ({ ...u, address: short }));
-      setCurrentChainId("0x1");
-      hideLoading();
-      showNotification(`${wallet.name} connected successfully! 🎉`, "success");
-      setTimeout(() => showModal("networkSwitchModal"), 300);
-    } catch {
-      hideLoading();
-      showNotification("Connection rejected - Please approve in your wallet", "error");
-    }
-  }, [closeModals, hideLoading, showLoading, showNotification, showModal]);
+  // ---------- WALLET / NETWORK ----------
+  const connectToWallet = useCallback(
+    async (wallet: WalletProvider) => {
+      closeModals();
+      showLoading("Connecting to wallet...");
+      try {
+        await new Promise((r) => setTimeout(r, 500));
+        const mock = "0x" + Math.random().toString(16).slice(2, 42);
+        const short = `${mock.slice(0, 6)}...${mock.slice(-4)}`;
+        setIsWalletConnected(true);
+        setCurrentWalletType(wallet.id);
+        setCurrentUser((u) => ({ ...u, address: short }));
+        setCurrentChainId("0x1"); // mock sai network trước
+        hideLoading();
+        showNotification(
+          `${wallet.name} connected successfully! 🎉`,
+          "success"
+        );
+        setTimeout(() => showModal("networkSwitchModal"), 300);
+      } catch {
+        hideLoading();
+        showNotification(
+          "Connection rejected - Please approve in your wallet",
+          "error"
+        );
+      }
+    },
+    [closeModals, hideLoading, showLoading, showNotification, showModal]
+  );
 
   const switchToCorrectNetwork = useCallback(async () => {
     showLoading("Switching network...");
@@ -995,15 +1460,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       await new Promise((r) => setTimeout(r, 500));
       setCurrentChainId(appData.creditcoinNetwork.chainId);
       hideLoading();
-      showNotification("Successfully switched to Creditcoin Testnet! ⛓️", "success");
+      showNotification(
+        "Successfully switched to Creditcoin Testnet! ⛓️",
+        "success"
+      );
       closeModals();
-      if (!currentUser.isRegistered) { setTimeout(() => showModal("registrationModal"), 200); }
-      else { showPage("dashboard"); }
+      if (!currentUser.isRegistered) {
+        setTimeout(() => showModal("registrationModal"), 200);
+      } else {
+        showPage("dashboard");
+      }
     } catch {
       hideLoading();
-      showNotification("Network switch rejected - Please approve in your wallet", "error");
+      showNotification(
+        "Network switch rejected - Please approve in your wallet",
+        "error"
+      );
     }
-  }, [closeModals, currentUser.isRegistered, hideLoading, showLoading, showNotification, showModal, showPage]);
+  }, [
+    closeModals,
+    currentUser.isRegistered,
+    hideLoading,
+    showLoading,
+    showNotification,
+    showModal,
+    showPage,
+  ]);
 
   const disconnectWallet = useCallback(() => {
     setIsWalletConnected(false);
@@ -1014,40 +1496,92 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     showNotification("Wallet disconnected", "info");
   }, [showNotification, showPage]);
 
-  const handleRegistration = useCallback(async (e?: React.FormEvent) => {
-    e?.preventDefault?.();
-    if (!isCorrectNetwork(currentChainId)) { showNotification("Please switch to Creditcoin Testnet first!", "warning"); showModal("networkSwitchModal"); return; }
-    showLoading("Registering on blockchain...");
-    await new Promise((r) => setTimeout(r, 600));
-    setCurrentUser((u) => ({ ...u, isRegistered: true, creditScore: 300, streakDays: 0, totalChallenges: 0, totalPointsEarned: 0 }));
-    hideLoading();
-    closeModals();
-    showPage("dashboard");
-    showNotification("Welcome to CreditBuild! Your journey begins now. 🎉", "success");
-  }, [closeModals, currentChainId, hideLoading, isCorrectNetwork, showLoading, showModal, showNotification, showPage]);
+  // ---------- REGISTRATION ----------
+  const handleRegistration = useCallback(
+    async (e?: React.FormEvent) => {
+      e?.preventDefault?.();
+      if (!isCorrectNetwork(currentChainId)) {
+        showNotification(
+          "Please switch to Creditcoin Testnet first!",
+          "warning"
+        );
+        showModal("networkSwitchModal");
+        return;
+      }
+      showLoading("Registering on blockchain...");
+      await new Promise((r) => setTimeout(r, 600));
+      setCurrentUser((u) => ({
+        ...u,
+        isRegistered: true,
+        creditScore: 300,
+        streakDays: 0,
+        totalChallenges: 0,
+        totalPointsEarned: 0,
+      }));
+      hideLoading();
+      closeModals();
+      showPage("dashboard");
+      showNotification(
+        "Welcome to CreditBuild! Your journey begins now. 🎉",
+        "success"
+      );
+    },
+    [
+      closeModals,
+      currentChainId,
+      hideLoading,
+      isCorrectNetwork,
+      showLoading,
+      showModal,
+      showNotification,
+      showPage,
+    ]
+  );
 
-  const openChallenge = useCallback((c: Challenge) => {
-    if (!isCorrectNetwork(currentChainId)) { showNotification("Please switch to Creditcoin Testnet first!", "warning"); showModal("networkSwitchModal"); return; }
-    setCurrentChallenge(c);
-    showModal("challengeModal");
-  }, [currentChainId, isCorrectNetwork, showModal, showNotification]);
+  // ---------- CHALLENGES ----------
+  const openChallenge = useCallback(
+    (c: Challenge) => {
+      if (!isCorrectNetwork(currentChainId)) {
+        showNotification(
+          "Please switch to Creditcoin Testnet first!",
+          "warning"
+        );
+        showModal("networkSwitchModal");
+        return;
+      }
+      setCurrentChallenge(c);
+      showModal("challengeModal");
+    },
+    [currentChainId, isCorrectNetwork, showModal, showNotification]
+  );
 
-  const completeChallenge = useCallback(async (_amount: number) => {
-    showLoading("Submitting challenge...");
-    await new Promise((r) => setTimeout(r, 500));
-    setCurrentUser((u) => ({
-      ...u,
-      creditScore: Math.min(850, u.creditScore + (currentChallenge?.creditImpact ?? 0)),
-      totalPointsEarned: u.totalPointsEarned + (currentChallenge?.points ?? 0),
-      totalChallenges: u.totalChallenges + 1,
-      streakDays: Math.max(u.streakDays, 1),
-    }));
-    hideLoading();
-    showNotification("Challenge Completed! 🎉", "success");
-    closeModals();
-  }, [currentChallenge, closeModals, hideLoading, showLoading, showNotification]);
+  const completeChallenge = useCallback(
+    async (_amount: number) => {
+      showLoading("Submitting challenge...");
+      await new Promise((r) => setTimeout(r, 500));
+      setCurrentUser((u) => ({
+        ...u,
+        creditScore: Math.min(
+          850,
+          u.creditScore + (currentChallenge?.creditImpact ?? 0)
+        ),
+        totalPointsEarned:
+          u.totalPointsEarned + (currentChallenge?.points ?? 0),
+        totalChallenges: u.totalChallenges + 1,
+        streakDays: Math.max(u.streakDays, 1),
+      }));
+      hideLoading();
+      showNotification("Challenge Completed! 🎉", "success");
+      closeModals();
+    },
+    [currentChallenge, closeModals, hideLoading, showLoading, showNotification]
+  );
 
-  const creditPercentage = useMemo(() => Math.max(5, ((currentUser.creditScore - 300) / 550) * 100), [currentUser.creditScore]);
+  // ---------- DERIVED ----------
+  const creditPercentage = useMemo(
+    () => Math.max(5, ((currentUser.creditScore - 300) / 550) * 100),
+    [currentUser.creditScore]
+  );
 
   const value: Ctx = {
     currentUser,
@@ -1089,180 +1623,7 @@ export function useApp() {
   if (!ctx) throw new Error("useApp must be used inside <AppProvider>");
   return ctx;
 }
-```
 
-### src/hooks/useApp.ts
-
-```typescript
-"use client";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { appData } from "@/lib/appData";
-import type { Achievement, Challenge, User, WalletProvider } from "@/lib/types";
-
-type PageId = "landingPage" | "dashboard" | "achievementsPage" | "progressPage" | "educationPage";
-type ModalId = "walletSelectionModal" | "networkSwitchModal" | "registrationModal" | "challengeModal";
-
-export function useApp() {
-  const [currentUser, setCurrentUser] = useState<User>({ ...appData.sampleUser, isRegistered: false });
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [currentWalletType, setCurrentWalletType] = useState<string | null>(null);
-  const [currentChainId, setCurrentChainId] = useState<string | null>(null);
-  const [availableWallets, setAvailableWallets] = useState<WalletProvider[]>([]);
-  const [currentPage, setCurrentPage] = useState<PageId>("landingPage");
-  const [currentChallenge, setCurrentChallenge] = useState<Challenge | null>(null);
-  const [loading, setLoading] = useState<{ visible: boolean; message: string }>({ visible: false, message: "Processing..." });
-  const [notification, setNotification] = useState<{ visible: boolean; message: string; type: "success" | "error" | "warning" | "info" }>({ visible: false, message: "", type: "info" });
-
-  const isCorrectNetwork = useCallback((cid: string | null) => cid === appData.creditcoinNetwork.chainId, []);
-  const showNotification = useCallback((message: string, type: "success" | "error" | "warning" | "info" = "info") => setNotification({ visible: true, message, type }), []);
-  const hideNotification = useCallback(() => setNotification((s) => ({ ...s, visible: false })), []);
-  const showLoading = useCallback((msg?: string) => setLoading({ visible: true, message: msg ?? "Processing..." }), []);
-  const hideLoading = useCallback(() => setLoading({ visible: false, message: "Processing..." }), []);
-
-  const detectWallets = useCallback(() => {
-    const base: WalletProvider[] = [];
-    if (typeof window !== "undefined") {
-      const win = window as unknown as { ethereum?: unknown };
-      if (win.ethereum) {
-        base.push({ name: "MetaMask", type: "metamask", icon: "🦊", description: "Most popular Ethereum wallet", available: true });
-      }
-    }
-    appData.walletProviders.forEach((w) => { const exists = base.find((b) => b.type === w.type); if (!exists) base.push({ ...w, available: false }); });
-    setAvailableWallets(base);
-  }, []);
-
-  useEffect(() => { setTimeout(() => { setCurrentPage("landingPage"); detectWallets(); }, 100); }, [detectWallets]);
-
-  const showPage = useCallback((page: PageId) => setCurrentPage(page), []);
-  const navigateToPage = useCallback((page: PageId) => {
-    if (!isWalletConnected && page !== "landingPage") { showNotification("Please connect your wallet first!", "warning"); return; }
-    if (isWalletConnected && !isCorrectNetwork(currentChainId)) { showNotification("Please switch to Creditcoin Testnet first!", "warning"); return; }
-    showPage(page);
-  }, [isWalletConnected, currentChainId, isCorrectNetwork, showPage, showNotification]);
-
-  const handleGetStarted = useCallback(() => {
-    if (!isWalletConnected) { showModal("walletSelectionModal"); }
-    else if (!isCorrectNetwork(currentChainId)) { showModal("networkSwitchModal"); }
-    else if (!currentUser.isRegistered) { showModal("registrationModal"); }
-    else { showPage("dashboard"); }
-  }, [isWalletConnected, currentChainId, currentUser.isRegistered, isCorrectNetwork, showPage]);
-
-  const [openModal, setOpenModal] = useState<ModalId | null>(null);
-  const showModal = useCallback((id: ModalId) => setOpenModal(id), []);
-  const closeModals = useCallback(() => setOpenModal(null), []);
-
-  const connectToWallet = useCallback(async (wallet: WalletProvider) => {
-    closeModals();
-    showLoading("Connecting to wallet...");
-    try {
-      await new Promise((r) => setTimeout(r, 1200));
-      const mockAddress = "0x" + Math.random().toString(16).slice(2, 42);
-      const short = `${mockAddress.slice(0, 6)}...${mockAddress.slice(-4)}`;
-      setIsWalletConnected(true);
-      setCurrentWalletType(wallet.type);
-      setCurrentUser((u) => ({ ...u, address: short }));
-      setCurrentChainId("0x1");
-      hideLoading();
-      showNotification(`${wallet.name} connected successfully! 🎉`, "success");
-      setTimeout(() => showModal("networkSwitchModal"), 600);
-    } catch {
-      hideLoading();
-      showNotification("Connection rejected - Please approve the connection in your wallet", "error");
-    }
-  }, [closeModals, hideLoading, showLoading, showNotification, showModal]);
-
-  const switchToCorrectNetwork = useCallback(async () => {
-    showLoading("Switching network...");
-    try {
-      await new Promise((r) => setTimeout(r, 900));
-      setCurrentChainId(appData.creditcoinNetwork.chainId);
-      hideLoading();
-      showNotification("Successfully switched to Creditcoin Testnet! ⛓️", "success");
-      closeModals();
-      if (!currentUser.isRegistered) { setTimeout(() => showModal("registrationModal"), 300); }
-      else { showPage("dashboard"); }
-    } catch {
-      hideLoading();
-      showNotification("Network switch rejected - Please approve in your wallet", "error");
-    }
-  }, [closeModals, currentUser.isRegistered, hideLoading, showLoading, showNotification, showModal, showPage]);
-
-  const disconnectWallet = useCallback(() => {
-    setIsWalletConnected(false);
-    setCurrentWalletType(null);
-    setCurrentChainId(null);
-    setCurrentUser({ ...appData.sampleUser, isRegistered: false });
-    showPage("landingPage");
-    showNotification("Wallet disconnected", "info");
-  }, [showNotification, showPage]);
-
-  const handleRegistration = useCallback(async (e?: React.FormEvent) => {
-    e?.preventDefault?.();
-    if (!isCorrectNetwork(currentChainId)) { showNotification("Please switch to Creditcoin Testnet first!", "warning"); showModal("networkSwitchModal"); return; }
-    showLoading("Registering on blockchain...");
-    await new Promise((r) => setTimeout(r, 1200));
-    setCurrentUser((u) => ({ ...u, isRegistered: true, creditScore: 300, streakDays: 0, totalChallenges: 0, totalPointsEarned: 0 }));
-    hideLoading();
-    closeModals();
-    showPage("dashboard");
-    showNotification("Welcome to CreditBuild! Your journey begins now. 🎉", "success");
-  }, [closeModals, currentChainId, hideLoading, isCorrectNetwork, showLoading, showModal, showNotification, showPage]);
-
-  const creditPercentage = useMemo(() => Math.max(5, ((currentUser.creditScore - 300) / 550) * 100), [currentUser.creditScore]);
-
-  const openChallenge = useCallback((c: Challenge) => {
-    if (!isCorrectNetwork(currentChainId)) { showNotification("Please switch to Creditcoin Testnet first!", "warning"); showModal("networkSwitchModal"); return; }
-    setCurrentChallenge(c);
-    showModal("challengeModal");
-  }, [currentChainId, isCorrectNetwork, showModal, showNotification]);
-
-  const completeChallenge = useCallback(async (amount: number) => {
-    showLoading("Submitting challenge...");
-    await new Promise((r) => setTimeout(r, 800));
-    setCurrentUser((u) => ({
-      ...u,
-      creditScore: Math.min(850, u.creditScore + (currentChallenge?.creditImpact ?? 0)),
-      totalPointsEarned: u.totalPointsEarned + (currentChallenge?.points ?? 0),
-      totalChallenges: u.totalChallenges + 1,
-      streakDays: Math.max(u.streakDays, 1),
-    }));
-    hideLoading();
-    showNotification("Challenge Completed! 🎉", "success");
-    closeModals();
-  }, [currentChallenge, closeModals, hideLoading, showLoading, showNotification]);
-
-  return {
-    currentUser,
-    isWalletConnected,
-    currentWalletType,
-    currentChainId,
-    availableWallets,
-    currentPage,
-    openModal,
-    currentChallenge,
-    loading,
-    notification,
-    creditPercentage,
-    challenges: appData.challenges,
-    achievements: appData.achievements,
-    educationalContent: appData.educationalContent,
-    network: appData.creditcoinNetwork,
-    detectWallets,
-    connectToWallet,
-    switchToCorrectNetwork,
-    disconnectWallet,
-    showPage,
-    navigateToPage,
-    handleGetStarted,
-    showModal,
-    closeModals,
-    handleRegistration,
-    openChallenge,
-    completeChallenge,
-    showNotification,
-    hideNotification,
-  };
-}
 ```
 
 ### src/lib/appData.ts
@@ -1280,23 +1641,109 @@ export const appData: AppData = {
     isRegistered: true,
   },
   challenges: [
-    { type: "daily_save", name: "Daily Saver", description: "Save at least $5 today", points: 10, creditImpact: 5, category: "daily", icon: "💰" },
-    { type: "bill_early", name: "Early Bird", description: "Pay a bill 3+ days early", points: 20, creditImpact: 10, category: "daily", icon: "⚡" },
-    { type: "budget_check", name: "Budget Tracker", description: "Review and update your budget", points: 15, creditImpact: 8, category: "daily", icon: "📊" },
-    { type: "weekly_goal", name: "Weekly Saver", description: "Save $50+ this week", points: 50, creditImpact: 25, category: "weekly", icon: "🎯" },
+    {
+      type: "daily_save",
+      name: "Daily Saver",
+      description: "Save at least $5 today",
+      points: 10,
+      creditImpact: 5,
+      category: "daily",
+      icon: "💰",
+    },
+    {
+      type: "bill_early",
+      name: "Early Bird",
+      description: "Pay a bill 3+ days early",
+      points: 20,
+      creditImpact: 10,
+      category: "daily",
+      icon: "⚡",
+    },
+    {
+      type: "budget_check",
+      name: "Budget Tracker",
+      description: "Review and update your budget",
+      points: 15,
+      creditImpact: 8,
+      category: "daily",
+      icon: "📊",
+    },
+    {
+      type: "weekly_goal",
+      name: "Weekly Saver",
+      description: "Save $50+ this week",
+      points: 50,
+      creditImpact: 25,
+      category: "weekly",
+      icon: "🎯",
+    },
   ],
   achievements: [
-    { id: "first_challenge", name: "First Steps", description: "Complete your first challenge", icon: "🏆", unlocked: true },
-    { id: "week_streak", name: "Week Warrior", description: "Maintain a 7-day streak", icon: "🔥", unlocked: true },
-    { id: "month_streak", name: "Monthly Master", description: "Maintain a 30-day streak", icon: "💎", unlocked: false },
-    { id: "good_credit", name: "Good Credit Club", description: "Reach 650 credit score", icon: "⭐", unlocked: false },
-    { id: "savings_master", name: "Savings Master", description: "Complete 10 savings challenges", icon: "🏅", unlocked: false },
-    { id: "perfect_score", name: "Perfect Credit", description: "Reach 850 credit score", icon: "👑", unlocked: false },
+    {
+      id: "first_challenge",
+      name: "First Steps",
+      description: "Complete your first challenge",
+      icon: "🏆",
+      unlocked: true,
+    },
+    {
+      id: "week_streak",
+      name: "Week Warrior",
+      description: "Maintain a 7-day streak",
+      icon: "🔥",
+      unlocked: true,
+    },
+    {
+      id: "month_streak",
+      name: "Monthly Master",
+      description: "Maintain a 30-day streak",
+      icon: "💎",
+      unlocked: false,
+    },
+    {
+      id: "good_credit",
+      name: "Good Credit Club",
+      description: "Reach 650 credit score",
+      icon: "⭐",
+      unlocked: false,
+    },
+    {
+      id: "savings_master",
+      name: "Savings Master",
+      description: "Complete 10 savings challenges",
+      icon: "🏅",
+      unlocked: false,
+    },
+    {
+      id: "perfect_score",
+      name: "Perfect Credit",
+      description: "Reach 850 credit score",
+      icon: "👑",
+      unlocked: false,
+    },
   ],
   walletProviders: [
-    { name: "MetaMask", type: "metamask", icon: "🦊", description: "Most popular Ethereum wallet", downloadUrl: "https://metamask.io" },
-    { name: "Coinbase Wallet", type: "coinbase", icon: "🔵", description: "User-friendly wallet by Coinbase", downloadUrl: "https://wallet.coinbase.com" },
-    { name: "WalletConnect", type: "walletconnect", icon: "🔗", description: "Connect with mobile wallets", downloadUrl: "https://walletconnect.com" },
+    {
+      name: "MetaMask",
+      id: "injected",
+      icon: "🦊",
+      description: "Most popular Ethereum wallet",
+      downloadUrl: "https://metamask.io",
+    },
+    {
+      name: "Coinbase Wallet",
+      id: "baseAccount",
+      icon: "🔵",
+      description: "User-friendly wallet by Coinbase",
+      downloadUrl: "https://wallet.coinbase.com",
+    },
+    {
+      name: "WalletConnect",
+      id: "walletConnect",
+      icon: "🔗",
+      description: "Connect with mobile wallets",
+      downloadUrl: "https://walletconnect.com",
+    },
   ],
   creditcoinNetwork: {
     chainId: "0x18E9F",
@@ -1308,12 +1755,37 @@ export const appData: AppData = {
   },
   contractAddress: "0x1234567890123456789012345678901234567890",
   educationalContent: [
-    { id: "credit_basics", title: "Credit Score Basics", description: "Learn what affects your credit score", duration: "5 min", points: 25 },
-    { id: "budgeting_101", title: "Budgeting 101", description: "Create your first budget", duration: "10 min", points: 35 },
-    { id: "debt_management", title: "Debt Management", description: "Strategies to pay off debt faster", duration: "8 min", points: 30 },
-    { id: "investment_basics", title: "Investment Fundamentals", description: "Start building wealth with smart investments", duration: "12 min", points: 40 },
+    {
+      id: "credit_basics",
+      title: "Credit Score Basics",
+      description: "Learn what affects your credit score",
+      duration: "5 min",
+      points: 25,
+    },
+    {
+      id: "budgeting_101",
+      title: "Budgeting 101",
+      description: "Create your first budget",
+      duration: "10 min",
+      points: 35,
+    },
+    {
+      id: "debt_management",
+      title: "Debt Management",
+      description: "Strategies to pay off debt faster",
+      duration: "8 min",
+      points: 30,
+    },
+    {
+      id: "investment_basics",
+      title: "Investment Fundamentals",
+      description: "Start building wealth with smart investments",
+      duration: "12 min",
+      points: 40,
+    },
   ],
 };
+
 ```
 
 ### src/lib/types.ts
@@ -1338,8 +1810,9 @@ export type Achievement = {
 };
 
 export type WalletProvider = {
+  id: "injected" | "baseAccount"| "walletConnect" | "io.metamask";
   name: string;
-  type: "metamask" | "coinbase" | "walletconnect" | "generic";
+  // type: "metamask" | "coinbase" | "walletconnect" | "generic";
   icon: string;
   description: string;
   downloadUrl?: string;
@@ -1371,6 +1844,13 @@ export type AppData = {
   walletProviders: WalletProvider[];
   creditcoinNetwork: Network;
   contractAddress: string;
-  educationalContent: { id: string; title: string; description: string; duration: string; points: number; }[];
+  educationalContent: {
+    id: string;
+    title: string;
+    description: string;
+    duration: string;
+    points: number;
+  }[];
 };
+
 ```

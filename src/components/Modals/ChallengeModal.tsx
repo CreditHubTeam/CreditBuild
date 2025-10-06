@@ -1,42 +1,34 @@
 "use client";
-import { useApp } from "@/context/AppContext";
 import { useState } from "react";
-import PixelModal from "./PixelModal";
+import { useUI } from "@/state/ui";
+import { useData } from "@/state/data";
+import Modal from "@/ui/Modal";
 
 export default function ChallengeModal() {
-  const { openModal, closeModals, currentChallenge, completeChallenge, showNotification } =
-    useApp();
-  const [amount, setAmount] = useState<string>(""); // Đổi thành string và empty
-  if (!currentChallenge) return null;
+  const { modal, close } = useUI();
+  const { submitChallenge } = useData();
+  const [amount, setAmount] = useState<string>("");
+
+  if (modal !== "challenge") return null;
 
   return (
-    <PixelModal
-      open={openModal === "challengeModal"}
-      title={currentChallenge.name}
-      onClose={closeModals}
-    >
-      <p className="mb-3 text-[12px]">{currentChallenge.description}</p>
-      <div className="flex gap-3 text-[11px] mb-3">
-        <span className="pixel-badge bg-mc-green text-white">
-          💰 {currentChallenge.points} Points
-        </span>
-        <span className="pixel-badge bg-mc-blue text-white">
-          📈 +{currentChallenge.creditImpact} Credit
-        </span>
-      </div>
+    <Modal title="Complete Challenge" onClose={close}>
       <form
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
-
-          // kiem tra amount la so duong
           const value = Number(amount);
-          if(value <= 0 || isNaN(value) || amount === ""){
-            // console.log("Showing notification"); // Debug
-            showNotification('Please enter a valid amount', 'warning');
+          if (value <= 0 || isNaN(value) || amount === "") {
             return;
           }
-          
-          completeChallenge(value);
+          try {
+            await submitChallenge(1, {
+              amount: value,
+              proof: { type: "number", value },
+            });
+            close();
+          } catch (error) {
+            // Error already handled in data context
+          }
         }}
       >
         <label className="text-[10px]">Amount ($):</label>
@@ -52,6 +44,6 @@ export default function ChallengeModal() {
           Complete Challenge
         </button>
       </form>
-    </PixelModal>
+    </Modal>
   );
 }
