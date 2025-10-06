@@ -94,21 +94,21 @@ export const appData: AppData = {
   walletProviders: [
     {
       name: "MetaMask",
-      type: "metamask",
+      id: "injected",
       icon: "🦊",
       description: "Most popular Ethereum wallet",
       downloadUrl: "https://metamask.io",
     },
     {
       name: "Coinbase Wallet",
-      type: "coinbase",
+      id: "baseAccount",
       icon: "🔵",
       description: "User-friendly wallet by Coinbase",
       downloadUrl: "https://wallet.coinbase.com",
     },
     {
       name: "WalletConnect",
-      type: "walletconnect",
+      id: "walletConnect",
       icon: "🔗",
       description: "Connect with mobile wallets",
       downloadUrl: "https://walletconnect.com",

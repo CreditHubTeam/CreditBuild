@@ -17,8 +17,9 @@ export type Achievement = {
 };
 
 export type WalletProvider = {
+  id: "injected" | "baseAccount"| "walletConnect" | "io.metamask";
   name: string;
-  type: "metamask" | "coinbase" | "walletconnect" | "generic";
+  // type: "metamask" | "coinbase" | "walletconnect" | "generic";
   icon: string;
   description: string;
   downloadUrl?: string;

@@ -1,13 +1,5 @@
 "use client";
 
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
 import { appData } from "@/lib/appData";
 import type {
   Achievement,
@@ -16,6 +8,15 @@ import type {
   User,
   WalletProvider,
 } from "@/lib/types";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { useConnect } from "wagmi";
 
 type PageId =
   | "landingPage"
@@ -107,6 +108,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     type: "info",
   });
 
+  // <-- add: wagmi connectors hook at top-level (hooks must be top-level)
+  const { connectors } = useConnect();
+
   // ---------- HELPERS ----------
   const isCorrectNetwork = useCallback(
     (cid: string | null) => cid === appData.creditcoinNetwork.chainId,
@@ -137,23 +141,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const showPage = useCallback((p: PageId) => setCurrentPage(p), []);
 
   // ---------- INIT ----------
+  // <-- replace detectWallets with mapping that uses connectors and doesn't mutate appData
   const detectWallets = useCallback(() => {
     const base: WalletProvider[] = [];
-    if (typeof window !== "undefined" && "ethereum" in window) {
-      base.push({
-        name: "MetaMask",
-        type: "metamask",
-        icon: "🦊",
-        description: "Most popular Ethereum wallet",
-        available: true,
-      });
-    }
+    console.log(connectors);
+
     appData.walletProviders.forEach((w) => {
-      if (!base.find((b) => b.type === w.type))
+      if (!base.find((b) => b.id === w.id))
         base.push({ ...w, available: false });
+
+      if (connectors.find((connector) => connector.id === w.id)) {
+        //neu trong connectors co cac wallet do => doi thanh available = true
+        w.available = true;
+      }
     });
     setAvailableWallets(base);
-  }, []);
+  }, [connectors]);
 
   useEffect(() => {
     setCurrentPage("landingPage");
@@ -217,7 +220,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const mock = "0x" + Math.random().toString(16).slice(2, 42);
         const short = `${mock.slice(0, 6)}...${mock.slice(-4)}`;
         setIsWalletConnected(true);
-        setCurrentWalletType(wallet.type);
+        setCurrentWalletType(wallet.id);
         setCurrentUser((u) => ({ ...u, address: short }));
         setCurrentChainId("0x1"); // mock sai network trước
         hideLoading();

@@ -1,10 +1,42 @@
 "use client";
 import { useApp } from "@/context/AppContext";
+import { WalletProvider } from "@/lib/types";
+import { useEffect } from "react";
+import { useConnect } from "wagmi";
 import PixelModal from "./PixelModal";
 
 export default function WalletSelectionModal() {
-  const { openModal, closeModals, availableWallets, connectToWallet } =
-    useApp();
+  const { openModal, closeModals, availableWallets, detectWallets } = useApp();
+  const { connectors, connect, status, error } = useConnect();
+
+  // console.log("Connectors:", connectors);
+
+  //============================DUYET QUA CAC WALLET==================
+  //duyet qua tat ca cac walletProviders trong appData de tao danh sach wallet hien thi
+  // const conntectorWallets = appData.walletProviders.map((wallet) => {
+  //   if (connectors.find((connector) => connector.id === wallet.id)) {
+  //     //neu trong connectors co cac wallet do => doi thanh available = true
+  //     wallet.available = true;
+  //   }
+  //   return wallet;
+  // });
+  // availableWallets = conntectorWallets;
+
+    useEffect(() => {
+      if (openModal === "walletSelectionModal") {
+        detectWallets();
+      }
+    }, [openModal, detectWallets]);
+
+  //=========================KET NOI VOI WALLET======================
+  const handleWalletClick = async (wallet: WalletProvider) => {
+    if (wallet.available) {
+      await connect({ connector: connectors.find((c) => c.id === wallet.id)! });
+    } else {
+      window.open(wallet.downloadUrl, "_blank");
+    }
+  };
+
   return (
     <PixelModal
       open={openModal === "walletSelectionModal"}
@@ -14,10 +46,10 @@ export default function WalletSelectionModal() {
       <div className="grid gap-3">
         {availableWallets.map((w) => (
           <button
-            key={w.type}
+            key={w.id}
             onClick={() =>
               w.available
-                ? connectToWallet(w)
+                ? handleWalletClick(w)
                 : window.open(w.downloadUrl, "_blank")
             }
             className={`pixel-card p-2 sm:p-3 flex items-center gap-2 sm:gap-3 min-w-0 ${
