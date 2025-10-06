@@ -144,17 +144,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // <-- replace detectWallets with mapping that uses connectors and doesn't mutate appData
   const detectWallets = useCallback(() => {
     const base: WalletProvider[] = [];
-    console.log(connectors);
+    console.log("Connectors:", connectors);
 
     appData.walletProviders.forEach((w) => {
-      if (!base.find((b) => b.id === w.id))
-        base.push({ ...w, available: false });
-
-      if (connectors.find((connector) => connector.id === w.id)) {
-        //neu trong connectors co cac wallet do => doi thanh available = true
-        w.available = true;
-      }
+      const isAvailable = connectors.find((connector) => connector.id === w.id);
+      
+      base.push({ 
+        ...w, 
+        available: !!isAvailable // ← Set available cho object copy
+      });
     });
+    
+    console.log("Detected wallets:", base); // ← Debug
     setAvailableWallets(base);
   }, [connectors]);
 

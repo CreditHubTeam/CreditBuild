@@ -1,18 +1,18 @@
 "use client";
 import { useWallet } from "@/state/wallet";
-import { useUI } from "@/state/ui";
+
+//== AppContext chua tach
+import { useApp } from "@/context/AppContext";
 
 export default function Header() {
   const {
     address,
     isConnected,
     networkOk,
-    connectors,
-    connect,
     disconnect,
     ensureCreditcoin,
   } = useWallet();
-  const { notify } = useUI();
+  const { showModal, closeModals } = useApp();
 
   return (
     <header className="w-full bg-mc-brown border-b-4 border-mc-darkbrown shadow-pixel sticky top-0 z-50">
@@ -30,16 +30,9 @@ export default function Header() {
         <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
           {!isConnected ? (
             <button
-              onClick={async () => {
-                const injected =
-                  connectors.find((c) => c.id === "injected") ?? connectors[0];
-                if (!injected)
-                  return notify("No wallet connector found", "warning");
-                try {
-                  await connect({ connector: injected });
-                } catch (error) {
-                  notify("Connection failed", "error");
-                }
+              onClick={() => {
+              console.log("Connect Wallet button clicked");
+              showModal("walletSelectionModal");
               }}
               className="pixel-btn pixel-btn--primary text-[8px] sm:text-[12px] px-2 sm:px-4 py-1 sm:py-2"
             >

@@ -2,12 +2,13 @@
 import { useApp } from "@/context/AppContext";
 import { WalletProvider } from "@/lib/types";
 import { useEffect } from "react";
-import { useConnect } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import PixelModal from "./PixelModal";
 
 export default function WalletSelectionModal() {
   const { openModal, closeModals, availableWallets, detectWallets } = useApp();
   const { connectors, connect, status, error } = useConnect();
+  const { isConnected } = useAccount();
 
   // console.log("Connectors:", connectors);
 
@@ -21,6 +22,14 @@ export default function WalletSelectionModal() {
   //   return wallet;
   // });
   // availableWallets = conntectorWallets;
+
+    // Auto close modal when wallet connects
+  useEffect(() => {
+    if (isConnected && openModal === "walletSelectionModal") {
+      console.log("✅ Wallet connected - auto closing modal");
+      closeModals();
+    }
+  }, [isConnected, openModal, closeModals]);
 
     useEffect(() => {
       if (openModal === "walletSelectionModal") {

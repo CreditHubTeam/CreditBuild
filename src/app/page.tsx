@@ -1,13 +1,18 @@
 "use client";
-import { useWallet } from "@/state/wallet";
 import { useUI } from "@/state/ui";
+import { useWallet } from "@/state/wallet";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+
+//==appContext chưa tách
+import { useApp } from "@/context/AppContext";
 
 export default function LandingPage() {
   const { isConnected, networkOk, connectors, connect, ensureCreditcoin } =
     useWallet();
   const { notify } = useUI();
+  const {showModal, closeModals} = useApp();
+  
   const router = useRouter();
 
   // Auto redirect to dashboard if wallet is connected and network is correct
@@ -19,15 +24,7 @@ export default function LandingPage() {
 
   const handleGetStarted = async () => {
     if (!isConnected) {
-      // Connect wallet
-      const injected =
-        connectors.find((c) => c.id === "injected") ?? connectors[0];
-      if (!injected) return notify("No wallet connector found", "warning");
-      try {
-        await connect({ connector: injected });
-      } catch {
-        notify("Connection failed", "error");
-      }
+      showModal("walletSelectionModal");
     } else if (!networkOk) {
       // Switch network
       await ensureCreditcoin();
