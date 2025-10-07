@@ -1,6 +1,6 @@
 "use client";
-import { usePathname, useRouter } from "next/navigation";
 import { useApp } from "@/context/AppContext";
+import { usePathname } from "next/navigation";
 
 type NavItem = {
   path: string;
@@ -16,17 +16,9 @@ const navItems: NavItem[] = [
 ];
 
 export default function BottomNav() {
+  const { handleNavigation } = useApp();
   const pathname = usePathname();
-  const router = useRouter();
-  const { isWalletConnected, showNotification } = useApp();
 
-  const handleNavigation = (path: string) => {
-    if (!isWalletConnected && path !== "/") {
-      showNotification("Please connect your wallet first!", "warning");
-      return;
-    }
-    router.push(path);
-  };
 
   const Item = ({
     path,

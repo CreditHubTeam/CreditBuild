@@ -8,6 +8,7 @@ import type {
   User,
   WalletProvider,
 } from "@/lib/types";
+import { usePathname, useRouter } from "next/navigation";
 import React, {
   createContext,
   useCallback,
@@ -16,7 +17,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useConnect } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 
 type PageId =
   | "landingPage"
@@ -60,7 +61,7 @@ type Ctx = {
   switchToCorrectNetwork: () => Promise<void>;
   disconnectWallet: () => void;
   showPage: (p: PageId) => void;
-  navigateToPage: (p: PageId) => void;
+  handleNavigation: (path: string) => void;
   handleGetStarted: () => void;
   showModal: (m: ModalId) => void;
   closeModals: () => void;
@@ -108,8 +109,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     type: "info",
   });
 
-  // <-- add: wagmi connectors hook at top-level (hooks must be top-level)
+  // <-- Listen to wagmi state
+  const { isConnected, address, chainId: wagmiChainId } = useAccount();
   const { connectors } = useConnect();
+
+  const pathname = usePathname();
+  const router = useRouter();
+
+  // Sync wagmi state with AppContext state
+  useEffect(() => {
+    console.log("Wagmi state changed:", { isConnected, address, chainId: wagmiChainId });
+    
+    setIsWalletConnected(isConnected);
+    
+    if (isConnected && address) {
+      const hexChainId = `0x${wagmiChainId?.toString(16)}`;
+      setCurrentChainId(hexChainId);
+      setCurrentUser(u => ({ 
+        ...u, 
+        address: `${address.slice(0, 6)}...${address.slice(-4)}` 
+      }));
+    } else {
+      // Disconnected
+      setCurrentChainId(null);
+      setCurrentUser({ ...appData.sampleUser, isRegistered: false });
+    }
+  }, [isConnected, address, wagmiChainId]);
 
   // ---------- HELPERS ----------
   const isCorrectNetwork = useCallback(
@@ -165,29 +190,39 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [detectWallets]);
 
   // ---------- NAV ----------
-  const navigateToPage = useCallback(
-    (page: PageId) => {
-      if (!isWalletConnected && page !== "landingPage") {
-        showNotification("Please connect your wallet first!", "warning");
-        return;
-      }
-      if (isWalletConnected && !isCorrectNetwork(currentChainId)) {
-        showNotification(
-          "Please switch to Creditcoin Testnet first!",
-          "warning"
-        );
-        return;
-      }
-      showPage(page);
-    },
-    [
-      isWalletConnected,
-      currentChainId,
-      isCorrectNetwork,
-      showNotification,
-      showPage,
-    ]
-  );
+  // const navigateToPage = useCallback(
+  //   (page: PageId) => {
+  //     console.log(page);
+  //     if (!isWalletConnected && page !== "landingPage") {
+  //       showNotification("Please connect your wallet first!", "warning");
+  //       return;
+  //     }
+  //     if (isWalletConnected && !isCorrectNetwork(currentChainId)) {
+  //       showNotification(
+  //         "Please switch to Creditcoin Testnet first!",
+  //         "warning"
+  //       );
+  //       return;
+  //     }
+  //     showPage(page);
+  //   },
+  //   [
+  //     isWalletConnected,
+  //     currentChainId,
+  //     isCorrectNetwork,
+  //     showNotification,
+  //     showPage,
+  //   ]
+  // );
+    const handleNavigation = (path: string) => {
+    // console.log("Navigating to:", path);
+    // console.log(isWalletConnected);
+    if (!isWalletConnected && path !== "/") {
+      showNotification("Please connect your wallet first!", "warning");
+      return;
+    }
+    router.push(path);
+  };
 
   const handleGetStarted = useCallback(() => {
     if (!isWalletConnected) {
@@ -391,7 +426,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     switchToCorrectNetwork,
     disconnectWallet,
     showPage,
-    navigateToPage,
+    handleNavigation,
     handleGetStarted,
     showModal,
     closeModals,
