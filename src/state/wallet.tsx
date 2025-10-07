@@ -1,7 +1,7 @@
 "use client";
-import React, { createContext, useContext, useMemo, useCallback } from "react";
-import { useAccount, useConnect, useDisconnect, useChainId } from "wagmi";
 import { creditcoinTestnet } from "@/lib/wagmi";
+import React, { createContext, useCallback, useContext, useMemo } from "react";
+import { useAccount, useChainId, useConnect, useDisconnect } from "wagmi";
 import { useUI } from "./ui";
 
 type WalletCtx = {
@@ -14,6 +14,14 @@ type WalletCtx = {
   disconnect: ReturnType<typeof useDisconnect>["disconnect"];
   ensureCreditcoin: () => Promise<void>;
 };
+
+/** Format address: 0x1234...abcd */
+export function formatAddress(address?: string) {
+  if (!address) return "";
+  return address.length > 10
+    ? `${address.slice(0, 6)}...${address.slice(-4)}`
+    : address;
+}
 
 const WalletContext = createContext<WalletCtx | null>(null);
 

@@ -1,5 +1,5 @@
-import { cookieStorage, createConfig, createStorage, http } from "wagmi";
 import { defineChain } from "viem";
+import { cookieStorage, createConfig, createStorage, http } from "wagmi";
 import { injected, walletConnect } from "wagmi/connectors";
 
 export const creditcoinTestnet = defineChain({

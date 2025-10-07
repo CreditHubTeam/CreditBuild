@@ -1,5 +1,5 @@
 "use client";
-import { useWallet } from "@/state/wallet";
+import { formatAddress, useWallet } from "@/state/wallet";
 
 //== AppContext chua tach
 import { useApp } from "@/context/AppContext";
@@ -43,7 +43,7 @@ export default function Header() {
             <div className="flex flex-col items-end gap-1 sm:gap-2">
               <div className="flex flex-col items-end gap-1">
                 <span className="bg-mc-darkstone text-white px-1 sm:px-2 py-1 border-2 border-black text-[8px] sm:text-[10px] max-w-[100px] sm:max-w-none truncate">
-                  <span className="hidden sm:inline">{address}</span>
+                  <span className="hidden sm:inline">{formatAddress(address)}</span>
                   <span className="sm:hidden">
                     {address?.slice(0, 6)}...{address?.slice(-4)}
                   </span>

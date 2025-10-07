@@ -1,46 +1,59 @@
 "use client";
 import { useApp } from "@/context/AppContext";
 import { WalletProvider } from "@/lib/types";
+import { creditcoinTestnet } from "@/lib/wagmi";
 import { useEffect } from "react";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount, useChainId, useConnect } from "wagmi";
 import PixelModal from "./PixelModal";
 
 export default function WalletSelectionModal() {
-  const { openModal, closeModals, availableWallets, detectWallets } = useApp();
-  const { connectors, connect, status, error } = useConnect();
+  const { openModal, closeModals, availableWallets, detectWallets, showModal, showNotification } = useApp();
+  const { connectors, connect } = useConnect();
   const { isConnected } = useAccount();
+  const chainId = useChainId();
 
-  // console.log("Connectors:", connectors);
-
-  //============================DUYET QUA CAC WALLET==================
-  //duyet qua tat ca cac walletProviders trong appData de tao danh sach wallet hien thi
-  // const conntectorWallets = appData.walletProviders.map((wallet) => {
-  //   if (connectors.find((connector) => connector.id === wallet.id)) {
-  //     //neu trong connectors co cac wallet do => doi thanh available = true
-  //     wallet.available = true;
-  //   }
-  //   return wallet;
-  // });
-  // availableWallets = conntectorWallets;
-
-    // Auto close modal when wallet connects
+  // Auto close modal and check network when wallet connects
   useEffect(() => {
     if (isConnected && openModal === "walletSelectionModal") {
-      console.log("✅ Wallet connected - auto closing modal");
+      console.log("✅ Wallet connected - checking network...");
+      console.log("Current chainId:", chainId);
+      console.log("Expected chainId:", creditcoinTestnet.id);
       closeModals();
-    }
-  }, [isConnected, openModal, closeModals]);
-
-    useEffect(() => {
-      if (openModal === "walletSelectionModal") {
-        detectWallets();
+      
+      // Kiểm tra network sau khi connect
+      if (chainId !== creditcoinTestnet.id) {
+        setTimeout(() => {
+          showNotification(
+            "Please switch to Creditcoin Testnet to continue!",
+            "warning"
+          );
+          showModal("networkSwitchModal");
+        }, 500);
+      } else {
+        showNotification("Connected to Creditcoin Testnet! 🎉", "success");
       }
-    }, [openModal, detectWallets]);
+    }
+  }, [isConnected, openModal, closeModals, chainId, showModal, showNotification]);
 
-  //=========================KET NOI VOI WALLET======================
+  useEffect(() => {
+    if (openModal === "walletSelectionModal") {
+      detectWallets();
+    }
+  }, [openModal, detectWallets]);
+
   const handleWalletClick = async (wallet: WalletProvider) => {
     if (wallet.available) {
-      await connect({ connector: connectors.find((c) => c.id === wallet.id)! });
+      try {
+        console.log("🔗 Connecting to:", wallet.name);
+        const connector = connectors.find((c) => c.id === wallet.id);
+        if (connector) {
+          await connect({ connector });
+          // useEffect sẽ handle network check
+        }
+      } catch (error) {
+        console.error("Connection error:", error);
+        showNotification("Failed to connect wallet. Please try again.", "error");
+      }
     } else {
       window.open(wallet.downloadUrl, "_blank");
     }
@@ -56,11 +69,7 @@ export default function WalletSelectionModal() {
         {availableWallets.map((w) => (
           <button
             key={w.id}
-            onClick={() =>
-              w.available
-                ? handleWalletClick(w)
-                : window.open(w.downloadUrl, "_blank")
-            }
+            onClick={() => handleWalletClick(w)}
             className={`pixel-card p-2 sm:p-3 flex items-center gap-2 sm:gap-3 min-w-0 ${
               w.available ? "" : "opacity-60 cursor-not-allowed"
             }`}

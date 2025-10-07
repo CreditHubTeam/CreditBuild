@@ -113,6 +113,13 @@ export const appData: AppData = {
       description: "Connect with mobile wallets",
       downloadUrl: "https://walletconnect.com",
     },
+    {
+      name: "Sub Wallet",
+      id: "app.subwallet",
+      icon: "🦀",
+      description: "Multi-chain wallet for Polkadot",
+      downloadUrl: "https://subwallet.app",
+    }
   ],
   creditcoinNetwork: {
     chainId: "0x18E9F",
