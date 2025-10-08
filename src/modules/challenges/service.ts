@@ -10,6 +10,7 @@ import { env } from "@/core/config";
 import { keccak256, toHex } from "viem";
 import { RuleSet } from "@/modules/common/rules";
 import { UsersRepo } from "../users/repo";
+import { AchievementsService } from "../achievements/service";
 
 //Example
 type Proof =

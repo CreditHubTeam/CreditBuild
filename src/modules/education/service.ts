@@ -1,8 +1,63 @@
-import { EducationRepo } from "./repo";
+import { prisma } from "@/core/db";
+import { UsersRepo } from "@/modules/users/repo";
+
 export const EducationService = {
-  list: () => EducationRepo.list(),
-  get: (idOrSlug: string) =>
-    isNaN(Number(idOrSlug))
-      ? EducationRepo.bySlug(idOrSlug)
-      : EducationRepo.byId(Number(idOrSlug)),
+  // List tất cả education content
+  list: () => {
+    return prisma.education.findMany({ orderBy: { id: "asc" } });
+  },
+
+  // Mark education content as completed
+  completeEducation: async (walletAddress: string, educationId: number) => {
+    const user = await UsersRepo.byWallet(walletAddress);
+    if (!user) throw new Error("User not found");
+
+    const education = await prisma.education.findUnique({
+      where: { id: educationId },
+    });
+    if (!education) throw new Error("Education content not found");
+
+    // Check đã complete chưa
+    const existing = await prisma.userEducation.findUnique({
+      where: {
+        userId_educationId: {
+          userId: user.id,
+          educationId: education.id,
+        },
+      },
+    });
+
+    if (existing) {
+      return { alreadyCompleted: true, points: 0 };
+    }
+
+    // Tạo record completion
+    await prisma.userEducation.create({
+      data: {
+        userId: user.id,
+        educationId: education.id,
+        completedAt: new Date(),
+      },
+    });
+
+    // Add points cho user
+    const newPoints = Number(user.totalPoints) + education.points;
+    await UsersRepo.update(user.id, {
+      totalPoints: BigInt(newPoints),
+    });
+
+    return {
+      success: true,
+      pointsEarned: education.points,
+      newTotalPoints: newPoints,
+    };
+  },
+
+  // Lấy education progress của user
+  getUserProgress: async (userId: number) => {
+    return prisma.userEducation.findMany({
+      where: { userId },
+      include: { education: true },
+    });
+  },
 };

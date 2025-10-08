@@ -25,6 +25,7 @@ model User {
   challenges      UserChallenge[]
   achievements    UserAchievement[]
   ledger          PointLedger[]
+  education       UserEducation[]
 }
 
 model Challenge {
@@ -71,6 +72,8 @@ model Achievement {
   name        String            @db.VarChar(128)
   description String?
   icon        String?           @db.VarChar(8)
+  conditions  Json // Achievement conditions
+  points      Int               @default(0) // Points reward
   users       UserAchievement[]
 }
 
@@ -110,14 +113,24 @@ model ContractConfig {
   updatedAt    DateTime @updatedAt
 }
 
-model EducationItem {
-  id        Int      @id @default(autoincrement())
-  slug      String   @unique @db.VarChar(64)
-  title     String   @db.VarChar(128)
-  bodyMd    String
-  category  String   @db.VarChar(64)
-  tags      String[] @db.VarChar(32)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  featured  Boolean  @default(false)
+model Education {
+  id            Int             @id @default(autoincrement())
+  title         String          @db.VarChar(128)
+  desc          String?         @db.VarChar(256)
+  duration      Int? // in minutes
+  points        Int? // points awarded upon completion
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  UserEducation UserEducation[]
+}
+
+model UserEducation {
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+  education   Education @relation(fields: [educationId], references: [id])
+  educationId Int
+  completedAt DateTime  @default(now())
+
+  @@unique([userId, educationId])
 }
