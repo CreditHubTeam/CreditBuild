@@ -12,8 +12,62 @@ export const ChallengesRepo = {
       },
     }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  createAttempt: (data: any) => prisma.userChallenge.create({ data }),
+  // createAttempt: (data: any) => prisma.userChallenge.create({ data }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updateAttempt: (id: number, data: any) =>
     prisma.userChallenge.update({ where: { id }, data }),
+
+  // ======= SIMPLE FUNC =======
+  // Lấy 4 challenges ngẫu nhiên cho ngày hôm nay
+  getDailyChallenges: async (count: number = 4) => {
+    const allChallenges = await prisma.challenge.findMany();
+    // Shuffle và lấy N challenges
+    const shuffled = allChallenges.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  },
+
+  // Check xem user đã làm challenge trong ngày chưa
+  hasCompletedToday: async (userId: number, challengeId: number) => {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const count = await prisma.userChallenge.count({
+      where: {
+        userId,
+        challengeId,
+        status: { in: ["APPROVED", "CLAIMED"] },
+        createdAt: { gte: startOfDay },
+      },
+    });
+    return count > 0;
+  },
+
+  // Đếm số challenges đã hoàn thành trong ngày
+  getDailyCompletedCount: async (userId: number) => {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    return prisma.userChallenge.count({
+      where: {
+        userId,
+        status: { in: ["APPROVED", "CLAIMED"] },
+        createdAt: { gte: startOfDay },
+      },
+    });
+  },
+  // Tạo challenge attempt => luôn auto approved (demo mode)
+  createAttempt: (data: {
+    userId: number;
+    challengeId: number;
+    amount?: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    proof?: any;
+    status?: string;
+  }) =>
+    prisma.userChallenge.create({
+      data: {
+        ...data,
+        status: data.status || "APPROVED", // Demo mode: auto approve
+      },
+    }),
 };

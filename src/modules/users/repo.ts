@@ -20,4 +20,14 @@ export const UsersRepo = {
     });
     return { attempts, last5 };
   },
+  update: (
+    id: number,
+    data: {
+      totalPoints?: bigint;
+      creditScore?: number;
+      totalChallenges?: number;
+      streakDays?: number;
+      username?: string;
+    }
+  ) => prisma.user.update({ where: { id }, data }),
 };
