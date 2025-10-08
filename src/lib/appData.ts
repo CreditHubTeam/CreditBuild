@@ -94,7 +94,7 @@ export const appData: AppData = {
   walletProviders: [
     {
       name: "MetaMask",
-      id: "injected",
+      id: "io.metamask",
       icon: "🦊",
       description: "Most popular Ethereum wallet",
       downloadUrl: "https://metamask.io",

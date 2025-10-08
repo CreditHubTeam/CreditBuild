@@ -22,41 +22,28 @@ export function middleware(request: NextRequest) {
     try {
       const wagmiState = JSON.parse(cookieValue);
       
-      // ✅ Đúng structure: connections là Map với __type và value
-      const connections = wagmiState?.state?.connections;
-      
-      if (!connections || connections.__type !== 'Map' || !connections.value || connections.value.length === 0) {
-        console.log(`🚫 Middleware: Blocking ${pathname} - no active connections`);
-        console.log('Connections data:', connections);
-        return NextResponse.redirect(new URL('/?blocked=wallet', request.url));
-      }
-      
-      // Check if có connection active
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const activeConnections: [string, any][] = connections.value;
+      // Check global state thay vì individual connections
+      const hasConnections = wagmiState?.state?.connections?.value?.length > 0;
       const currentConnectionId = wagmiState?.state?.current;
+      const globalChainId = wagmiState?.state?.chainId; // ← Use global chain
       
-      console.log('Active connections:', activeConnections);
+      console.log('Has connections:', hasConnections);
       console.log('Current connection ID:', currentConnectionId);
+      console.log('Global chain ID:', globalChainId);
+      console.log('Expected chain ID (Creditcoin):', 102031);
       
-      // Kiểm tra connection hiện tại có accounts không
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const currentConnection = activeConnections.find(([id, _]: [string, any]) => id === currentConnectionId);
-      
-      if (!currentConnection) {
-        console.log(`🚫 Middleware: Blocking ${pathname} - no current connection`);
+      if (!hasConnections || !currentConnectionId) {
+        console.log(`🚫 Middleware: Blocking ${pathname} - no active connections`);
         return NextResponse.redirect(new URL('/?blocked=wallet', request.url));
       }
       
-      const [_, connectionData] = currentConnection;
-      
-      if (!connectionData.accounts || connectionData.accounts.length === 0) {
-        console.log(`🚫 Middleware: Blocking ${pathname} - no accounts in connection`);
-        return NextResponse.redirect(new URL('/?blocked=wallet', request.url));
+      // Optional: Check if on correct network
+      if (globalChainId !== 102031) {
+        console.log(`⚠️ Middleware: Wrong network (${globalChainId}), but allowing access`);
+        // Không block, để client-side handle network switch
       }
       
-      console.log(`✅ Middleware: Valid connection found for ${connectionData.connector.name}`);
-      console.log(`✅ Connected account: ${connectionData.accounts[0]}`);
+      console.log(`✅ Middleware: Connection found, allowing access to ${pathname}`);
       
     } catch (error) {
       console.log(`🚫 Middleware: Blocking ${pathname} - invalid connection state`);

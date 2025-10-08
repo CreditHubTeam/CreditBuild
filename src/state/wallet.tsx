@@ -38,6 +38,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
   const networkOk = chainId === creditcoinTestnet.id;
 
+  // Enhanced effect để handle network mismatch
   useEffect(() => {
     const protectedRoutes = ['/dashboard', '/education', '/progress', '/achievements'];
     const isProtectedRoute = protectedRoutes.includes(pathname);
@@ -46,8 +47,16 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       console.log("🔄 Wallet disconnected - redirecting to home");
       notify("Wallet disconnected. Redirecting to home...", "info");
       router.push("/");
+      return;
     }
-  }, [isConnected, pathname, router, notify]);
+    
+    // Check network mismatch
+    if (isConnected && isProtectedRoute && !networkOk) {
+      console.log("⚠️ Wrong network detected on protected route");
+      notify("Please switch to Creditcoin Testnet to continue!", "warning");
+      // Không redirect, để user có cơ hội switch network
+    }
+  }, [isConnected, networkOk, pathname, router, notify]);
 
   const ensureCreditcoin = useCallback(async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
