@@ -1,4 +1,5 @@
 "use client";
+import { useApp } from "@/context/AppContext";
 import { creditcoinTestnet } from "@/lib/wagmi";
 import { usePathname, useRouter } from "next/navigation";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
@@ -30,6 +31,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const { address, isConnected, connector } = useAccount();
   const [realChainId, setRealChainId] = useState<number | null>(null);
   const [isValidating, setIsValidating] = useState(false);
+  const { showModal, closeModals } = useApp();
   
   // ✅ More robust chain detection
   useEffect(() => {
@@ -173,51 +175,54 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       notify("No injected wallet found", "warning");
       return;
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const provider = (window as any).ethereum;
-    const hexId = "0x" + creditcoinTestnet.id.toString(16);
+    // // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // const provider = (window as any).ethereum;
+    // const hexId = "0x" + creditcoinTestnet.id.toString(16);
 
-    showLoading("Switching network...");
-    try {
-      await provider.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: hexId }],
-      });
-      hideLoading();
-      notify("Switched to Creditcoin Testnet ⛓️", "success");
-      close();
-    } catch {
-      // add chain then switch
-      try {
-        await provider.request({
-          method: "wallet_addEthereumChain",
-          params: [
-            {
-              chainId: hexId,
-              chainName: creditcoinTestnet.name,
-              nativeCurrency: creditcoinTestnet.nativeCurrency,
-              rpcUrls: creditcoinTestnet.rpcUrls.default.http,
-              blockExplorerUrls: [
-                creditcoinTestnet.blockExplorers!.default!.url,
-              ],
-            },
-          ],
-        });
-        await provider.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: hexId }],
-        });
-        hideLoading();
-        // notify("Creditcoin Testnet added & switched ✅", "success");
-        notify("Creditcoin Testnet added & switched ✅", "success");
-        // window.location.reload(); //==
-        close();
-      } catch {
-        hideLoading();
-        notify("Network switch rejected", "error");
-      }
-    }
-  }, [showLoading, hideLoading, notify, close]);
+    // showLoading("Switching network...");
+    showModal("networkSwitchModal");
+
+
+    // try {
+    //   await provider.request({
+    //     method: "wallet_switchEthereumChain",
+    //     params: [{ chainId: hexId }],
+    //   });
+    //   hideLoading();
+    //   notify("Switched to Creditcoin Testnet ⛓️", "success");
+    //   close();
+    // } catch {
+    //   // add chain then switch
+    //   try {
+    //     await provider.request({
+    //       method: "wallet_addEthereumChain",
+    //       params: [
+    //         {
+    //           chainId: hexId,
+    //           chainName: creditcoinTestnet.name,
+    //           nativeCurrency: creditcoinTestnet.nativeCurrency,
+    //           rpcUrls: creditcoinTestnet.rpcUrls.default.http,
+    //           blockExplorerUrls: [
+    //             creditcoinTestnet.blockExplorers!.default!.url,
+    //           ],
+    //         },
+    //       ],
+    //     });
+    //     await provider.request({
+    //       method: "wallet_switchEthereumChain",
+    //       params: [{ chainId: hexId }],
+    //     });
+    //     hideLoading();
+    //     // notify("Creditcoin Testnet added & switched ✅", "success");
+    //     notify("Creditcoin Testnet added & switched ✅", "success");
+    //     // window.location.reload(); //==
+    //     close();
+    //   } catch {
+    //     hideLoading();
+    //     notify("Network switch rejected", "error");
+    //   }
+    // }
+  }, [showModal]);
 
   const handleDisconnect = useCallback(() => {
     console.log("🔌 Disconnecting wallet...");
