@@ -1,6 +1,7 @@
 "use client";
 import { creditcoinTestnet } from "@/lib/wagmi";
-import React, { createContext, useCallback, useContext, useMemo } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import React, { createContext, useCallback, useContext, useEffect, useMemo } from "react";
 import { useAccount, useChainId, useConnect, useDisconnect } from "wagmi";
 import { useUI } from "./ui";
 
@@ -31,8 +32,22 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const { connectors, connectAsync } = useConnect();
   const { disconnect } = useDisconnect();
   const { showLoading, hideLoading, notify, close } = useUI();
+  
+  const router = useRouter();
+  const pathname = usePathname();
 
   const networkOk = chainId === creditcoinTestnet.id;
+
+  useEffect(() => {
+    const protectedRoutes = ['/dashboard', '/education', '/progress', '/achievements'];
+    const isProtectedRoute = protectedRoutes.includes(pathname);
+    
+    if (!isConnected && isProtectedRoute) {
+      console.log("🔄 Wallet disconnected - redirecting to home");
+      notify("Wallet disconnected. Redirecting to home...", "info");
+      router.push("/");
+    }
+  }, [isConnected, pathname, router, notify]);
 
   const ensureCreditcoin = useCallback(async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -84,6 +99,17 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }
   }, [showLoading, hideLoading, notify, close]);
 
+  const handleDisconnect = useCallback(() => {
+    console.log("🔌 Disconnecting wallet...");
+    disconnect();
+    
+    close(); // Close any open modals
+    
+    setTimeout(() => {
+      router.push("/");
+    }, 100);
+  }, [disconnect, close, router]);
+
   const value = useMemo<WalletCtx>(
     () => ({
       address: address as `0x${string}` | undefined,
@@ -93,7 +119,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       connectors,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       connect: connectAsync as any,
-      disconnect,
+      disconnect: handleDisconnect,
       ensureCreditcoin,
     }),
     [
@@ -103,7 +129,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       networkOk,
       connectors,
       connectAsync,
-      disconnect,
+      handleDisconnect,
       ensureCreditcoin,
     ]
   );
