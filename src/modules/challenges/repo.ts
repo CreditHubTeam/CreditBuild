@@ -62,7 +62,7 @@ export const ChallengesRepo = {
     amount?: number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     proof?: any;
-    status?: string;
+    status?: "PENDING" | "APPROVED" | "REJECTED" | "CLAIMED";
   }) =>
     prisma.userChallenge.create({
       data: {

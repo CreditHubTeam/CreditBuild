@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if already claimed
-    const existingClaim = await prisma.challengeCompletion.findFirst({
+    const existingClaim = await prisma.userChallenge.findFirst({
       where: {
         userId: user.id,
         challengeId: challengeId,
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create challenge completion
-    const completion = await prisma.challengeCompletion.create({
+    const completion = await prisma.userChallenge.create({
       data: {
         userId: user.id,
         challengeId: challengeId,
@@ -62,6 +62,7 @@ export async function POST(req: NextRequest) {
         pointsAwarded: challenge.points,
         creditChange: challenge.creditImpact,
         completionKey: `${user.id}-${challengeId}-${Date.now()}`,
+        status: "CLAIMED",
       },
     });
 

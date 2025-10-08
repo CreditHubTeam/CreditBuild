@@ -7,6 +7,13 @@ export const EducationService = {
     return prisma.education.findMany({ orderBy: { id: "asc" } });
   },
 
+  // Get education content by ID
+  get: (id: string) => {
+    return prisma.education.findUnique({
+      where: { id: Number(id) },
+    });
+  },
+
   // Mark education content as completed
   completeEducation: async (walletAddress: string, educationId: number) => {
     const user = await UsersRepo.byWallet(walletAddress);
@@ -41,14 +48,15 @@ export const EducationService = {
     });
 
     // Add points cho user
-    const newPoints = Number(user.totalPoints) + education.points;
+    const pointsToAdd = education.points || 0;
+    const newPoints = Number(user.totalPoints) + pointsToAdd;
     await UsersRepo.update(user.id, {
       totalPoints: BigInt(newPoints),
     });
 
     return {
       success: true,
-      pointsEarned: education.points,
+      pointsEarned: pointsToAdd,
       newTotalPoints: newPoints,
     };
   },
