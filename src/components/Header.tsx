@@ -1,21 +1,64 @@
 "use client";
-import { formatAddress, useWallet } from "@/state/wallet";
-
-//== AppContext chua tach
 import { useApp } from "@/context/AppContext";
+import { formatAddress, useWallet } from "@/state/wallet";
+import { useEffect, useState } from "react";
 
 export default function Header() {
   const {
     address,
     isConnected,
     networkOk,
+    chainId,
     disconnect,
     ensureCreditcoin,
   } = useWallet();
   const { showModal, closeModals } = useApp();
 
+  const [renderKey, setRenderKey] = useState(0);
+
+  console.log("=== HEADER STATE ===");
+  console.log("chainId:", chainId);
+  console.log("networkOk:", networkOk);
+  console.log("isConnected:", isConnected);
+  console.log("renderKey:", renderKey);
+
+  useEffect(() => {
+    console.log("🔄 Header: State changed, forcing re-render");
+    setRenderKey((prev) => prev + 1);
+  }, [chainId, networkOk, isConnected]);
+
+  useEffect(() => {
+    const handleChainChanged = (newChainId: string) => {
+      console.log("🔄 Header: Chain changed event received");
+      console.log("New chainId:", parseInt(newChainId, 16));
+
+      setTimeout(() => {
+        setRenderKey((prev) => prev + 1);
+      }, 100);
+    };
+
+    if (typeof window !== "undefined" && window.ethereum) {
+      window.ethereum.on("chainChanged", handleChainChanged);
+
+      return () => {
+        window.ethereum?.removeListener?.("chainChanged", handleChainChanged);
+      };
+    }
+  }, []);
+
+  const isReallyOnCreditcoin = chainId === 102031;
+  const displayNetworkOk = networkOk && isReallyOnCreditcoin;
+
+  console.log("=== HEADER DISPLAY LOGIC ===");
+  console.log("chainId === 102031:", chainId === 102031);
+  console.log("networkOk from wallet:", networkOk);
+  console.log("displayNetworkOk (final):", displayNetworkOk);
+
   return (
-    <header className="w-full bg-mc-brown border-b-4 border-mc-darkbrown shadow-pixel sticky top-0 z-50">
+    <header
+      className="w-full bg-mc-brown border-b-4 border-mc-darkbrown shadow-pixel sticky top-0 z-50"
+      key={renderKey}
+    >
       <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 flex items-center justify-between gap-2 sm:gap-4">
         <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
           <div className="bg-mc-gold text-mc-darkbrown px-2 sm:px-4 py-1 sm:py-2 border-3 border-mc-darkbrown pixel-inset font-bold text-[8px] sm:text-[10px] whitespace-nowrap">
@@ -31,8 +74,8 @@ export default function Header() {
           {!isConnected ? (
             <button
               onClick={() => {
-              console.log("Connect Wallet button clicked");
-              showModal("walletSelectionModal");
+                console.log("Connect Wallet button clicked");
+                showModal("walletSelectionModal");
               }}
               className="pixel-btn pixel-btn--primary text-[8px] sm:text-[12px] px-2 sm:px-4 py-1 sm:py-2"
             >
@@ -43,7 +86,9 @@ export default function Header() {
             <div className="flex flex-col items-end gap-1 sm:gap-2">
               <div className="flex flex-col items-end gap-1">
                 <span className="bg-mc-darkstone text-white px-1 sm:px-2 py-1 border-2 border-black text-[8px] sm:text-[10px] max-w-[100px] sm:max-w-none truncate">
-                  <span className="hidden sm:inline">{formatAddress(address)}</span>
+                  <span className="hidden sm:inline">
+                    {formatAddress(address)}
+                  </span>
                   <span className="sm:hidden">
                     {address?.slice(0, 6)}...{address?.slice(-4)}
                   </span>
@@ -51,18 +96,22 @@ export default function Header() {
                 <div className="flex items-center gap-2 text-[10px]">
                   <span
                     className={`text-xs ${
-                      networkOk ? "text-mc-green" : "text-mc-red"
+                      displayNetworkOk ? "text-mc-green" : "text-mc-red"
                     }`}
                   >
-                    {networkOk ? "🟢" : "🔴"}
+                    {displayNetworkOk ? "🟢" : "🔴"}
                   </span>
                   <span>
-                    {networkOk ? "Creditcoin Testnet" : "Wrong Network"}
+                    {displayNetworkOk
+                      ? "Creditcoin Testnet"
+                      : `Wrong Network ${
+                          chainId ? `(${chainId})` : "(Disconnected)"
+                        }`}
                   </span>
                 </div>
               </div>
               <div className="flex gap-2">
-                {!networkOk && (
+                {!displayNetworkOk && (
                   <button
                     onClick={ensureCreditcoin}
                     className="pixel-btn pixel-btn--secondary text-[10px] px-2 py-1"
