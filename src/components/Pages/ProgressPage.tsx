@@ -2,13 +2,13 @@
 import { useApp } from "@/context/AppContext";
 
 export default function ProgressPage() {
-  const { navigateToPage, currentUser } = useApp();
+  const { handleNavigation, currentUser } = useApp();
   return (
     <section className="container mx-auto px-4 py-6 pb-20 sm:pb-24">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl">Progress Tracking</h1>
         <button
-          onClick={() => navigateToPage("dashboard")}
+          onClick={() => handleNavigation("/dashboard")}
           className="pixel-btn pixel-btn--secondary"
         >
           Back to Dashboard

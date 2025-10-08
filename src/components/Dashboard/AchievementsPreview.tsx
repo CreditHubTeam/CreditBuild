@@ -2,14 +2,14 @@
 import { useApp } from "@/context/AppContext";
 
 export default function AchievementsPreview() {
-  const { achievements, navigateToPage } = useApp();
+  const { achievements, handleNavigation } = useApp();
   return (
     <div className="pixel-card p-5 mb-20">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl">Recent Achievements</h2>
         <button
           className="pixel-btn pixel-btn--secondary"
-          onClick={() => navigateToPage("achievementsPage")}
+          onClick={() => handleNavigation("/achievements")}
         >
           View All
         </button>

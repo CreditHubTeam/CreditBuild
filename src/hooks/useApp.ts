@@ -78,8 +78,8 @@ export function useApp() {
       const win = window as unknown as { ethereum?: unknown };
       if (win.ethereum) {
         base.push({
+          id: "io.metamask",
           name: "MetaMask",
-          type: "metamask",
           icon: "🦊",
           description: "Most popular Ethereum wallet",
           available: true,
@@ -88,7 +88,7 @@ export function useApp() {
     }
     // Thêm các lựa chọn còn lại (download link)
     appData.walletProviders.forEach((w) => {
-      const exists = base.find((b) => b.type === w.type);
+      const exists = base.find((b) => b.id === w.id);
       if (!exists) base.push({ ...w, available: false });
     });
     setAvailableWallets(base);
@@ -165,7 +165,7 @@ export function useApp() {
         const mockAddress = "0x" + Math.random().toString(16).slice(2, 42);
         const short = `${mockAddress.slice(0, 6)}...${mockAddress.slice(-4)}`;
         setIsWalletConnected(true);
-        setCurrentWalletType(wallet.type);
+        setCurrentWalletType(wallet.id);
         setCurrentUser((u) => ({ ...u, address: short }));
         setCurrentChainId("0x1"); // mainnet giả lập (sai)
         hideLoading();
