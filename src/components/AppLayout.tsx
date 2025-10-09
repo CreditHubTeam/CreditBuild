@@ -6,8 +6,8 @@ import WalletSelectionModal from "@/components/Modals/WalletSelectionModal";
 import NetworkSwitchModal from "@/components/Modals/NetworkSwitchModal";
 import RegistrationModal from "@/components/Modals/RegistrationModal";
 import ChallengeModal from "@/components/Modals/ChallengeModal";
-import LoadingIndicator from "@/components/LoadingIndicator";
-import Notification from "@/components/UI/Notification";
+import LoadingGlobal from "@/ui/Loading";
+import Notification from "@/ui/Notification";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -30,7 +30,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <NetworkSwitchModal />
       <RegistrationModal />
       <ChallengeModal />
-      <LoadingIndicator />
+      <LoadingGlobal />
       <Notification />
     </>
   );
