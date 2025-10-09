@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/core/db";
 import { AchievementsService } from "@/modules/achievements/service";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const ClaimSchema = z.object({
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
 
     // Get user
     const user = await prisma.user.findUnique({
-      where: { walletAddress: userAddress },
+      where: { wallet_address: userAddress },
     });
 
     if (!user) {

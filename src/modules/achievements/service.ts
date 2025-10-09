@@ -34,7 +34,7 @@ export const AchievementsService = {
       // Check different types of conditions
       if (
         conditions.minChallenges &&
-        user.totalChallenges >= conditions.minChallenges
+        user.total_challenges >= conditions.minChallenges
       ) {
         // If specific category required, check that too
         if (conditions.challengeCategory) {
@@ -53,20 +53,20 @@ export const AchievementsService = {
         }
       }
 
-      if (conditions.minStreak && user.streakDays >= conditions.minStreak) {
+      if (conditions.minStreak && user.streak_days >= conditions.minStreak) {
         qualifies = true;
       }
 
       if (
         conditions.minCreditScore &&
-        user.creditScore >= conditions.minCreditScore
+        user.credit_score >= conditions.minCreditScore
       ) {
         qualifies = true;
       }
 
       if (
         conditions.minPoints &&
-        Number(user.totalPoints) >= conditions.minPoints
+        Number(user.total_points) >= conditions.minPoints
       ) {
         qualifies = true;
       }

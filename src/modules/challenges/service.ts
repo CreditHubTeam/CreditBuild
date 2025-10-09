@@ -1,16 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from "@/core/db";
-import { writeLedger } from "@/modules/common/ledger";
-import { applyCredit } from "@/modules/common/credit";
-import { validateRules } from "@/modules/common/rules";
-import { ChallengesRepo } from "./repo";
-import { operatorClient } from "@/integrations/evm/client";
-import { questAbi } from "@/integrations/evm/contracts";
-import { env } from "@/core/config";
-import { keccak256, toHex } from "viem";
-import { RuleSet } from "@/modules/common/rules";
-import { UsersRepo } from "../users/repo";
 import { AchievementsService } from "../achievements/service";
+import { UsersRepo } from "../users/repo";
+import { ChallengesRepo } from "./repo";
 
 //Example
 type Proof =
@@ -54,7 +46,7 @@ export const ChallengesService = {
     proof?: Proof
   ) => {
     // validate user and challenge
-    const user = await prisma.user.findUnique({ where: { walletAddress } });
+    const user = await prisma.user.findUnique({ where: { wallet_address: walletAddress } });
     if (!user) throw new Error("User not found");
     const challenge = await ChallengesRepo.byId(challengeId);
     if (!challenge) throw new Error("Challenge not found");
@@ -75,19 +67,19 @@ export const ChallengesService = {
     });
 
     // Update user points và stats
-    const newPoints = Number(user.totalPoints) + challenge.points;
-    const newCreditScore = user.creditScore + challenge.creditImpact;
-    const newTotalChallenges = user.totalChallenges + 1;
+    const newPoints = Number(user.total_points) + challenge.points;
+    const newCreditScore = user.credit_score + challenge.creditImpact;
+    const newTotalChallenges = user.total_challenges + 1;
 
     // Check xem đây có phải challenge đầu tiên trong ngày không (để update streak)
     const completedToday = await ChallengesRepo.getDailyCompletedCount(user.id);
     const shouldUpdateStreak = completedToday === 1; // Challenge đầu tiên trong ngày
 
     await UsersRepo.update(user.id, {
-      totalPoints: BigInt(newPoints),
-      creditScore: newCreditScore,
-      totalChallenges: newTotalChallenges,
-      streakDays: shouldUpdateStreak ? user.streakDays + 1 : user.streakDays,
+      total_points: BigInt(newPoints),
+      credit_score: newCreditScore,
+      total_challenges: newTotalChallenges,
+      streak_days: shouldUpdateStreak ? user.streak_days + 1 : user.streak_days,
     });
 
     // Check achievements
