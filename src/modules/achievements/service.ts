@@ -22,7 +22,8 @@ export const AchievementsService = {
       if (hasAchievement) continue;
 
       // Check achievement conditions
-      const conditions = achievement.conditions as {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const conditions = (achievement as any).conditions as {
         minChallenges?: number;
         minStreak?: number;
         minCreditScore?: number;
