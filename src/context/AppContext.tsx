@@ -8,6 +8,7 @@ import type {
   User,
   WalletProvider,
 } from "@/lib/types";
+import { ViewFanClubCard } from "@/lib/types/view";
 import { usePathname, useRouter } from "next/navigation";
 import React, {
   createContext,
@@ -30,6 +31,7 @@ type ModalId =
   | "networkSwitchModal"
   | "registrationModal"
   | "challengeModal";
+ 
 
 type Ctx = {
   // state
@@ -52,6 +54,7 @@ type Ctx = {
   // data
   challenges: Challenge[];
   achievements: Achievement[];
+  fanClubs: ViewFanClubCard[];
   educationalContent: AppData["educationalContent"];
   network: AppData["creditcoinNetwork"];
 
@@ -417,12 +420,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     availableWallets,
     currentPage,
     openModal,
+
     currentChallenge,
     loading,
     notification,
     creditPercentage,
     challenges: appData.challenges,
     achievements: appData.achievements,
+    fanClubs: appData.fanClubs,
     educationalContent: appData.educationalContent,
     network: appData.creditcoinNetwork,
     detectWallets,

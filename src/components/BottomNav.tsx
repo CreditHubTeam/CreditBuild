@@ -13,6 +13,8 @@ const navItems: NavItem[] = [
   { path: "/achievements", icon: "🏆", label: "Achievements" },
   { path: "/progress", icon: "📈", label: "Progress" },
   { path: "/education", icon: "📚", label: "Learn" },
+  // add new Fan Clubs
+  { path: "/fan-clubs", icon: "🎉", label: "Fan Clubs" }
 ];
 
 export default function BottomNav() {
@@ -37,16 +39,16 @@ export default function BottomNav() {
           : "bg-mc-oak text-black hover:bg-mc-brown hover:text-white"
       } border-3 border-black rounded-pixel shadow-pixel hover:shadow-none active:translate-y-[1px] active:scale-100 min-h-[50px] sm:min-h-[65px] lg:min-h-[75px]`}
     >
-      <span className="text-sm sm:text-lg lg:text-xl mb-1">{icon}</span>
-      <span className="text-[8px] sm:text-[10px] lg:text-[12px] leading-tight text-center font-bold">
+      <span className="w-full h-full flex-1 flex items-center justify-center text-[32px] sm:text-[40px] lg:text-[52px] leading-none">{icon}</span>
+      {/* <span className="text-[8px] sm:text-[10px] lg:text-[12px] leading-tight text-center font-bold">
         {label}
-      </span>
+      </span> */}
     </button>
   );
 
   return (
     <nav className="fixed bottom-2 sm:bottom-3 left-2 right-2 sm:left-4 sm:right-4 lg:left-8 lg:right-8 z-40">
-      <div className="grid grid-cols-4 gap-1 sm:gap-3 lg:gap-4">
+      <div className="grid grid-cols-5 gap-1 sm:gap-3 lg:gap-4">
         {navItems.map((item) => (
           <Item
             key={item.path}

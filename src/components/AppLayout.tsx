@@ -8,6 +8,7 @@ import RegistrationModal from "@/components/Modals/RegistrationModal";
 import ChallengeModal from "@/components/Modals/ChallengeModal";
 import LoadingGlobal from "@/ui/Loading";
 import Notification from "@/ui/Notification";
+import FanClubsModal from "./Modals/FanClubsModal";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -30,6 +31,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <NetworkSwitchModal />
       <RegistrationModal />
       <ChallengeModal />
+      <FanClubsModal />
       <LoadingGlobal />
       <Notification />
     </>

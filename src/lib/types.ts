@@ -1,3 +1,5 @@
+import { ViewFanClubCard } from "./types/view";
+
 export type Challenge = {
   type: string;
   name: string;
@@ -15,6 +17,7 @@ export type Achievement = {
   icon: string;
   unlocked: boolean;
 };
+
 
 export type WalletProvider = {
   id: "baseAccount"| "walletConnect" | "io.metamask" | "app.subwallet" | string;
@@ -48,6 +51,7 @@ export type AppData = {
   sampleUser: User;
   challenges: Challenge[];
   achievements: Achievement[];
+  fanClubs: ViewFanClubCard[];
   walletProviders: WalletProvider[];
   creditcoinNetwork: Network;
   contractAddress: string;

@@ -11,8 +11,8 @@ export default function LandingPage() {
   const { isConnected, networkOk, connectors, connect, ensureCreditcoin } =
     useWallet();
   const { notify } = useUI();
-  const {showModal, closeModals} = useApp();
-  
+  const { showModal, closeModals } = useApp();
+
   const router = useRouter();
 
   // Auto redirect to dashboard if wallet is connected and network is correct
