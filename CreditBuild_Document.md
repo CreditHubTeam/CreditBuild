@@ -10,7 +10,14 @@
 
 2. **Registration flow** — upon first connect, user registers with initial settings (goal, profile); this initializes on-profile metrics.
 
-3. **Dashboard** — shows credit score, streaks, total points, and challenge counters.
+3. **Dashboard** — shows credit score, streaks, total points, and challenge counters.  
+   **Advanced Dashboard:**  
+
+* Real-time credit score tracking with detailed breakdown  
+- Task completion streaks and momentum indicators  
+- Multi-category point accumulation (financial, social, educational)  
+- Achievement showcase with NFT badge integration  
+- Fan club membership status and tier progression
 
 4. **Challenges** — daily/weekly tasks with `points` and `creditImpact`. Users open a modal, submit proof/amount, and mark completion.
 
@@ -52,25 +59,140 @@
 CREATE TABLE users (  
   id SERIAL PRIMARY KEY,  
   wallet\_address VARCHAR(66) UNIQUE NOT NULL,  
+  moca\_id VARCHAR(128) UNIQUE,  
   username VARCHAR(64),  
   credit\_score INT DEFAULT 300,  
   streak\_days INT DEFAULT 0,  
   total\_challenges INT DEFAULT 0,  
   total\_points BIGINT DEFAULT 0,  
-  registered\_at TIMESTAMP DEFAULT now()  
+  social\_points BIGINT DEFAULT 0,  
+  financial\_points BIGINT DEFAULT 0,  
+  education\_points BIGINT DEFAULT 0,  
+  tier\_level VARCHAR(32) DEFAULT 'bronze',  
+  reputation\_score INT DEFAULT 0,  
+  referral\_code VARCHAR(16) UNIQUE,  
+  kyc\_status VARCHAR(32) DEFAULT 'pending',  
+  registered\_at TIMESTAMP DEFAULT now(),  
+  last\_activity TIMESTAMP DEFAULT now()  
 );
 
-\-- Challenges  
+\-- KOLs/Influencers  
+CREATE TABLE kols (  
+  id SERIAL PRIMARY KEY,  
+  user\_id INT REFERENCES users(id),  
+  kol\_name VARCHAR(128),  
+  verification\_status VARCHAR(32) DEFAULT 'pending',  
+  social\_followers JSONB, \-- {twitter: 1000, instagram: 500}  
+  specialization VARCHAR(64), \-- finance, crypto, lifestyle  
+  commission\_rate DECIMAL(5,2) DEFAULT 10.00,  
+  total\_earnings BIGINT DEFAULT 0,  
+  created\_at TIMESTAMP DEFAULT now()  
+);
+
+\-- Fan Clubs  
+CREATE TABLE fan\_clubs (  
+  id SERIAL PRIMARY KEY,  
+  kol\_id INT REFERENCES kols(id),  
+  club\_name VARCHAR(128),  
+  description TEXT,  
+  entry\_requirements JSONB,  
+  membership\_fee BIGINT DEFAULT 0,  
+  max\_members INT,  
+  current\_members INT DEFAULT 0,  
+  club\_image VARCHAR(255),  
+  contract\_address VARCHAR(66),  
+  created\_at TIMESTAMP DEFAULT now()  
+);
+
+\-- Fan Club Memberships  
+CREATE TABLE fan\_club\_memberships (  
+  id SERIAL PRIMARY KEY,  
+  user\_id INT REFERENCES users(id),  
+  club\_id INT REFERENCES fan\_clubs(id),  
+  membership\_tier VARCHAR(32) DEFAULT 'basic',  
+  joined\_at TIMESTAMP DEFAULT now(),  
+  last\_activity TIMESTAMP DEFAULT now(),  
+  total\_tasks\_completed INT DEFAULT 0,  
+  tier\_points BIGINT DEFAULT 0  
+);
+
 CREATE TABLE challenges (  
   id SERIAL PRIMARY KEY,  
-  type VARCHAR(64),  
+  type VARCHAR(64), \-- financial, social, educational, kol\_exclusive  
+  category VARCHAR(64), \-- saving, defi, content\_creation, etc.  
   name VARCHAR(128),  
   description TEXT,  
   points INT,  
   credit\_impact INT,  
-  category VARCHAR(64),  
+  social\_impact INT DEFAULT 0,  
   rules JSONB,  
+  verification\_method VARCHAR(64), \-- manual, automatic, smart\_contract  
+  creator\_id INT REFERENCES users(id), \-- NULL for platform tasks  
+  fan\_club\_id INT REFERENCES fan\_clubs(id), \-- NULL for public tasks  
+  difficulty\_level VARCHAR(32) DEFAULT 'beginner',  
+  estimated\_time\_minutes INT,  
+  max\_completions INT, \-- NULL for unlimited  
+  start\_date TIMESTAMP,  
+  end\_date TIMESTAMP,  
+  is\_recurring BOOLEAN DEFAULT false,  
+  recurrence\_pattern VARCHAR(64), \-- daily, weekly, monthly  
   icon VARCHAR(8),  
+  featured BOOLEAN DEFAULT false,  
+  created\_at TIMESTAMP DEFAULT now()  
+);
+
+\-- Social Task Definitions  
+CREATE TABLE social\_tasks (  
+  id SERIAL PRIMARY KEY,  
+  challenge\_id INT REFERENCES challenges(id),  
+  platform VARCHAR(32), \-- twitter, instagram, tiktok, youtube  
+  action\_type VARCHAR(64), \-- post, share, comment, follow, create\_content  
+  content\_requirements JSONB,  
+  hashtags\_required TEXT\[\],  
+  mention\_requirements TEXT\[\],  
+  min\_engagement\_metrics JSONB, \-- {likes: 10, shares: 5, comments: 2}  
+  verification\_webhook VARCHAR(255),  
+  auto\_verification BOOLEAN DEFAULT false  
+);
+
+\-- Social Task Completions  
+CREATE TABLE social\_task\_completions (  
+  id SERIAL PRIMARY KEY,  
+  user\_challenge\_id INT REFERENCES user\_challenges(id),  
+  social\_task\_id INT REFERENCES social\_tasks(id),  
+  platform\_post\_id VARCHAR(128),  
+  post\_url VARCHAR(512),  
+  engagement\_metrics JSONB,  
+  verification\_status VARCHAR(32) DEFAULT 'pending',  
+  verified\_at TIMESTAMP,  
+  verified\_by INT REFERENCES users(id)  
+);
+
+\-- Multi-category point ledger  
+CREATE TABLE enhanced\_point\_ledger (  
+  id SERIAL PRIMARY KEY,  
+  user\_id INT REFERENCES users(id),  
+  points\_delta BIGINT NOT NULL,  
+  point\_category VARCHAR(32), \-- financial, social, educational, bonus  
+  reason VARCHAR(128),  
+  source VARCHAR(64),  
+  challenge\_id INT REFERENCES challenges(id),  
+  fan\_club\_id INT REFERENCES fan\_clubs(id),  
+  multiplier DECIMAL(5,2) DEFAULT 1.00,  
+  tx\_hash VARCHAR(128),  
+  moca\_token\_equivalent BIGINT,  
+  created\_at TIMESTAMP DEFAULT now()  
+);
+
+\-- KOL Revenue Tracking  
+CREATE TABLE kol\_earnings (  
+  id SERIAL PRIMARY KEY,  
+  kol\_id INT REFERENCES kols(id),  
+  fan\_club\_id INT REFERENCES fan\_clubs(id),  
+  revenue\_source VARCHAR(64), \-- membership\_fees, task\_completions, commissions  
+  amount BIGINT,  
+  currency VARCHAR(16), \-- MOCA, USDC, etc.  
+  transaction\_hash VARCHAR(128),  
   created\_at TIMESTAMP DEFAULT now()  
 );
 

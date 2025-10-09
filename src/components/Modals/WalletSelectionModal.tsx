@@ -1,7 +1,7 @@
 "use client";
 import { useApp } from "@/context/AppContext";
 import { WalletProvider } from "@/lib/types";
-import { creditcoinTestnet } from "@/lib/wagmi";
+import { creditcoinTestnet } from "@/lib/chains";
 import { useEffect } from "react";
 import { useAccount, useChainId, useConnect } from "wagmi";
 import PixelModal from "./PixelModal";

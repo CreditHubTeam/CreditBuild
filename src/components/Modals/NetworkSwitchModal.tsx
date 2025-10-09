@@ -1,6 +1,6 @@
 "use client";
 import { useApp } from "@/context/AppContext";
-import { creditcoinTestnet } from "@/lib/wagmi";
+import { creditcoinTestnet } from "@/lib/chains";
 import { useUI } from "@/state/ui";
 import { useSwitchChain } from "wagmi";
 import PixelModal from "./PixelModal";

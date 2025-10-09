@@ -1,5 +1,5 @@
 "use client";
-import { creditcoinTestnet } from "@/lib/wagmi";
+import { creditcoinTestnet } from "@/lib/chains";
 import { useAccount, useBalance, useChainId, useConnections } from "wagmi";
 
 export default function ConnectionPanel() {
