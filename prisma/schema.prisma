@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,32 +11,182 @@ datasource db {
 }
 
 model User {
-  id              Int               @id @default(autoincrement())
-  walletAddress   String            @unique
-  username        String?           @db.VarChar(64)
-  creditScore     Int               @default(300)
-  streakDays      Int               @default(0)
-  totalChallenges Int               @default(0)
-  totalPoints     BigInt            @default(0)
-  registeredAt    DateTime          @default(now())
-  challenges      UserChallenge[]
-  achievements    UserAchievement[]
-  ledger          PointLedger[]
-  education       UserEducation[]
+  id               Int       @id @default(autoincrement())
+  wallet_address   String    @unique @db.VarChar(66)
+  moca_id          String?   @unique @db.VarChar(128)
+  username         String?   @db.VarChar(64)
+  credit_score     Int       @default(300)
+  streak_days      Int       @default(0)
+  total_challenges Int       @default(0)
+  total_points     BigInt    @default(0)
+  social_points    BigInt    @default(0)
+  financial_points BigInt    @default(0)
+  education_points BigInt    @default(0)
+  tier_level       String    @db.VarChar(32) @default("bronze")
+  reputation_score Int       @default(0)
+  referral_code    String?   @unique @db.VarChar(16)
+  kyc_status       String    @db.VarChar(32) @default("pending")
+  registered_at    DateTime  @default(now())
+  last_activity    DateTime  @default(now())
+
+  // Relations
+  attempts                  UserChallenge[]
+  achievements              UserAchievement[]
+  pointLedgers              PointLedger[]
+  UserEducation             UserEducation[]
+  
+  // ✅ Added missing opposite relations
+  kols                      Kol[]
+  fanClubMemberships        FanClubMembership[]
+  createdChallenges         Challenge[]          @relation("ChallengeCreator")
+  verifiedSocialTasks       SocialTaskCompletion[] @relation("SocialTaskVerifier")
+  enhancedPointLedgers      EnhancedPointLedger[]
+}
+
+model Kol {
+  id                 Int      @id @default(autoincrement())
+  user               User     @relation(fields: [userId], references: [id])
+  userId             Int
+  kol_name           String   @db.VarChar(128)
+  verification_status String  @db.VarChar(32) @default("pending")
+  social_followers   Json
+  specialization     String   @db.VarChar(64)
+  commission_rate    Decimal  @db.Decimal(5,2) @default(10.00)
+  total_earnings     BigInt   @default(0)
+  created_at         DateTime @default(now())
+  
+  // ✅ Added missing opposite relations
+  fanClubs           FanClub[]
+  earnings           KolEarning[]
+}
+
+model FanClub {
+  id               Int      @id @default(autoincrement())
+  kol              Kol      @relation(fields: [kolId], references: [id])
+  kolId            Int
+  club_name        String   @db.VarChar(128)
+  description      String?
+  entry_requirements Json
+  membership_fee   BigInt   @default(0)
+  max_members      Int
+  current_members  Int      @default(0)
+  club_image       String?  @db.VarChar(255)
+  contract_address String?  @db.VarChar(66)
+  created_at       DateTime @default(now())
+  
+  // ✅ Added missing opposite relations
+  memberships      FanClubMembership[]
+  challenges       Challenge[]
+  enhancedPointLedgers EnhancedPointLedger[]
+  kolEarnings      KolEarning[]
+}
+
+model FanClubMembership {
+  id                  Int      @id @default(autoincrement())
+  user                User     @relation(fields: [userId], references: [id])
+  userId              Int
+  club                FanClub  @relation(fields: [clubId], references: [id])
+  clubId              Int
+  membership_tier     String   @db.VarChar(32) @default("basic")
+  joined_at           DateTime @default(now())
+  last_activity       DateTime @default(now())
+  total_tasks_completed Int    @default(0)
+  tier_points         BigInt   @default(0)
 }
 
 model Challenge {
-  id           Int             @id @default(autoincrement())
-  type         String          @db.VarChar(64)
-  name         String          @db.VarChar(128)
-  description  String?
-  points       Int
-  creditImpact Int
-  category     String?         @db.VarChar(64)
-  rules        Json
-  icon         String?         @db.VarChar(8)
-  createdAt    DateTime        @default(now())
-  attempts     UserChallenge[]
+  id                Int       @id @default(autoincrement())
+  type              String    @db.VarChar(64)
+  category          String?   @db.VarChar(64)
+  name              String    @db.VarChar(128)
+  description       String?
+  points            Int
+  creditImpact      Int
+  socialImpact      Int       @default(0)
+  rules             Json
+  verificationMethod String?  @db.VarChar(64)
+  creator           User?     @relation("ChallengeCreator", fields: [creatorId], references: [id])
+  creatorId         Int?
+  fanClub           FanClub?  @relation(fields: [fanClubId], references: [id])
+  fanClubId         Int?
+  difficultyLevel   String    @db.VarChar(32) @default("beginner")
+  estimatedTimeMinutes Int?
+  maxCompletions    Int?
+  startDate         DateTime?
+  endDate           DateTime?
+  isRecurring       Boolean   @default(false)
+  recurrencePattern String?   @db.VarChar(64)
+  icon              String?   @db.VarChar(8)
+  featured          Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  
+  // ✅ Added missing opposite relations
+  attempts          UserChallenge[]
+  socialTasks       SocialTask[]
+  enhancedPointLedgers EnhancedPointLedger[]
+}
+
+model SocialTask {
+  id                    Int      @id @default(autoincrement())
+  challenge             Challenge @relation(fields: [challengeId], references: [id])
+  challengeId           Int
+  platform              String   @db.VarChar(32)
+  action_type           String   @db.VarChar(64)
+  content_requirements  Json
+  hashtags_required     String[]
+  mention_requirements  String[]
+  min_engagement_metrics Json
+  verification_webhook  String?  @db.VarChar(255)
+  auto_verification     Boolean  @default(false)
+  
+  // ✅ Added missing opposite relations
+  completions          SocialTaskCompletion[]
+}
+
+model SocialTaskCompletion {
+  id                 Int       @id @default(autoincrement())
+  userChallenge      UserChallenge @relation(fields: [userChallengeId], references: [id])
+  userChallengeId    Int
+  socialTask         SocialTask @relation(fields: [socialTaskId], references: [id])
+  socialTaskId       Int
+  platformPostId     String    @db.VarChar(128)
+  postUrl            String    @db.VarChar(512)
+  engagementMetrics  Json
+  verificationStatus String    @db.VarChar(32) @default("pending")
+  verifiedAt         DateTime?
+  verifiedBy         User?     @relation("SocialTaskVerifier", fields: [verifiedById], references: [id])
+  verifiedById       Int?
+}
+
+model EnhancedPointLedger {
+  id                  Int       @id @default(autoincrement())
+  user                User      @relation(fields: [userId], references: [id])
+  userId              Int
+  pointsDelta         BigInt
+  pointCategory       String?   @db.VarChar(32)
+  reason              String?   @db.VarChar(128)
+  source              String?   @db.VarChar(64)
+  challenge           Challenge? @relation(fields: [challengeId], references: [id])
+  challengeId         Int?
+  fanClub             FanClub?  @relation(fields: [fanClubId], references: [id])
+  fanClubId           Int?
+  multiplier          Decimal   @db.Decimal(5,2) @default(1.00)
+  txHash              String?   @db.VarChar(128)
+  mocaTokenEquivalent BigInt?
+  createdAt           DateTime  @default(now())
+}
+
+model KolEarning {
+  id              Int      @id @default(autoincrement())
+  kol             Kol      @relation(fields: [kolId], references: [id])
+  kolId           Int
+  fanClub         FanClub  @relation(fields: [fanClubId], references: [id])
+  fanClubId       Int
+  revenueSource   String   @db.VarChar(64)
+  amount          BigInt
+  currency        String   @db.VarChar(16)
+  transactionHash String?  @db.VarChar(128)
+  createdAt       DateTime @default(now())
 }
 
 enum AttemptStatus {
@@ -63,6 +210,9 @@ model UserChallenge {
   txHash        String?       @db.VarChar(128)
   completionKey String?       @unique
   createdAt     DateTime      @default(now())
+  
+  // ✅ Added missing opposite relations
+  socialTaskCompletions SocialTaskCompletion[]
 
   @@index([userId, challengeId, createdAt])
 }
@@ -70,10 +220,8 @@ model UserChallenge {
 model Achievement {
   id          String            @id @db.VarChar(64)
   name        String            @db.VarChar(128)
-  description String?
+  description String?           @db.Text
   icon        String?           @db.VarChar(8)
-  conditions  Json // Achievement conditions
-  points      Int               @default(0) // Points reward
   users       UserAchievement[]
 }
 
@@ -116,7 +264,7 @@ model ContractConfig {
 model Education {
   id            Int             @id @default(autoincrement())
   title         String          @db.VarChar(128)
-  desc          String?         @db.VarChar(256)
+  description   String?         @db.VarChar(256)
   duration      Int? // in minutes
   points        Int? // points awarded upon completion
   createdAt     DateTime        @default(now())
