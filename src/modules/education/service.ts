@@ -49,9 +49,9 @@ export const EducationService = {
 
     // Add points cho user
     const pointsToAdd = education.points || 0;
-    const newPoints = Number(user.totalPoints) + pointsToAdd;
+    const newPoints = Number(user.total_points) + pointsToAdd;
     await UsersRepo.update(user.id, {
-      totalPoints: BigInt(newPoints),
+      total_points: BigInt(newPoints),
     });
 
     return {

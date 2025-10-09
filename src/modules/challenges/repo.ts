@@ -66,7 +66,10 @@ export const ChallengesRepo = {
   }) =>
     prisma.userChallenge.create({
       data: {
-        ...data,
+        userId: data.userId,
+        challengeId: data.challengeId,
+        amount: data.amount === undefined ? undefined : String(data.amount),
+        proof: data.proof,
         status: data.status || "APPROVED", // Demo mode: auto approve
       },
     }),
