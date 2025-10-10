@@ -38,4 +38,11 @@ export class userChallengeRepository {
       where: { id },
     });
   }
+
+  // getUserChallengesByUserId
+  async getByUserId(userId: number): Promise<UserChallenge[]> {
+    return await prisma.userChallenge.findMany({
+      where: { userId },
+    });
+  }
 }

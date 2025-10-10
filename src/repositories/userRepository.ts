@@ -17,6 +17,13 @@ export class userRepository {
     });
   }
 
+  //xem chi tiet bang wallet_address
+  async getByWalletAddress(walletAddress: string): Promise<User | null> {
+    return await prisma.user.findUnique({
+      where: { wallet_address: walletAddress },
+    });
+  }
+
   // tạo user
   async create(data: Prisma.UserCreateInput): Promise<User> {
     return await prisma.user.create({
@@ -37,5 +44,18 @@ export class userRepository {
     return await prisma.user.delete({
       where: { id },
     });
+  }
+
+  // kiem tra ton tai voi wallet_address
+  async isExistByWalletAddress(walletAddress: string): Promise<boolean> {
+    const user = await prisma.user.findUnique({
+      where: { wallet_address: walletAddress },
+    });
+    if(user){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 }
