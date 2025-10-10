@@ -2,29 +2,18 @@
 import { useData } from "@/state/data";
 import { useUI } from "@/state/ui";
 import { appData } from "@/lib/appData";
+import { useApp } from "@/context/AppContext";
 
 export default function ChallengesGrid() {
-  const { challenges } = useData();
+  // const { challenges } = useData(); // This is call by react query
+  const { challenges } = useApp();
   const { open } = useUI();
-
-  // Fallback to appData if API not ready
-  const challengesToShow =
-    challenges.length > 0
-      ? challenges
-      : appData.challenges.map((c, i) => ({
-          id: i + 1,
-          name: c.name,
-          description: c.description,
-          points: c.points,
-          creditImpact: c.creditImpact,
-          icon: c.icon,
-        }));
 
   return (
     <div className="pixel-card p-5 mb-5">
       <h2 className="text-xl mb-4">Daily Challenges</h2>
       <div className="grid md:grid-cols-2 gap-3">
-        {challengesToShow.map((c) => (
+        {challenges.map((c) => (
           <button
             key={c.id}
             onClick={() => open("challenge")}

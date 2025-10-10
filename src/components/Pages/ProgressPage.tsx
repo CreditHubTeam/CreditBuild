@@ -21,12 +21,12 @@ export default function ProgressPage() {
         </div>
         <div className="pixel-card p-4">
           <h3>Points Earned</h3>
-          <div className="text-2xl">{currentUser.totalPointsEarned}</div>
+          <div className="text-2xl">{currentUser.totalPoints}</div>
         </div>
         <div className="pixel-card p-4">
           <h3>Best Streak</h3>
           <div className="text-2xl">
-            {Math.max(currentUser.streakDays, 14)} days
+            {Math.max(currentUser.streakDays, currentUser.bestStreak)} days
           </div>
         </div>
       </div>

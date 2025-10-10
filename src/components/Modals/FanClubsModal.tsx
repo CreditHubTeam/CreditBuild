@@ -4,8 +4,6 @@ import { useData } from "@/state/data";
 import Modal from "@/ui/Modal";
 import { ViewFanClubCard } from "@/lib/types/view";
 
-
-
 interface FanClubsModalProps {
   club?: ViewFanClubCard;
 }

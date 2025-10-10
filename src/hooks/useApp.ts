@@ -249,7 +249,7 @@
 //         creditScore: 300,
 //         streakDays: 0,
 //         totalChallenges: 0,
-//         totalPointsEarned: 0,
+//         totalPoints: 0,
 //       }));
 //       hideLoading();
 //       closeModals();
@@ -304,8 +304,8 @@
 //           850,
 //           u.creditScore + (currentChallenge?.creditImpact ?? 0)
 //         ),
-//         totalPointsEarned:
-//           u.totalPointsEarned + (currentChallenge?.points ?? 0),
+//         totalPoints:
+//           u.totalPoints + (currentChallenge?.points ?? 0),
 //         totalChallenges: u.totalChallenges + 1,
 //         streakDays: Math.max(u.streakDays, 1),
 //       }));

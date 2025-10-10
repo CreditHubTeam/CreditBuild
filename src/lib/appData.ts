@@ -2,11 +2,12 @@ import { AppData } from "./types";
 
 export const appData: AppData = {
   sampleUser: {
-    address: "0x1234...abcd",
+    walletAddress: "0x1234...abcd",
     creditScore: 420,
     totalChallenges: 15,
     streakDays: 7,
-    totalPointsEarned: 300,
+    bestStreak: 14,
+    totalPoints: 300,
     isRegistered: true,
   },
   fanClubs: [
@@ -70,6 +71,7 @@ export const appData: AppData = {
   ],
   challenges: [
     {
+      id: 1,
       type: "daily_save",
       name: "Daily Saver",
       description: "Save at least $5 today",
@@ -77,8 +79,11 @@ export const appData: AppData = {
       creditImpact: 5,
       category: "daily",
       icon: "💰",
+      estimatedTimeMinutes: 5,
+      isCompleted: false,
     },
     {
+      id: 2,
       type: "bill_early",
       name: "Early Bird",
       description: "Pay a bill 3+ days early",
@@ -86,8 +91,10 @@ export const appData: AppData = {
       creditImpact: 10,
       category: "daily",
       icon: "⚡",
+      isCompleted: false,
     },
     {
+      id: 3,
       type: "budget_check",
       name: "Budget Tracker",
       description: "Review and update your budget",
@@ -95,8 +102,10 @@ export const appData: AppData = {
       creditImpact: 8,
       category: "daily",
       icon: "📊",
+      isCompleted: true,
     },
     {
+      id: 4,
       type: "weekly_goal",
       name: "Weekly Saver",
       description: "Save $50+ this week",
@@ -104,6 +113,7 @@ export const appData: AppData = {
       creditImpact: 25,
       category: "weekly",
       icon: "🎯",
+      isCompleted: false,
     },
   ],
   achievements: [
@@ -196,6 +206,7 @@ export const appData: AppData = {
       description: "Learn what affects your credit score",
       duration: "5 min",
       points: 25,
+      isCompleted: false,
     },
     {
       id: "budgeting_101",
@@ -203,6 +214,7 @@ export const appData: AppData = {
       description: "Create your first budget",
       duration: "10 min",
       points: 35,
+      isCompleted: true,
     },
     {
       id: "debt_management",
@@ -210,6 +222,7 @@ export const appData: AppData = {
       description: "Strategies to pay off debt faster",
       duration: "8 min",
       points: 30,
+      isCompleted: false,
     },
     {
       id: "investment_basics",
@@ -217,6 +230,7 @@ export const appData: AppData = {
       description: "Start building wealth with smart investments",
       duration: "12 min",
       points: 40,
+      isCompleted: false,
     },
   ],
 };

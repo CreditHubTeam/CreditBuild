@@ -4,15 +4,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/http";
 import { useWallet } from "./wallet";
 import { useUI } from "./ui";
+import { Challenge } from "@/lib/types";
 
-type Challenge = {
-  id: number;
-  name: string;
-  description?: string;
-  points: number;
-  creditImpact: number;
-  icon?: string;
-};
+
+
 type EducationItem = {
   id: number;
   slug: string;

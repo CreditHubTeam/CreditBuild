@@ -249,6 +249,7 @@ educationalContent: appData.educationalContent,
 ```
 
 #### 3. **Component Dependencies**
+
 - **Dashboard Components**: `CreditScore.tsx`, `ChallengesGrid.tsx`, `ConnectionPanel.tsx`, `AchievementsPreview.tsx`
 - **Page Components**: `AchievementsPage.tsx`, `EducationPage.tsx`, `ProgressPage.tsx`
 - **Feature Components**: `features/dashboard/ChallengesGrid.tsx`
@@ -1202,6 +1203,7 @@ export interface AppData {
 ### Phase 5: Migration Steps
 
 #### Step 1: Backend Setup (✅ COMPLETED)
+
 ```bash
 # Backend is already implemented and tested
 # Docker setup working with API endpoints
@@ -1215,12 +1217,14 @@ node test-api.js
 ```
 
 #### Step 2: Frontend Package Installation
+
 ```bash
 # In frontend project root
 npm install @tanstack/react-query @tanstack/react-query-devtools zod
 ```
 
 #### Step 3: API Integration
+
 ```bash
 # 1. Update environment variables (.env.local)
 NEXT_PUBLIC_API_URL=http://localhost:3000/api
@@ -1234,6 +1238,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 #### Step 4: Component Migration (Priority Order)
 
 **Phase 4.1: Core User System**
+
 ```bash
 # Update these components first:
 # 1. src/context/AppContext.tsx - Replace static user with API
@@ -1242,6 +1247,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 ```
 
 **Phase 4.2: Daily Challenge System**  
+
 ```bash
 # Update challenge-related components:
 # 1. src/components/Dashboard/ChallengesGrid.tsx - Use API daily challenges
@@ -1250,6 +1256,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 ```
 
 **Phase 4.3: Achievement System**
+
 ```bash
 # Update achievement components:
 # 1. src/components/Pages/AchievementsPage.tsx - Use API achievements
@@ -1258,6 +1265,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 ```
 
 **Phase 4.4: Educational Content**
+
 ```bash
 # Update education components:
 # 1. src/components/Pages/EducationPage.tsx - Use API content
@@ -1268,6 +1276,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 #### Step 5: Testing & Validation
 
 **Daily Challenge Flow Test:**
+
 ```bash
 # 1. Connect wallet → Register user via API
 # 2. Load dashboard → Should show 4 daily challenges from API
@@ -1277,6 +1286,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 ```
 
 **Education Flow Test:**
+
 ```bash
 # 1. Navigate to education page → Should load content from API
 # 2. Click on education item → Show modal with markdown content
@@ -1284,6 +1294,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 ```
 
 **Streak System Test:**
+
 ```bash
 # 1. Complete challenge today → Streak should increment
 # 2. Skip a day → Streak should reset to 0 
@@ -1293,6 +1304,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 #### Step 6: Performance Optimization
 
 **React Query Configuration:**
+
 ```typescript
 // Configure appropriate stale times and refetch intervals
 // Daily challenges: Refresh every 5 minutes (they change daily)
@@ -1303,7 +1315,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 
 ## 🧪 Backend Testing Status (✅ ALL WORKING)
 
-### Verified API Endpoints:
+### Verified API Endpoints
 
 | Endpoint | Status | Test Result |
 |----------|--------|-------------|
@@ -1316,7 +1328,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 | `GET /education` | ✅ | Educational content with markdown working |
 | `POST /education/complete` | ✅ | Education completion + points working |
 
-### Key Backend Features Confirmed:
+### Key Backend Features Confirmed
 
 1. **Daily Challenge Rotation**: ✅ 4 challenges refresh daily at midnight
 2. **Streak System**: ✅ Increments on first challenge of day, resets if missed
@@ -1325,7 +1337,8 @@ NEXT_PUBLIC_API_URL=http://localhost:3000/api
 5. **Education Tracking**: ✅ Completion tracking with points reward
 6. **Proof System**: ✅ Different proof types per challenge category
 
-### Docker Commands:
+### Docker Commands
+
 ```bash
 # Start backend services
 docker compose -f docker/docker-compose.yml up -d --build
@@ -1340,6 +1353,7 @@ docker compose -f docker/docker-compose.yml logs -f
 ## 🔧 Implementation Checklist
 
 ### Backend Implementation ✅ COMPLETED
+
 - [x] Set up Node.js/Express backend with TypeScript
 - [x] Design and implement PostgreSQL database schema
 - [x] Create user registration with wallet address verification
@@ -1354,6 +1368,7 @@ docker compose -f docker/docker-compose.yml logs -f
 - [x] Add streak system logic (daily challenge requirement)
 
 ### Frontend Migration (IN PROGRESS)
+
 - [ ] Install React Query and dependencies
 - [ ] Create API client with proper error handling
 - [ ] Create React Query hooks for all data fetching
@@ -1370,26 +1385,30 @@ docker compose -f docker/docker-compose.yml logs -f
 - [ ] Update TypeScript types for API responses
 - [ ] Add environment configuration
 
-### Key Implementation Notes:
+### Key Implementation Notes
 
-#### Daily Challenge System Logic:
+#### Daily Challenge System Logic
+
 - ✅ **4 challenges per day** refreshed at midnight UTC
 - ✅ **User can complete any/all** of the 4 daily challenges
 - ✅ **Streak system**: Requires at least 1 challenge per day to maintain
 - ✅ **Categories**: onboarding(10pts), growth(50pts), onchain(100pts), education(100pts), savings(75pts), payment(60pts)
 - ✅ **Proof system**: Different proof requirements per category
 
-#### Achievement Auto-Unlock:
+#### Achievement Auto-Unlock
+
 - ✅ **Automatic checking** after each challenge claim
 - ✅ **Conditions**: minChallenges, minStreak, minCreditScore, challengeCategory
 - ✅ **Response includes** `newAchievements` array for UI notifications
 
-#### Education System:
+#### Education System
+
 - ✅ **Markdown content** stored in database
 - ✅ **Simple completion** - user reads content and clicks "completed"
 - ✅ **Points awarded** for completion (typically 25 points)
 
 ### Testing & Quality Assurance ✅ BACKEND TESTED
+
 - [x] Test user registration and profile retrieval
 - [x] Test daily challenge loading (4 challenges)
 - [x] Test challenge completion with different proof types
@@ -1401,7 +1420,8 @@ docker compose -f docker/docker-compose.yml logs -f
 - [x] Test Docker containerization
 - [x] Cross-verify all 24 challenges load correctly
 
-### Frontend Testing Needed:
+### Frontend Testing Needed
+
 - [ ] Test wallet connection and user registration flow
 - [ ] Test daily challenge UI and completion flow
 - [ ] Test achievement display and unlock notifications
@@ -1411,6 +1431,7 @@ docker compose -f docker/docker-compose.yml logs -f
 - [ ] Validate responsive design and cross-browser compatibility
 
 ### Deployment & DevOps
+
 - [x] Backend Docker setup working locally
 - [ ] Set up production backend deployment
 - [ ] Set up frontend deployment with environment variables
@@ -1438,6 +1459,7 @@ docker compose -f docker/docker-compose.yml logs -f
 ## 📚 Additional Considerations
 
 ### Security
+
 - ✅ Wallet address verification for user identification
 - ✅ Input validation with comprehensive error handling
 - ✅ API endpoint protection and rate limiting
@@ -1445,6 +1467,7 @@ docker compose -f docker/docker-compose.yml logs -f
 - [ ] Add CORS policies for production deployment
 
 ### Performance  
+
 - ✅ React Query caching for efficient data management
 - ✅ Optimized database queries with proper indexing
 - ✅ Stale time configuration for different data types
@@ -1452,6 +1475,7 @@ docker compose -f docker/docker-compose.yml logs -f
 - [ ] CDN setup for static assets
 
 ### User Experience
+
 - ✅ Comprehensive loading states in API hooks
 - ✅ Error handling with meaningful error messages
 - ✅ Achievement unlock notifications system
@@ -1459,9 +1483,10 @@ docker compose -f docker/docker-compose.yml logs -f
 - [ ] Optimistic updates for challenge completions
 - [ ] Offline support with service workers (future enhancement)
 
-### Backend Features Confirmed Working:
+### Backend Features Confirmed Working
 
 #### 🎯 Daily Challenge System
+
 - **4 challenges per day** with midnight UTC refresh
 - **24 total challenges** across 6 categories
 - **Streak system** requiring daily participation
@@ -1469,18 +1494,21 @@ docker compose -f docker/docker-compose.yml logs -f
 - **Points and credit** awarded per completion
 
 #### 🏆 Achievement System  
+
 - **Auto-unlock mechanism** after each challenge claim
 - **Multiple condition types**: challenges, streak, credit score
 - **Points rewards** for achievement unlocks
 - **Progress tracking** with percentage completion
 
 #### 📚 Education System
+
 - **Markdown content** support for rich educational material
 - **Simple completion flow** with points reward
 - **Category and tag** organization
 - **Featured content** highlighting system
 
 #### 👤 User Management
+
 - **Wallet-based registration** without passwords
 - **Credit score tracking** with automatic updates
 - **Streak day management** with reset logic
@@ -1489,6 +1517,7 @@ docker compose -f docker/docker-compose.yml logs -f
 This migration transforms your static prototype into a fully functional, API-driven platform ready for real users with persistent data, engaging daily challenges, and growth tracking capabilities.
 
 This migration guide provides a complete roadmap for transforming your static mock data application into a robust, API-driven platform that can scale and provide real value to users.
+
 ```
 
 ### CreditBuild_Document.md
@@ -5144,7 +5173,7 @@ export default function ProgressPage() {
       </div>
       <div className="grid md:grid-cols-3 gap-3">
         <div className="pixel-card p-4"><h3>Total Challenges</h3><div className="text-2xl">{currentUser.totalChallenges}</div></div>
-        <div className="pixel-card p-4"><h3>Points Earned</h3><div className="text-2xl">{currentUser.totalPointsEarned}</div></div>
+        <div className="pixel-card p-4"><h3>Points Earned</h3><div className="text-2xl">{currentUser.totalPoints}</div></div>
         <div className="pixel-card p-4"><h3>Best Streak</h3><div className="text-2xl">{Math.max(currentUser.streakDays, 14)} days</div></div>
       </div>
     </section>
@@ -5490,7 +5519,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         creditScore: 300,
         streakDays: 0,
         totalChallenges: 0,
-        totalPointsEarned: 0,
+        totalPoints: 0,
       }));
       hideLoading();
       closeModals();
@@ -5539,8 +5568,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           850,
           u.creditScore + (currentChallenge?.creditImpact ?? 0)
         ),
-        totalPointsEarned:
-          u.totalPointsEarned + (currentChallenge?.points ?? 0),
+        totalPoints:
+          u.totalPoints + (currentChallenge?.points ?? 0),
         totalChallenges: u.totalChallenges + 1,
         streakDays: Math.max(u.streakDays, 1),
       }));
@@ -5611,7 +5640,7 @@ export const appData: AppData = {
     creditScore: 420,
     totalChallenges: 15,
     streakDays: 7,
-    totalPointsEarned: 300,
+    totalPoints: 300,
     isRegistered: true,
   },
   challenges: [
@@ -5798,7 +5827,7 @@ export type User = {
   creditScore: number;
   totalChallenges: number;
   streakDays: number;
-  totalPointsEarned: number;
+  totalPoints: number;
   isRegistered: boolean;
 };
 
@@ -7000,6 +7029,7 @@ npm run lint
 # CẤU TRÚC MỚI (FE)
 
 ```
+
 src/
   app/
     layout.tsx              # giữ như hiện tại (cookieToInitialState)
@@ -7029,6 +7059,7 @@ src/
     wagmi.ts                # defineChain(Creditcoin testnet), connectors
     http.ts                 # fetch wrapper (with baseURL)
     types.ts                # (giữ)
+
 ```
 
 > Bạn không cần xoá ngay AppContext cũ. Làm theo **Phase** dưới đây để chuyển dần.
@@ -7133,9 +7164,9 @@ export const useUI = () => {
 
 **Thay thế nhanh trong component**
 
-* `Notification` → `const { notice, clearNotice } = useUI()`
-* `LoadingIndicator` → `const { loading } = useUI()`
-* Các modal → `const { modal, open, close } = useUI()` (đổi id: `walletSelection`, `networkSwitch`, …)
+- `Notification` → `const { notice, clearNotice } = useUI()`
+- `LoadingIndicator` → `const { loading } = useUI()`
+- Các modal → `const { modal, open, close } = useUI()` (đổi id: `walletSelection`, `networkSwitch`, …)
 
 ---
 
@@ -7493,13 +7524,13 @@ export default function ChallengeModal() {
 
 ## Phase 6 – Điều chỉnh Navigation & Guards
 
-* **Landing “Get Started”**:
+- **Landing “Get Started”**:
 
-  * Nếu `!isConnected` → open(`walletSelection`)
-  * Nếu `isConnected && !networkOk` → `ensureCreditcoin()`
-  * Nếu đã ok → push `/dashboard`
+  - Nếu `!isConnected` → open(`walletSelection`)
+  - Nếu `isConnected && !networkOk` → `ensureCreditcoin()`
+  - Nếu đã ok → push `/dashboard`
 
-* **BottomNav**: trước khi `router.push(path)` → nếu `!isConnected` hoặc `!networkOk` thì `notify()`.
+- **BottomNav**: trước khi `router.push(path)` → nếu `!isConnected` hoặc `!networkOk` thì `notify()`.
 
 ---
 
@@ -7524,9 +7555,9 @@ NEXT_PUBLIC_WC_PROJECT_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 4. **Kết nối BE thật**: cắm `NEXT_PUBLIC_API_BASE` đến service backend (đã định nghĩa API ở phần backend trước đó).
 5. **Kiểm thử**:
 
-   * Kết nối ví, switch chain (thật) → chainId `102031`.
-   * `GET /api/challenges`, `POST /api/challenges/:id/submit` chạy ok (BE ledger + optional on-chain).
-   * Education & Dashboard dùng React Query lấy data chuẩn.
+   - Kết nối ví, switch chain (thật) → chainId `102031`.
+   - `GET /api/challenges`, `POST /api/challenges/:id/submit` chạy ok (BE ledger + optional on-chain).
+   - Education & Dashboard dùng React Query lấy data chuẩn.
 
 ---
 
@@ -7549,11 +7580,11 @@ NEXT_PUBLIC_WC_PROJECT_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ## Vì sao cách này “đúng bài” & chuyên nghiệp?
 
-* **Phân tầng rõ (UI/Wallet/Data)** → component chỉ rerender khi slice của nó đổi.
-* **wagmi SSR-safe** (đã có `cookieToInitialState`) → không mất connect state khi refresh.
-* **Dễ mở rộng**: thêm `dashboard` query, `achievements` query, `user` profile… chỉ thêm ở `state/data.tsx`.
-* **Thay blockchain**? Chỉ sửa `defineChain()` + `.env`.
-* **Loại bỏ “mock network switch”** → dùng `wallet_addEthereumChain`/`wallet_switchEthereumChain` thật.
+- **Phân tầng rõ (UI/Wallet/Data)** → component chỉ rerender khi slice của nó đổi.
+- **wagmi SSR-safe** (đã có `cookieToInitialState`) → không mất connect state khi refresh.
+- **Dễ mở rộng**: thêm `dashboard` query, `achievements` query, `user` profile… chỉ thêm ở `state/data.tsx`.
+- **Thay blockchain**? Chỉ sửa `defineChain()` + `.env`.
+- **Loại bỏ “mock network switch”** → dùng `wallet_addEthereumChain`/`wallet_switchEthereumChain` thật.
 
 ---
 
@@ -8137,9 +8168,9 @@ export function useRequireWalletNetwork() {
 
 **Landing page CTA:**
 
-* Nếu chưa connect → nút `Connect Wallet`.
-* Nếu connect sai network → nút `Switch Network`.
-* Nếu ok → nút `Go to Dashboard`.
+- Nếu chưa connect → nút `Connect Wallet`.
+- Nếu connect sai network → nút `Switch Network`.
+- Nếu ok → nút `Go to Dashboard`.
 
 **Dashboard page** (ghép các block)
 
@@ -8247,8 +8278,8 @@ grep -R "useApp" src | cat
 
 # 9) Phase 8 – Test nhanh (E2E local)
 
-* **Seed BE** xong (như doc backend): có 3 challenges, 3 bài education.
-* FE:
+- **Seed BE** xong (như doc backend): có 3 challenges, 3 bài education.
+- FE:
 
   1. Mở `/` → Connect Wallet (MetaMask).
   2. Switch sang **Creditcoin Testnet (102031)**.
@@ -8260,16 +8291,16 @@ grep -R "useApp" src | cat
 
 ## Tại sao kiến trúc này đúng chuẩn?
 
-* **Multi-context theo domain**: UI/Wallet/Data → component chỉ rerender khi slice state của nó đổi.
-* **wagmi SSR**: không mất state khi F5.
-* **Data layer = React Query**: caching/invalidate mạch lạc; BE có thể scale (router API hoặc tách service).
-* **Dễ mở rộng**: thêm `achievements`, `profile editor`, `admin`,… chỉ việc thêm module tương ứng.
+- **Multi-context theo domain**: UI/Wallet/Data → component chỉ rerender khi slice state của nó đổi.
+- **wagmi SSR**: không mất state khi F5.
+- **Data layer = React Query**: caching/invalidate mạch lạc; BE có thể scale (router API hoặc tách service).
+- **Dễ mở rộng**: thêm `achievements`, `profile editor`, `admin`,… chỉ việc thêm module tương ứng.
 
 ---
 
 ## Gợi ý làm gì tiếp theo?
 
-* maybe do **`Achievements` feature** (FE + BE route), **Upload Proof (ảnh + URL)**, hoặc **WalletConnect modal đẹp** theo pixel-style hiện có.
+- maybe do **`Achievements` feature** (FE + BE route), **Upload Proof (ảnh + URL)**, hoặc **WalletConnect modal đẹp** theo pixel-style hiện có.
 
 ---
 
@@ -8283,12 +8314,12 @@ Gia sư sẽ “đi nốt” toàn bộ phần FE theo kiến trúc mới, kèm 
 
 **Goal**: Clean kiến trúc + đủ tính năng MVP để demo:
 
-* Kết nối ví + switch Creditcoin Testnet (102031)
-* Dashboard (CreditScore, ChallengesGrid, Leaderboard, Ledger)
-* Challenge detail + **submit proof** theo `rules` (image/url/tx/number…)
-* Education (list + **detail markdown**)
-* Achievements (tường thành tích; đọc từ API user)
-* Guard (yêu cầu ví + đúng network)
+- Kết nối ví + switch Creditcoin Testnet (102031)
+- Dashboard (CreditScore, ChallengesGrid, Leaderboard, Ledger)
+- Challenge detail + **submit proof** theo `rules` (image/url/tx/number…)
+- Education (list + **detail markdown**)
+- Achievements (tường thành tích; đọc từ API user)
+- Guard (yêu cầu ví + đúng network)
 
 **Lộ trình thực hiện**
 
@@ -8693,12 +8724,12 @@ const EXPLORER = 'https://creditcoin-testnet.blockscout.com';
 
 # Gợi ý hoàn thiện tiếp theo (t tuỳ chọn)
 
-* **UI đẹp & thống nhất**: trích style pixel hiện có, đóng gói `pixel-card`, `pixel-btn`, `pixel-badge` thành components trong `src/ui/`.
-* **Proof upload lên storage**: thay vì Base64 inline, upload sang S3/R2, BE lưu URL trong `proof`.
-* **Skeleton loading**: React Query `placeholderData` + skeleton components.
-* **I18n** (vi/en) cho UI text.
-* **Error Boundary** cho trang page.
-* **E2E tests** (Playwright) cho 3 flow: connect + switch, submit challenge, xem tx.
+- **UI đẹp & thống nhất**: trích style pixel hiện có, đóng gói `pixel-card`, `pixel-btn`, `pixel-badge` thành components trong `src/ui/`.
+- **Proof upload lên storage**: thay vì Base64 inline, upload sang S3/R2, BE lưu URL trong `proof`.
+- **Skeleton loading**: React Query `placeholderData` + skeleton components.
+- **I18n** (vi/en) cho UI text.
+- **Error Boundary** cho trang page.
+- **E2E tests** (Playwright) cho 3 flow: connect + switch, submit challenge, xem tx.
 
 ---
 
@@ -10445,7 +10476,7 @@ export default function ProgressPage() {
         </div>
         <div className="pixel-card p-4">
           <h3>Points Earned</h3>
-          <div className="text-2xl">{currentUser.totalPointsEarned}</div>
+          <div className="text-2xl">{currentUser.totalPoints}</div>
         </div>
         <div className="pixel-card p-4">
           <h3>Best Streak</h3>
@@ -10863,7 +10894,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         creditScore: 300,
         streakDays: 0,
         totalChallenges: 0,
-        totalPointsEarned: 0,
+        totalPoints: 0,
       }));
       hideLoading();
       closeModals();
@@ -10912,8 +10943,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           850,
           u.creditScore + (currentChallenge?.creditImpact ?? 0)
         ),
-        totalPointsEarned:
-          u.totalPointsEarned + (currentChallenge?.points ?? 0),
+        totalPoints:
+          u.totalPoints + (currentChallenge?.points ?? 0),
         totalChallenges: u.totalChallenges + 1,
         streakDays: Math.max(u.streakDays, 1),
       }));
@@ -11342,7 +11373,7 @@ export function useApp() {
         creditScore: 300,
         streakDays: 0,
         totalChallenges: 0,
-        totalPointsEarned: 0,
+        totalPoints: 0,
       }));
       hideLoading();
       closeModals();
@@ -11397,8 +11428,8 @@ export function useApp() {
           850,
           u.creditScore + (currentChallenge?.creditImpact ?? 0)
         ),
-        totalPointsEarned:
-          u.totalPointsEarned + (currentChallenge?.points ?? 0),
+        totalPoints:
+          u.totalPoints + (currentChallenge?.points ?? 0),
         totalChallenges: u.totalChallenges + 1,
         streakDays: Math.max(u.streakDays, 1),
       }));
@@ -11520,7 +11551,7 @@ export const appData: AppData = {
     creditScore: 420,
     totalChallenges: 15,
     streakDays: 7,
-    totalPointsEarned: 300,
+    totalPoints: 300,
     isRegistered: true,
   },
   challenges: [
@@ -11737,7 +11768,7 @@ export type User = {
   creditScore: number;
   totalChallenges: number;
   streakDays: number;
-  totalPointsEarned: number;
+  totalPoints: number;
   isRegistered: boolean;
 };
 

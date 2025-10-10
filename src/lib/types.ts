@@ -1,13 +1,16 @@
 import { ViewFanClubCard } from "./types/view";
 
 export type Challenge = {
+  id: number;
   type: string;
+  category: string;
   name: string;
-  description: string;
+  description?: string;
   points: number;
   creditImpact: number;
-  category: "daily" | "weekly";
-  icon: string;
+  icon?: string;
+  estimatedTimeMinutes?: number;
+  isCompleted: boolean;
 };
 
 export type Achievement = {
@@ -18,9 +21,13 @@ export type Achievement = {
   unlocked: boolean;
 };
 
-
 export type WalletProvider = {
-  id: "baseAccount"| "walletConnect" | "io.metamask" | "app.subwallet" | string;
+  id:
+    | "baseAccount"
+    | "walletConnect"
+    | "io.metamask"
+    | "app.subwallet"
+    | string;
   name: string;
   // type: "metamask" | "coinbase" | "walletconnect" | "generic";
   icon: string;
@@ -30,12 +37,13 @@ export type WalletProvider = {
 };
 
 export type User = {
-  address: string;
+  walletAddress: string;
   creditScore: number;
   totalChallenges: number;
   streakDays: number;
-  totalPointsEarned: number;
+  totalPoints: number;
   isRegistered: boolean;
+  bestStreak: number;
 };
 
 export type Network = {
@@ -61,5 +69,6 @@ export type AppData = {
     description: string;
     duration: string;
     points: number;
+    isCompleted: boolean;
   }[];
 };
