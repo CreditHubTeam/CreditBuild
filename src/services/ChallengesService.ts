@@ -4,3 +4,9 @@
 // validateProof(proof, paymentAPI, imageVerification): Xác thực bằng chứng.
 // checkRules(challengeId, userId): Kiểm tra các quy tắc thử thách.
 // storeUserChallengeRecord(record): Lưu trữ bản ghi thử thách của người dùng.
+
+
+// [] getAllChallenges(): Lấy tất cả thử thách có sẵn.
+// [] getChallengeDetails(challengeId): Lấy chi tiết thử thách.
+// [] getChallengeByStatus(userId, status): Lấy thử thách theo trạng thái (đang diễn ra, đã hoàn thành).
+// [] startChallenge(challengeId, userId): Bắt đầu thử thách.
