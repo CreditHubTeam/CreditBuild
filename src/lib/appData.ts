@@ -29,6 +29,7 @@ export const appData: AppData = {
       },
       priceLabel: "100 MOCA",
       image: "/images/fanclubs/titan-defi.png",
+      isJoin: true,
     },
     {
       id: 2,
@@ -48,6 +49,7 @@ export const appData: AppData = {
       },
       priceLabel: "80 MOCA",
       image: "/images/fanclubs/nft-sensei.png",
+      isJoin: false,
     },
     {
       id: 3,
@@ -67,6 +69,7 @@ export const appData: AppData = {
       },
       priceLabel: "150 MOCA",
       image: "/images/fanclubs/yield-farmer-x.png",
+      isJoin: true,
     },
   ],
   challenges: [

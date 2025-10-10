@@ -25,34 +25,8 @@ export interface ApiFanClubCard {
     };
   };
   contractAddress?: `0x${string}`; // fan_clubs.contract_address (nếu cần)
-  createdAt?: ISODate; // fan_clubs.created_at (optional)
-}
-
-export interface ApiFanClubCard {
-  id: number; // fan_clubs.id
-  title: string; // club_name (hoặc format sẵn)
-  description?: string; // fan_clubs.description
-  image?: string; // fan_clubs.club_image
-  price: { amount: number; currency: "MOCA" }; // membership_fee
-  stats: {
-    members: number; // current_members
-    challenges: number; // COUNT(challenges.id)
-    avgEarnings: number; // computed (MOCA or points)
-  };
-  kol: {
-    id: number; // kols.id
-    name: string; // kol_name
-    verified: boolean; // verification_status === 'verified'
-    specialization?: string; // specialization
-    socials?: {
-      // kols.social_followers JSONB
-      twitter?: number;
-      youtube?: number;
-      telegram?: number;
-    };
-  };
-  contractAddress?: `0x${string}`; // fan_clubs.contract_address (nếu cần)
-  createdAt?: ISODate; // fan_clubs.created_at (optional)
+  createdAt?: ISODate; // fan_clubs.created_at (optional)\
+  isJoin: boolean; // user đã join chưa (từ API)
 }
 
 // export const apiFanClubs = [

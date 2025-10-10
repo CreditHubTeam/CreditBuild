@@ -16,6 +16,7 @@ export function toViewFanClubCard(x: ApiFanClubCard): ViewFanClubCard {
     socials: x.kol.socials ?? {},
     priceLabel,
     image: x.image,
+    isJoin: x.isJoin,
   };
 }
 
