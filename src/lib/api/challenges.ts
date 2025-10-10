@@ -1,4 +1,5 @@
 import { apiClient } from "./client";
+import { Challenge } from "@/lib/types";
 
 type apiChallengeType = {
   walletAddress: string;
@@ -6,7 +7,8 @@ type apiChallengeType = {
   proof?: unknown;
 };
 
-export const getChallenges = async () => apiClient.get("/challenges");
+export const getChallenges = async (): Promise<Challenge[]> =>
+  apiClient.get("/challenges");
 
 export const postNewChallenge = async (
   challId: string,

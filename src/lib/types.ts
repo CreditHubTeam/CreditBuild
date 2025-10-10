@@ -21,6 +21,15 @@ export type Achievement = {
   unlocked: boolean;
 };
 
+export type Education = {
+  id: string;
+  title: string;
+  description: string;
+  duration: string;
+  points: number;
+  isCompleted: boolean;
+};
+
 export type WalletProvider = {
   id:
     | "baseAccount"
@@ -63,12 +72,5 @@ export type AppData = {
   walletProviders: WalletProvider[];
   creditcoinNetwork: Network;
   contractAddress: string;
-  educationalContent: {
-    id: string;
-    title: string;
-    description: string;
-    duration: string;
-    points: number;
-    isCompleted: boolean;
-  }[];
+  educationalContent: Education[];
 };

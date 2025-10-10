@@ -19,28 +19,3 @@ export interface ViewFanClubCard {
   image?: string; // cover/thumb nếu có
   isJoin: boolean;
 }
-
-// export interface ViewUserBadge {
-//   label: string;            // "Gold"
-//   color: 'stone' | 'amber' | 'indigo' | 'rose';
-// }
-
-// export interface ViewDashboardUser {
-//   displayName: string;      // username rút gọn hoặc rút gọn địa chỉ ví
-//   creditScore: number;
-//   tier: TierLevel;
-//   streakDays: number;
-//   totalPoints: number;
-//   badge: ViewUserBadge;
-// }
-
-// export interface ViewChallengeCard {
-//   id: number;
-//   title: string;
-//   subtitle?: string;
-//   points: number;
-//   difficulty: Difficulty;
-//   icon?: string;
-//   completed: boolean;
-//   progress?: number;        // 0..1
-// }
