@@ -1,12 +1,16 @@
 import { challengeRepository } from "@/repositories/challengeRepository";
+import { educationRepository } from "@/repositories/educationRepository";
 import { userAchievementRepository } from "@/repositories/userAchievementRepository";
 import { userChallengeRepository } from "@/repositories/userChallengeRepository";
+import { userEducationRepository } from "@/repositories/userEducationRepository";
 import { userRepository } from "@/repositories/userRepository";
 
 const userRepo = new userRepository();
 const userChallengeRepo = new userChallengeRepository();
 const challengeRepo = new challengeRepository();
 const userAchievementRepo = new userAchievementRepository();
+const userEducationRepo = new userEducationRepository();
+const educationRepo = new educationRepository();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const serializeUser = (u: any) => {
@@ -111,7 +115,7 @@ export const UsersService = {
         return result;
     },
 
-// [] getUserAchievements(walletAdress, top=null): lấy danh sách thành tựu của người dùng
+// [x] getUserAchievements(walletAdress, top=null): lấy danh sách thành tựu của người dùng
     getUserAchievements: async (walletAddress: string, top?: number) => {
         const user = await userRepo.getByWalletAddress(walletAddress);
         if (!user) throw new Error("User not found");
@@ -129,7 +133,51 @@ export const UsersService = {
             return achievements.slice(0, top);
         }
         return achievements;
-    }
+    },
+// [] getUserEducation(walletAddress, status): Lấy danh sách các khóa học của người dùng theo trạng thái (chưa đăng ký, đang học, đã hoàn thành).
+    getUserEducation: async (walletAddress: string, status?: "no_enrollment" | "in_progress" | "completed") => {
+        const user = await userRepo.getByWalletAddress(walletAddress);
+        if (!user) throw new Error("User not found");
+        const allEducations = await educationRepo.findAll();
+        // lấy tất cả userEducations của user
+        const userEducations = await userEducationRepo.getByUserId(user.id);
+        if(status == "no_enrollment"){
+            //lấy allEducations - userEducations
+            const enrolledEducationIds = userEducations.map(ue => ue.educationId);
+            const noEnrollmentEducations = allEducations.filter(e => !enrolledEducationIds.includes(e.id));
+            // eslint-disable-next-line prefer-const
+            let result = [];
+            for(const edu of noEnrollmentEducations){
+                result.push({
+                    id: edu.id,
+                    title: edu.title,
+                    description: edu.description,
+                    duration: edu.duration,
+                    isCompleted: false
+                });
+            }
+            return result;
+        }
+        else if(status == "completed"){
+            // eslint-disable-next-line prefer-const
+            let result = [];
+            for(const userEdu of userEducations){
+                //tìm education theo userEdu.educationId
+                const education = await educationRepo.findById(userEdu.educationId);
+                if(education){
+                    result.push({
+                        id: education.id,
+                        title: education.title,
+                        description: education.description,
+                        duration: education.duration,
+                        isCompleted: true
+                    });
+                }
+            }
+            return result;
+        }
+        return allEducations;
+    },
 
 // updateProfileMetrics(): Cập nhật các chỉ số trên hồ sơ.
 

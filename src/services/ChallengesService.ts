@@ -20,7 +20,7 @@ export const ChallengesService = {
 // checkRules(challengeId, userId): Kiểm tra các quy tắc thử thách.
 // storeUserChallengeRecord(record): Lưu trữ bản ghi thử thách của người dùng.
 
-// [] submitChallenge(challengeId, walletAddress, amount, proof): Gửi thử thách đã hoàn thành.
+// [x] submitChallenge(challengeId, walletAddress, amount, proof): Gửi thử thách đã hoàn thành.
     submitChallenge: async (challengeId: number, walletAddress: `0x${string}`, amount?: number, proof?: Proof) => {
         // lấy user từ walletAddress
         const user = await userRepo.getByWalletAddress(walletAddress);

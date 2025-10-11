@@ -16,6 +16,18 @@ export class userEducationRepository {
       where: { id },
     });
   }
+  // xem tất cả user education theo userId
+  async getByUserId(userId: number): Promise<UserEducation[]> {
+    return await prisma.userEducation.findMany({
+      where: { userId: userId },
+    });
+  }
+// xem tat ca user education theo userid va educationId
+  async getByUserIdAndEducationId(userId: number, educationId: number): Promise<UserEducation[]> {
+    return await prisma.userEducation.findMany({
+      where: { userId: userId, educationId: educationId },
+    });
+  }
 
   // tạo user education
   async create(data: Prisma.UserEducationCreateInput): Promise<UserEducation> {
