@@ -14,7 +14,7 @@ export const EducationsService = {
 // [] getAllEducationalModules(): Lấy tất cả mô-đun giáo dục.
 // [] startModule(userId, moduleId): Bắt đầu mô-đun giáo dục.
 
-// [] completeEducation(walletAddress, educationId): Hoàn thành education
+// [x] completeEducation(walletAddress, educationId): Hoàn thành education
     completeEducation: async (walletAddress: string, educationId: number) => {
         // Tìm user theo walletAddress
         const user = await userRepo.getByWalletAddress(walletAddress);
