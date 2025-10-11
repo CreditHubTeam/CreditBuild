@@ -1,22 +1,31 @@
+import { EducationsService } from "@/services/EducationsService";
 import { NextRequest, NextResponse } from "next/server";
-import { EducationService } from "@/modules/education/service";
 import * as z from "zod";
 
 const CompleteEducationInput = z.object({
   walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
-  educationId: z.number(),
+  //== nữa thêm proof ở đây nếu cần
 });
 
-export async function POST(req: NextRequest) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const body = CompleteEducationInput.parse(await req.json());
+    const { id: educationId } = params;
 
-    const result = await EducationService.completeEducation(
+    const educationIdNum = parseInt(educationId, 10);
+    if (Number.isNaN(educationIdNum)) {
+      throw new Error("Invalid education id");
+    }
+
+    const result = await EducationsService.completeEducation(
       body.walletAddress,
-      body.educationId
+      educationIdNum
     );
 
-    return NextResponse.json({ ok: true, ...result });
+    return NextResponse.json({ ok: true, data: result });
   } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : typeof error === "string" ? error : "Unknown error";

@@ -4,6 +4,7 @@ import { userAchievementRepository } from "@/repositories/userAchievementReposit
 import { userChallengeRepository } from "@/repositories/userChallengeRepository";
 import { userEducationRepository } from "@/repositories/userEducationRepository";
 import { userRepository } from "@/repositories/userRepository";
+import { randomUUID } from "crypto";
 
 const userRepo = new userRepository();
 const userChallengeRepo = new userChallengeRepository();
@@ -64,7 +65,7 @@ export const UsersService = {
 
         const newUser = await userRepo.create({
             wallet_address: walletAddress,
-            moca_id: "",
+            moca_id: randomUUID(), //==randomUUID()
             username: "",
             credit_score: 300,
             streak_days: 0,
