@@ -7,8 +7,9 @@ type apiChallengeType = {
   proof?: unknown;
 };
 
-export const getChallenges = async (): Promise<Challenge[]> =>
-  apiClient.get("/challenges");
+export const getChallenges = async (
+  walletAddress: string
+): Promise<Challenge[]> => apiClient.get(`/user/${walletAddress}/challenges`);
 
 export const postNewChallenge = async (
   challId: string,

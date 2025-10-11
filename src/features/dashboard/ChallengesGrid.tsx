@@ -5,8 +5,8 @@ import { appData } from "@/lib/appData";
 import { useApp } from "@/context/AppContext";
 
 export default function ChallengesGrid() {
-  // const { challenges } = useData(); // This is call by react query
-  const { challenges } = useApp();
+  // const { challenges } = useApp(); // Thay vì hiện tại dùng data mock, thì đây tôi dùng call api giống useData đúng không
+  const { challenges } = useData(); // This is call by react query
   const { open } = useUI();
 
   return (

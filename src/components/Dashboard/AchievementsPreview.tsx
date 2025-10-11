@@ -1,8 +1,10 @@
 "use client";
 import { useApp } from "@/context/AppContext";
+import { useData } from "@/state/data";
 
 export default function AchievementsPreview() {
   const { achievements, handleNavigation } = useApp();
+  // const { achievements } = useData();
   return (
     <div className="pixel-card p-5 mb-20">
       <div className="flex items-center justify-between mb-4">
