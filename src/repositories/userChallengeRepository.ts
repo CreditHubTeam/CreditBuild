@@ -45,4 +45,10 @@ export class userChallengeRepository {
       where: { userId },
     });
   }
+  // getByUserIdAndChallengeId
+  async getByUserIdAndChallengeId(userId: number, challengeId: number): Promise<UserChallenge | null> {
+    return await prisma.userChallenge.findFirst({
+      where: { userId, challengeId },
+    });
+  }
 }

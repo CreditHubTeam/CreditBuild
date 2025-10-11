@@ -1,10 +1,12 @@
 import { challengeRepository } from "@/repositories/challengeRepository";
+import { userAchievementRepository } from "@/repositories/userAchievementRepository";
 import { userChallengeRepository } from "@/repositories/userChallengeRepository";
 import { userRepository } from "@/repositories/userRepository";
 
 const userRepo = new userRepository();
 const userChallengeRepo = new userChallengeRepository();
 const challengeRepo = new challengeRepository();
+const userAchievementRepo = new userAchievementRepository();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const serializeUser = (u: any) => {
@@ -77,7 +79,7 @@ export const UsersService = {
 
         return serializeUser(newUser);
     },
-// [] get UserChallenges(walletAddress): Lấy danh sách thử thách của người dùng.
+// [x] get UserChallenges(walletAddress): Lấy danh sách thử thách của người dùng.
     getUserChallenges: async (walletAddress: string): Promise<Challenge[]> => {
         
         const result: Challenge[] = [];
@@ -108,6 +110,26 @@ export const UsersService = {
         console.log("result", result)
         return result;
     },
+
+// [] getUserAchievements(walletAdress, top=null): lấy danh sách thành tựu của người dùng
+    getUserAchievements: async (walletAddress: string, top?: number) => {
+        const user = await userRepo.getByWalletAddress(walletAddress);
+        if (!user) throw new Error("User not found");
+
+        const achievements = await userAchievementRepo.getAllByUserId(user.id);
+        //== sắp xếp theo thời gian giảm dần
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        achievements.sort((a: any, b: any) => {
+          const ta = a?.unlockedAt ? new Date(a.unlockedAt).getTime() : 0;
+          const tb = b?.unlockedAt ? new Date(b.unlockedAt).getTime() : 0;
+          return tb - ta;
+        });
+        if (top) {
+            // Giới hạn số lượng thành tựu trả về
+            return achievements.slice(0, top);
+        }
+        return achievements;
+    }
 
 // updateProfileMetrics(): Cập nhật các chỉ số trên hồ sơ.
 

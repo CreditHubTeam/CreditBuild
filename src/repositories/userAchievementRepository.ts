@@ -6,9 +6,16 @@ export class userAchievementRepository {
   // ...implement methods here
 
   // xem tất cả user achievements
-    async getAll(): Promise<UserAchievement[]> {
+  async getAll(): Promise<UserAchievement[]> {
     return await prisma.userAchievement.findMany();
     }
+  
+  // xem tat ca userachievements theo userid
+  async getAllByUserId(userId: number) : Promise<UserAchievement[]> {
+    return await prisma.userAchievement.findMany({
+      where: { userId }
+    });
+  }
 
   // xem chi tiết một user achievement
   async getById(id: number): Promise<UserAchievement | null> {
@@ -16,6 +23,8 @@ export class userAchievementRepository {
       where: { id },
     });
   }
+
+  // 
 
   // tạo user achievement
   async create(data: Prisma.UserAchievementCreateInput): Promise<UserAchievement> {
