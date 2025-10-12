@@ -6,12 +6,12 @@ async function main() {
 
     // ✅ 1. Contract Config cho Creditcoin testnet - FIXED
     console.log("📡 Creating contract config...");
-    
+
     // Check if config already exists
     const existingConfig = await prisma.contractConfig.findFirst({
         where: { chainId: 102031 }
     });
-    
+
     if (!existingConfig) {
         await prisma.contractConfig.create({
             data: {
@@ -61,7 +61,7 @@ async function main() {
     // ✅ 3. Challenges - Check if already exist before createMany
     console.log("🎯 Creating challenges...");
     const existingChallenges = await prisma.challenge.findMany();
-    
+
     if (existingChallenges.length === 0) {
         await prisma.challenge.createMany({
             data: [
@@ -85,7 +85,7 @@ async function main() {
                     icon: "🌞",
                     featured: true
                 },
-                
+
                 // Social Challenges
                 {
                     type: "social",
@@ -213,7 +213,7 @@ async function main() {
                 },
                 {
                     type: "payment",
-                    category: "payment", 
+                    category: "payment",
                     name: "Credit Card Payment",
                     description: "Pay credit card bill before due date",
                     points: 80,
@@ -255,7 +255,7 @@ async function main() {
     // ✅ 4. Achievements - Check before createMany
     console.log("🏆 Creating achievements...");
     const existingAchievements = await prisma.achievement.findMany();
-    
+
     if (existingAchievements.length === 0) {
         await prisma.achievement.createMany({
             data: [
@@ -266,14 +266,14 @@ async function main() {
                     icon: "🚀"
                 },
                 {
-                    id: "week_warrior", 
+                    id: "week_warrior",
                     name: "Week Warrior",
                     description: "Complete 7 challenges",
                     icon: "💪"
                 },
                 {
                     id: "streak_superstar",
-                    name: "Streak Superstar", 
+                    name: "Streak Superstar",
                     description: "Maintain 7-day streak",
                     icon: "🔥"
                 },
@@ -291,7 +291,7 @@ async function main() {
                 },
                 {
                     id: "savings_champion",
-                    name: "Savings Champion", 
+                    name: "Savings Champion",
                     description: "Complete 10 savings challenges",
                     icon: "💰"
                 },
@@ -304,7 +304,7 @@ async function main() {
                 {
                     id: "credit_champion",
                     name: "Credit Champion",
-                    description: "Achieve 800+ credit score", 
+                    description: "Achieve 800+ credit score",
                     icon: "⭐"
                 },
                 {
@@ -323,7 +323,7 @@ async function main() {
     // ✅ 5. Educational Content
     console.log("📚 Creating educational content...");
     const existingEducation = await prisma.education.findMany();
-    
+
     if (existingEducation.length === 0) {
         await prisma.education.createMany({
             data: [
@@ -334,7 +334,7 @@ async function main() {
                     points: 25
                 },
                 {
-                    title: "Understanding Credit Scores", 
+                    title: "Understanding Credit Scores",
                     description: "Learn how credit scores work and what affects them",
                     duration: 10,
                     points: 50
@@ -384,16 +384,16 @@ async function main() {
 
     // ✅ 6. Sample User Progress (cho testing)
     console.log("📊 Creating sample user progress...");
-    
+
     // Get some challenges for sample data
     const allChallenges = await prisma.challenge.findMany({ take: 3 });
-    
+
     // Create some completed challenges for alice
     if (allChallenges.length > 0) {
         const existingUserChallenge = await prisma.userChallenge.findFirst({
             where: { userId: u1.id, challengeId: allChallenges[0].id }
         });
-        
+
         if (!existingUserChallenge) {
             await prisma.userChallenge.create({
                 data: {
@@ -411,7 +411,7 @@ async function main() {
         const existingAchievement = await prisma.userAchievement.findFirst({
             where: { userId: u1.id, achievementId: "first_steps" }
         });
-        
+
         if (!existingAchievement) {
             await prisma.userAchievement.create({
                 data: {
@@ -424,10 +424,10 @@ async function main() {
 
     // ✅ 7. Point Ledgers for sample users
     console.log("💰 Creating point ledgers...");
-    const existingLedgers = await prisma.pointLedger.findMany({ 
-        where: { userId: u1.id } 
+    const existingLedgers = await prisma.pointLedger.findMany({
+        where: { userId: u1.id }
     });
-    
+
     if (existingLedgers.length === 0) {
         await prisma.pointLedger.createMany({
             data: [
@@ -457,24 +457,28 @@ async function main() {
     console.log("🎪 Creating sample KOLs and fan clubs...");
 
     // Create multiple sample KOLs
-    const kolForFanClubs = await prisma.kol.upsert({
-        where: { userId: u2.id },
-        update: {},
-        create: {
-            userId: u2.id,
-            kol_name: "CreditMaster Pro",
-            verification_status: "verified",
-            social_followers: { 
-                twitter: 25000, 
-                instagram: 18000, 
-                youtube: 12500,
-                tiktok: 35000 
-            },
-            specialization: "personal_finance",
-            commission_rate: 12.5,
-            total_earnings: BigInt(2500000)
-        }
+    let kolForFanClubs = await prisma.kol.findFirst({
+        where: { userId: u2.id }
     });
+
+    if (!kolForFanClubs) {
+        kolForFanClubs = await prisma.kol.create({
+            data: {
+                userId: u2.id,
+                kol_name: "CreditMaster Pro",
+                verification_status: "verified",
+                social_followers: {
+                    twitter: 25000,
+                    instagram: 18000,
+                    youtube: 12500,
+                    tiktok: 35000
+                },
+                specialization: "personal_finance",
+                commission_rate: 12.5,
+                total_earnings: BigInt(2500000)
+            }
+        });
+    }
 
     // Create additional KOLs if they don't exist
     const existingKols = await prisma.kol.findMany();
@@ -591,7 +595,7 @@ async function main() {
     if (existingFanClubs.length === 0) {
         // Get all KOLs for fan club creation
         const allKols = await prisma.kol.findMany();
-        
+
         const fanClubs = [
             {
                 kolId: kolForFanClubs.id,

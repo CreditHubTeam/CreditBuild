@@ -10,6 +10,15 @@ RUN npm run build
 FROM node:20-alpine
 WORKDIR /app
 ENV NODE_ENV=production
+
+# Install wget for healthcheck
+RUN apk add --no-cache wget
+
 COPY --from=builder /app ./
+
+# Copy and setup entrypoint script
+COPY docker/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["/app/entrypoint.sh"]

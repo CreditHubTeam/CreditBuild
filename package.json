@@ -9,6 +9,7 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "node prisma/seed.mjs",
+    "db:seed:prod": "NODE_ENV=production node prisma/seed.mjs",
     "db:studio": "prisma studio",
     "lint": "eslint"
   },
