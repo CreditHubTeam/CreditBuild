@@ -33,8 +33,8 @@ export const completeEducation = async (
 export const getUserEducations = async (
   walletAddress: string
 ): Promise<Education[]> => {
-  const response: ApiResponse<Education[]> = await apiClient.get(
-    `/users/${walletAddress}/educations`
-  );
-  return handleApiResponse(response);
+  const response: ApiResponse<{ userEducations: Education[] }> =
+    await apiClient.get(`/users/${walletAddress}/educations`);
+  const data = handleApiResponse(response);
+  return data.userEducations;
 };

@@ -4,11 +4,16 @@ import { useData } from "@/state/data";
 
 export default function EducationPage() {
   const { handleNavigation } = useApp();
-  const { educations } = useData();
-
+  const { userEducations, completeEducation } = useData();
+  console.log(userEducations);
   // Tách 2 nhóm
-  const incomplete = educations.filter((e) => !e.isCompleted);
-  const completed = educations.filter((e) => e.isCompleted);
+  const incomplete = userEducations.filter((e) => !e.isCompleted);
+  const completed = userEducations.filter((e) => e.isCompleted);
+
+  const handleSubmitEducation = async (id: string) => {
+    if (incomplete.length === 0) return;
+    await completeEducation(id, { progress: 100, proof: {} });
+  };
 
   return (
     <section className="container mx-auto px-4 py-6 pb-20 sm:pb-24">
@@ -33,7 +38,11 @@ export default function EducationPage() {
           </p>
         )}
         {incomplete.map((c) => (
-          <div key={c.id} className="pixel-card p-4 border-mc-yellow">
+          <div
+            key={c.id}
+            className="pixel-card p-4 border-mc-yellow"
+            onClick={() => handleSubmitEducation(c.id)}
+          >
             <h3 className="font-bold mb-2">{c.title}</h3>
             <p className="text-[11px] opacity-90 mb-2">{c.description}</p>
             <div className="text-[11px] flex gap-3">

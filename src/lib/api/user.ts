@@ -18,7 +18,7 @@ export const postRegister = async (
   data: RegisterRequest
 ): Promise<RegisterResponse> => {
   const response: ApiResponse<RegisterResponse> = await apiClient.post(
-    "/register",
+    "/auth/register",
     data
   );
   return handleApiResponse(response);

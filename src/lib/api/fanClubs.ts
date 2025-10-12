@@ -4,6 +4,7 @@ import { ViewFanClubCard } from "../types/view";
 
 type JoinFanClubRequest = {
   walletAddress: string;
+  fanClubId: number;
 };
 
 type JoinFanClubResponse = {
@@ -14,10 +15,10 @@ type JoinFanClubResponse = {
 };
 
 export const getFanClubs = async (): Promise<ViewFanClubCard[]> => {
-  const response: ApiResponse<ViewFanClubCard[]> = await apiClient.get(
-    "/fan-clubs"
-  );
-  return handleApiResponse(response);
+  const response: ApiResponse<{ allFanClubs: ViewFanClubCard[] }> =
+    await apiClient.get("/fan-clubs");
+  const data = handleApiResponse(response);
+  return data.allFanClubs;
 };
 
 export const joinFanClub = async (
@@ -25,7 +26,7 @@ export const joinFanClub = async (
   body: JoinFanClubRequest
 ): Promise<JoinFanClubResponse> => {
   const response: ApiResponse<JoinFanClubResponse> = await apiClient.post(
-    `/fan-clubs/${clubId}/join`,
+    `/fan-clubs/join`,
     body
   );
   return handleApiResponse(response);

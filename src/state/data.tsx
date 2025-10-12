@@ -13,10 +13,11 @@ import {
 } from "@/lib/api/education";
 import { getFanClubs, joinFanClub } from "@/lib/api/fanClubs";
 import { getAchievements } from "@/lib/api/achievements";
-import { getUser } from "@/lib/api/user";
+import { getUser, postRegister } from "@/lib/api/user";
 
 type DataCtx = {
-  currentUser: User;
+  currentUser: User | null;
+  creditPercentage: number;
   challenges: Challenge[];
   educations: Education[];
   userEducations: Education[];
@@ -40,6 +41,10 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const qc = useQueryClient();
   const { address } = useWallet();
   const { showLoading, hideLoading, notify } = useUI();
+  const [hasWelcomed, setHasWelcomed] = React.useState<string | null>(null);
+  const [registrationAttempted, setRegistrationAttempted] = React.useState<
+    Set<string>
+  >(new Set());
 
   // User
   const qCurrentUser = useQuery({
@@ -98,6 +103,76 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     queryFn: () => getAchievements(address as string),
     enabled: !!address,
   });
+
+  // Auto Register Mutation
+  const mAutoRegister = useMutation({
+    mutationKey: ["autoRegister"],
+    mutationFn: async (walletAddress: string) => {
+      // Mark that we've attempted registration for this address
+      setRegistrationAttempted((prev) => new Set(prev).add(walletAddress));
+      return postRegister({ walletAddress });
+    },
+    onSuccess: (data, walletAddress) => {
+      notify("Welcome! Account created successfully! 🎉", "success");
+      console.log("User registered:", data);
+      setHasWelcomed(walletAddress);
+      // Refresh user data
+      qc.invalidateQueries({ queryKey: ["currentUser"] });
+    },
+    onError: (error: Error, walletAddress) => {
+      // If user already exists, it's not really an error for UX
+      if (
+        error.message.includes("USER_ALREADY_EXISTS") ||
+        error.message.includes("already exists")
+      ) {
+        notify("Welcome back! 👋", "info");
+        console.log("User already exists, continuing...");
+        setHasWelcomed(walletAddress);
+        // Still refresh user data
+        qc.invalidateQueries({ queryKey: ["currentUser"] });
+      } else {
+        console.error("Registration failed:", error);
+        notify("Registration failed. Please try again.", "error");
+        // Don't retry automatically on real errors
+      }
+    },
+  });
+
+  // Reset states when address changes or disconnects
+  React.useEffect(() => {
+    if (!address) {
+      setHasWelcomed(null);
+      setRegistrationAttempted(new Set());
+      return;
+    }
+  }, [address]);
+
+  // Auto-register effect - only when user query error and haven't tried yet
+  React.useEffect(() => {
+    if (
+      address &&
+      qCurrentUser.isError &&
+      !mAutoRegister.isPending &&
+      !registrationAttempted.has(address)
+    ) {
+      console.log("User not found, auto-registering for address:", address);
+      mAutoRegister.mutate(address);
+    }
+  }, [address, qCurrentUser.isError, mAutoRegister, registrationAttempted]);
+
+  // Welcome back message effect - only when user data loads successfully
+  React.useEffect(() => {
+    if (
+      address &&
+      qCurrentUser.data &&
+      !qCurrentUser.isLoading &&
+      hasWelcomed !== address
+    ) {
+      console.log("Welcome back user:", qCurrentUser.data);
+      notify("Welcome back! 👋", "info");
+      setHasWelcomed(address);
+    }
+  }, [address, qCurrentUser.data, qCurrentUser.isLoading, hasWelcomed, notify]);
 
   const mSubmitChallenge = useMutation({
     mutationKey: ["submitChallenge"],
@@ -159,6 +234,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     mutationFn: async ({ clubId }: { clubId: string }) =>
       joinFanClub(clubId, {
         walletAddress: address as string,
+        fanClubId: Number(clubId),
       }),
     onMutate: () => showLoading("Joining fan club..."),
     onSettled: () => hideLoading(),
@@ -186,7 +262,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<DataCtx>(
     () => ({
       creditPercentage,
-      currentUser: qCurrentUser.data as User,
+      currentUser: qCurrentUser.data || null,
       challenges: qChallenges.data ?? [],
       educations: qEducation.data ?? [],
       userEducations: qUserEducations.data ?? [],

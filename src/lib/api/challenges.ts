@@ -17,10 +17,10 @@ type CompleteChallengeResponse = {
 export const getChallenges = async (
   walletAddress: string
 ): Promise<Challenge[]> => {
-  const response: ApiResponse<Challenge[]> = await apiClient.get(
-    `/users/${walletAddress}/challenges`
-  );
-  return handleApiResponse(response);
+  const response: ApiResponse<{ userChallenges: Challenge[] }> =
+    await apiClient.get(`/users/${walletAddress}/challenges`);
+  const data = handleApiResponse(response);
+  return data.userChallenges;
 };
 
 export const completeChallenge = async (
