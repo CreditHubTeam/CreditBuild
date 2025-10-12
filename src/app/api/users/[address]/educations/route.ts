@@ -1,7 +1,7 @@
 import { UsersService } from "@/services/UserService";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request, { params }: { params: { address: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ address: string }> }) {
     try {
         const { address } = await params;
 

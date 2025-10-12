@@ -8,8 +8,7 @@ const RegisterInput = z
     walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
     signature: z.string().optional(),
     referralCode: z.string().optional(),
-  })
-  .meta({ id: "RegisterInput" });
+  });
 
 export async function POST(req: NextRequest) {
   const json = await req.json();

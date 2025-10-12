@@ -453,10 +453,234 @@ async function main() {
         });
     }
 
+    // ✅ 8. KOL and Fan Clubs (sample/demo data)
+    console.log("🎪 Creating sample KOLs and fan clubs...");
+
+    // Create multiple sample KOLs
+    const kolForFanClubs = await prisma.kol.upsert({
+        where: { userId: u2.id },
+        update: {},
+        create: {
+            userId: u2.id,
+            kol_name: "CreditMaster Pro",
+            verification_status: "verified",
+            social_followers: { 
+                twitter: 25000, 
+                instagram: 18000, 
+                youtube: 12500,
+                tiktok: 35000 
+            },
+            specialization: "personal_finance",
+            commission_rate: 12.5,
+            total_earnings: BigInt(2500000)
+        }
+    });
+
+    // Create additional KOLs if they don't exist
+    const existingKols = await prisma.kol.findMany();
+    if (existingKols.length <= 1) {
+        // Create additional sample users for KOLs
+        const kolUser1 = await prisma.user.upsert({
+            where: { wallet_address: "0x3333333333333333333333333333333333333333" },
+            update: {},
+            create: {
+                wallet_address: "0x3333333333333333333333333333333333333333",
+                username: "cryptosavvy",
+                credit_score: 780,
+                streak_days: 15,
+                total_challenges: 25,
+                total_points: BigInt(5000),
+                tier_level: "gold"
+            }
+        });
+
+        const kolUser2 = await prisma.user.upsert({
+            where: { wallet_address: "0x4444444444444444444444444444444444444444" },
+            update: {},
+            create: {
+                wallet_address: "0x4444444444444444444444444444444444444444",
+                username: "debtfreecoach",
+                credit_score: 825,
+                streak_days: 30,
+                total_challenges: 40,
+                total_points: BigInt(8500),
+                tier_level: "platinum"
+            }
+        });
+
+        const kolUser3 = await prisma.user.upsert({
+            where: { wallet_address: "0x5555555555555555555555555555555555555555" },
+            update: {},
+            create: {
+                wallet_address: "0x5555555555555555555555555555555555555555",
+                username: "investmentguru",
+                credit_score: 800,
+                streak_days: 22,
+                total_challenges: 35,
+                total_points: BigInt(7200),
+                tier_level: "gold"
+            }
+        });
+
+        // Create additional KOLs
+        await prisma.kol.createMany({
+            data: [
+                {
+                    userId: kolUser1.id,
+                    kol_name: "Crypto Finance Expert",
+                    verification_status: "verified",
+                    social_followers: {
+                        twitter: 45000,
+                        instagram: 32000,
+                        youtube: 28000,
+                        linkedin: 15000
+                    },
+                    specialization: "cryptocurrency",
+                    commission_rate: 15.0,
+                    total_earnings: BigInt(4200000)
+                },
+                {
+                    userId: kolUser2.id,
+                    kol_name: "Debt Freedom Coach",
+                    verification_status: "verified",
+                    social_followers: {
+                        twitter: 38000,
+                        instagram: 42000,
+                        tiktok: 65000,
+                        youtube: 22000
+                    },
+                    specialization: "debt_management",
+                    commission_rate: 10.0,
+                    total_earnings: BigInt(3800000)
+                },
+                {
+                    userId: kolUser3.id,
+                    kol_name: "Investment Strategy Pro",
+                    verification_status: "verified",
+                    social_followers: {
+                        twitter: 52000,
+                        instagram: 28000,
+                        youtube: 35000,
+                        linkedin: 25000
+                    },
+                    specialization: "investment",
+                    commission_rate: 18.0,
+                    total_earnings: BigInt(5500000)
+                },
+                {
+                    userId: u1.id, // Use existing alice as a KOL too
+                    kol_name: "Beginner Finance Guide",
+                    verification_status: "pending",
+                    social_followers: {
+                        twitter: 8500,
+                        instagram: 12000,
+                        tiktok: 15000
+                    },
+                    specialization: "financial_literacy",
+                    commission_rate: 8.0,
+                    total_earnings: BigInt(150000)
+                }
+            ]
+        });
+        console.log("✅ Multiple KOLs created");
+    } else {
+        console.log("ℹ️ Additional KOLs already exist");
+    }
+
+    const existingFanClubs = await prisma.fanClub.findMany();
+    if (existingFanClubs.length === 0) {
+        // Get all KOLs for fan club creation
+        const allKols = await prisma.kol.findMany();
+        
+        const fanClubs = [
+            {
+                kolId: kolForFanClubs.id,
+                club_name: "Savings Savvy Club",
+                description: "A community focused on building saving habits and emergency funds.",
+                entry_requirements: { minTier: "bronze", minPoints: 0 },
+                membership_fee: BigInt(0),
+                max_members: 500,
+                current_members: 0,
+                club_image: null,
+                contract_address: null
+            },
+            {
+                kolId: kolForFanClubs.id,
+                club_name: "Credit Builders Guild",
+                description: "Advanced group for credit score improvement and onchain activities.",
+                entry_requirements: { minTier: "silver", minPoints: 100 },
+                membership_fee: BigInt(1000),
+                max_members: 200,
+                current_members: 0,
+                club_image: null,
+                contract_address: null
+            }
+        ];
+
+        // Add more fan clubs if we have additional KOLs
+        if (allKols.length > 1) {
+            const additionalFanClubs = [
+                {
+                    kolId: allKols[1]?.id || kolForFanClubs.id,
+                    club_name: "Crypto Investment Academy",
+                    description: "Learn crypto trading, DeFi strategies, and blockchain investments.",
+                    entry_requirements: { minTier: "silver", minPoints: 250, minCreditScore: 600 },
+                    membership_fee: BigInt(2500),
+                    max_members: 150,
+                    current_members: 0,
+                    club_image: null,
+                    contract_address: null
+                },
+                {
+                    kolId: allKols[2]?.id || kolForFanClubs.id,
+                    club_name: "Debt-Free Warriors",
+                    description: "Support group for eliminating debt and building wealth.",
+                    entry_requirements: { minTier: "bronze", minPoints: 50 },
+                    membership_fee: BigInt(500),
+                    max_members: 300,
+                    current_members: 0,
+                    club_image: null,
+                    contract_address: null
+                },
+                {
+                    kolId: allKols[3]?.id || kolForFanClubs.id,
+                    club_name: "Investment Mastery Circle",
+                    description: "Premium community for advanced investment strategies and portfolio management.",
+                    entry_requirements: { minTier: "gold", minPoints: 500, minCreditScore: 750 },
+                    membership_fee: BigInt(5000),
+                    max_members: 100,
+                    current_members: 0,
+                    club_image: null,
+                    contract_address: null
+                },
+                {
+                    kolId: allKols[4]?.id || kolForFanClubs.id,
+                    club_name: "Financial Literacy Beginners",
+                    description: "Friendly community for those starting their financial journey.",
+                    entry_requirements: { minTier: "bronze", minPoints: 0 },
+                    membership_fee: BigInt(0),
+                    max_members: 1000,
+                    current_members: 0,
+                    club_image: null,
+                    contract_address: null
+                }
+            ];
+            fanClubs.push(...additionalFanClubs);
+        }
+
+        // Use createMany for bulk insert
+        await prisma.fanClub.createMany({ data: fanClubs });
+        console.log(`✅ ${fanClubs.length} Fan clubs created`);
+    } else {
+        console.log("ℹ️ Fan clubs already exist");
+    }
+
     console.log("✅ Database seeding completed successfully!");
     console.log("📊 Created:");
     console.log("  - 1 Contract Config");
-    console.log("  - 2 Sample Users");
+    console.log("  - 6 Sample Users (including KOL accounts)");
+    console.log("  - 5 KOLs with different specializations");
+    console.log("  - 6 Fan Clubs with varying entry requirements");
     console.log("  - 10 Challenges (across all categories)");
     console.log("  - 9 Achievements");
     console.log("  - 8 Educational Content items");
