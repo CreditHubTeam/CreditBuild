@@ -33,4 +33,15 @@ export class fanClubMembershipRepository {
             where: { id },
         });
     }   
+
+    // isUserInClub
+    async isUserInClub(userId: number, clubId: number): Promise<boolean> {
+        const membership = await prisma.fanClubMembership.findFirst({
+            where: {
+                userId,
+                clubId,
+            },
+        });
+        return membership !== null;
+    }
 }

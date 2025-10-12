@@ -21,6 +21,7 @@ export const FanClubsService = {
         let result = [];
         for(const club of clubs){
             const kols = await kolRepo.findById(club.kolId);
+            const isUserInClub = await fanClubMembershipRepo.isUserInClub(club.id, club.kolId);
             result.push({
                 id: club.id,
                 kolName: kols?.kol_name || "Unknown",
@@ -37,7 +38,8 @@ export const FanClubsService = {
                     youtube: "youtube.com/test" //== tạm thời để link test, sau này có thể lấy từ kols
                 },
                 priceLabel: club.membership_fee > 0 ? `${club.membership_fee} MOCA` : "Free",
-                image: club.club_image || "https://via.placeholder.com/300x150.png?text=Fan+Club" //== tạm thời để ảnh placeholder, sau này có thể lấy từ club.club_image
+                image: club.club_image || "https://via.placeholder.com/300x150.png?text=Fan+Club", //== tạm thời để ảnh placeholder, sau này có thể lấy từ club.club_image
+                isJoined: isUserInClub //== tạm thời để false, sau này có thể kiểm tra user đã tham gia club chưa
             })
         }
         return result;
