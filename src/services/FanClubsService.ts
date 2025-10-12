@@ -38,6 +38,7 @@ export const FanClubsService = {
                 },
                 priceLabel: club.membership_fee > 0 ? `${club.membership_fee} MOCA` : "Free",
                 image: club.club_image || "https://via.placeholder.com/300x150.png?text=Fan+Club", //== tạm thời để ảnh placeholder, sau này có thể lấy từ club.club_image
+                isJoined: false //== mặc định chưa tham gia, khi lấy theo user sẽ cập nhật lại
             })
         }
         return result;
