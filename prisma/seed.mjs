@@ -31,10 +31,10 @@ async function main() {
     // ✅ 2. Sample Users
     console.log("👥 Creating sample users...");
     const u1 = await prisma.user.upsert({
-        where: { wallet_address: "0x1111111111111111111111111111111111111111" },
+        where: { wallet_address: "0xbEb7518cD8F8f096A23426AE3c8a9d778b4CBf00" },
         update: {},
         create: {
-            wallet_address: "0x1111111111111111111111111111111111111111",
+            wallet_address: "0xbEb7518cD8F8f096A23426AE3c8a9d778b4CBf00",
             username: "alice",
             credit_score: 420,
             streak_days: 5,
