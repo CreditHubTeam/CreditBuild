@@ -95,7 +95,10 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   });
 
   // Fan Clubs
-  const qFanClubs = useQuery({ queryKey: ["fanClubs"], queryFn: getFanClubs });
+  const qFanClubs = useQuery({
+    queryKey: ["fanClubs"],
+    queryFn: () => getFanClubs(address as string),
+  });
 
   // Achievements
   const qAchievements = useQuery<Achievement[]>({

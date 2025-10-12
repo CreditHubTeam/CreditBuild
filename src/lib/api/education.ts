@@ -34,7 +34,7 @@ export const getUserEducations = async (
   walletAddress: string
 ): Promise<Education[]> => {
   const response: ApiResponse<{ userEducations: Education[] }> =
-    await apiClient.get(`/users/${walletAddress}/educations`);
+    await apiClient.get(`/users/${walletAddress}/educations?status=no_enrollment`);
   const data = handleApiResponse(response);
   return data.userEducations;
 };

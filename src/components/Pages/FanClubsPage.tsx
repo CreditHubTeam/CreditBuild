@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { useApp } from "@/context/AppContext";
 import { useUI } from "@/state/ui";
 import { useData } from "@/state/data";
@@ -8,6 +7,8 @@ export default function FanClubsPage() {
   const { handleNavigation } = useApp();
   const { fanClubs } = useData();
 
+  const joinedClubs = fanClubs.filter((c) => !c.isJoined);
+  console.log("joinedClubs", joinedClubs);
   const { open } = useUI();
 
   // === Handlers ===
@@ -36,7 +37,7 @@ export default function FanClubsPage() {
 
       {/* Grid */}
       <div className="grid md:grid-cols-2 sm:grid-cols-2 gap-4">
-        {fanClubs.map((club) => {
+        {joinedClubs.map((club) => {
           const initials = club.kolName
             .split(" ")
             .map((w) => w[0])

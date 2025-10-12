@@ -17,7 +17,7 @@ export default function AchievementsPreview() {
         </button>
       </div>
       <div className="grid md:grid-cols-3 gap-3">
-        {achievements.slice(0, 3).map((a) => (
+        {achievements.filter((a) => a.unlocked).slice(0, 3).map((a) => (
           <div
             key={a.id}
             className="bg-mc-oak text-black border-3 border-black rounded-pixel p-4"

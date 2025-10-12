@@ -14,9 +14,10 @@ type JoinFanClubResponse = {
   totalPoints: number;
 };
 
-export const getFanClubs = async (): Promise<ViewFanClubCard[]> => {
+export const getFanClubs = async (walletAddress: string): Promise<ViewFanClubCard[]> => {
   const response: ApiResponse<{ allFanClubs: ViewFanClubCard[] }> =
-    await apiClient.get("/fan-clubs");
+    // await apiClient.get(`users/${walletAddress}/fan-clubs`);
+    await apiClient.get(`/fan-clubs`);
   const data = handleApiResponse(response);
   return data.allFanClubs;
 };
