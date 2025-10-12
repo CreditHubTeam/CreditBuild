@@ -13,7 +13,7 @@ export async function POST(
 ) {
   try {
     const body = CompleteEducationInput.parse(await req.json());
-    const { id: educationId } = params;
+    const { id: educationId } = await params;
 
     const educationIdNum = parseInt(educationId, 10);
     if (Number.isNaN(educationIdNum)) {

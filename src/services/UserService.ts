@@ -1,3 +1,4 @@
+import { achievementRepository } from "@/repositories/achievementRepository";
 import { challengeRepository } from "@/repositories/challengeRepository";
 import { educationRepository } from "@/repositories/educationRepository";
 import { userAchievementRepository } from "@/repositories/userAchievementRepository";
@@ -12,24 +13,48 @@ const challengeRepo = new challengeRepository();
 const userAchievementRepo = new userAchievementRepository();
 const userEducationRepo = new userEducationRepository();
 const educationRepo = new educationRepository();
+const achievementRepo = new achievementRepository();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const serializeUser = (u: any) => {
-  if (!u) return null;
-  return {
-    walletAddress: u.wallet_address ?? null,
-    creditScore: u.credit_score ?? null,
-    totalChallenges: u.total_challenges ?? 0,
-    streakDays: u.streak_days ?? 0,
-    // Convert BigInt -> string to avoid JSON serialization error
-    totalPoints: u.total_points !== undefined ? u.total_points.toString() : "0",
-    socialPoints: u.social_points !== undefined ? u.social_points.toString() : "0",
-    financialPoints: u.financial_points !== undefined ? u.financial_points.toString() : "0",
-    educationPoints: u.education_points !== undefined ? u.education_points.toString() : "0",
-    bestStreak: u.streak_days ?? 0,
-    isRegistered: true,
-    // include other fields you need, converting BigInt as above
-  };
+    if (!u) return null;
+    return {
+        walletAddress: u.wallet_address ?? null,
+        creditScore: u.credit_score ?? null,
+        totalChallenges: u.total_challenges ?? 0,
+        streakDays: u.streak_days ?? 0,
+        // Convert BigInt -> string to avoid JSON serialization error
+        totalPoints: u.total_points !== undefined ? u.total_points.toString() : "0",
+        socialPoints: u.social_points !== undefined ? u.social_points.toString() : "0",
+        financialPoints: u.financial_points !== undefined ? u.financial_points.toString() : "0",
+        educationPoints: u.education_points !== undefined ? u.education_points.toString() : "0",
+        bestStreak: u.streak_days ?? 0,
+        isRegistered: true,
+        // include other fields you need, converting BigInt as above
+    };
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const serializeUserProfile = (u: any) => {
+    if (!u) return null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const toNumber = (v: any) => {
+        if (v === undefined || v === null) return 0;
+        if (typeof v === "bigint") return Number(v);
+        const n = Number(v);
+        return Number.isNaN(n) ? 0 : n;
+    };
+
+    return {
+        walletAddress: u.wallet_address ?? null,
+        creditScore: u.credit_score ?? null,
+        totalChallenges: u.total_challenges ?? 0,
+        streakDays: u.streak_days ?? 0,
+        // Convert BigInt/string/other -> number
+        totalPoints: toNumber(u.total_points),
+        isRegistered: true,
+        bestStreak: u.streak_days ?? 0
+    };
 };
 
 interface Challenge {
@@ -86,7 +111,7 @@ export const UsersService = {
     },
 // [x] get UserChallenges(walletAddress): Lấy danh sách thử thách của người dùng.
     getUserChallenges: async (walletAddress: string): Promise<Challenge[]> => {
-        
+
         const result: Challenge[] = [];
         // Lấy user theo walletAddress
         const user = await userRepo.getByWalletAddress(walletAddress);
@@ -121,21 +146,35 @@ export const UsersService = {
         const user = await userRepo.getByWalletAddress(walletAddress);
         if (!user) throw new Error("User not found");
 
-        const achievements = await userAchievementRepo.getAllByUserId(user.id);
+        let userAchievements = await userAchievementRepo.getAllByUserId(user.id);
         //== sắp xếp theo thời gian giảm dần
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        achievements.sort((a: any, b: any) => {
+        userAchievements.sort((a: any, b: any) => {
           const ta = a?.unlockedAt ? new Date(a.unlockedAt).getTime() : 0;
           const tb = b?.unlockedAt ? new Date(b.unlockedAt).getTime() : 0;
           return tb - ta;
         });
         if (top) {
             // Giới hạn số lượng thành tựu trả về
-            return achievements.slice(0, top);
+            userAchievements = userAchievements.slice(0, top);
         }
-        return achievements;
+        // eslint-disable-next-line prefer-const
+        let result = [];
+        for (const ach of userAchievements) {
+            // tìm thông tin của achievement theo ach.achievementId
+            const achievement = await achievementRepo.findById(ach.achievementId);
+
+            result.push({
+                id: ach.id,
+                name: achievement!.name,
+                description: achievement!.description,
+                icon: achievement!.icon,
+                unlocked: true, //== luôn true vì chỉ lấy những thành tựu đã mở
+            });
+        }
+        return result;
     },
-// [] getUserEducation(walletAddress, status): Lấy danh sách các khóa học của người dùng theo trạng thái (chưa đăng ký, đang học, đã hoàn thành).
+// [x] getUserEducation(walletAddress, status): Lấy danh sách các khóa học của người dùng theo trạng thái (chưa đăng ký, đang học, đã hoàn thành).
     getUserEducation: async (walletAddress: string, status?: "no_enrollment" | "in_progress" | "completed") => {
         const user = await userRepo.getByWalletAddress(walletAddress);
         if (!user) throw new Error("User not found");
@@ -153,7 +192,8 @@ export const UsersService = {
                     id: edu.id,
                     title: edu.title,
                     description: edu.description,
-                    duration: edu.duration,
+                    duration: edu.duration!.toString() + " min",
+                    points: edu.points,
                     isCompleted: false
                 });
             }
@@ -170,7 +210,8 @@ export const UsersService = {
                         id: education.id,
                         title: education.title,
                         description: education.description,
-                        duration: education.duration,
+                        duration: education.duration!.toString() + " min",
+                        points: education.points,
                         isCompleted: true
                     });
                 }
@@ -183,6 +224,11 @@ export const UsersService = {
 // updateProfileMetrics(): Cập nhật các chỉ số trên hồ sơ.
 
 // [] getUserProfile(userId): Lấy hồ sơ người dùng.
+    getUserProfile: async (walletAddress: string) => {
+        const user = await userRepo.getByWalletAddress(walletAddress);
+        if (!user) throw new Error("User not found");
+        return serializeUserProfile(user);
+    }
 // [] updateUserSettings(userId, settings): Cập nhật cài đặt người dùng (mục tiêu, sở thích).
 // [] getUserAchievements(userId): Lấy thành tích của người dùng.
 }

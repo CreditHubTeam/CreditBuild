@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const user = await UsersService.register(walletAddress, signature, referralCode);
-    return NextResponse.json({ ok: true, user });
+    return NextResponse.json({ ok: true, data: user });
   } catch (err) {
     const message =
       err instanceof Error ? err.message : typeof err === "string" ? err : JSON.stringify(err);

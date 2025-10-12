@@ -1,11 +1,11 @@
 import { FanClubsService } from "@/services/FanClubsService";
 import { NextResponse } from "next/server";
 
-
+    
 export async function GET(req: Request) {
     try{
-        const data = await FanClubsService.getAllFanClubs();
-        return NextResponse.json({ ok: true, data });
+        const allFanClubs = await FanClubsService.getAllFanClubs(); 
+        return NextResponse.json({ ok: true, data: {allFanClubs} });
     }
     catch (error: unknown) {
         const msg =

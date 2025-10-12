@@ -24,7 +24,7 @@ export const FanClubsService = {
             result.push({
                 id: club.id,
                 kolName: kols?.kol_name || "Unknown",
-                kolVerified: kols?.verification_status || false,
+                kolVerified: kols?.verification_status !== "pending" ? true : false,
                 kolSubtitle: kols?.specialization || "",
                 title: club.club_name,
                 description: club.description,
@@ -55,6 +55,8 @@ joinFanClub: async (walletAddress: string, clubId: number) => {
     //tim kol cua club
     const kol = await kolRepo.findById(club.kolId);
     if (!kol) throw new Error("KOL not found");
+
+    //==kiểm tra user đã tham gia club chưa
     //tạo fan club membership
     const result = await fanClubMembershipRepo.create({
         user: { connect: { id: user.id } },
