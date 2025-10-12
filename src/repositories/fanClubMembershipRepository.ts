@@ -8,6 +8,12 @@ export class fanClubMembershipRepository {
     async findAll(): Promise<FanClubMembership[]> {
         return await prisma.fanClubMembership.findMany();
     }
+    // findAllByUserId
+    async findAllByUserId(userId: number): Promise<FanClubMembership[]> {
+        return await prisma.fanClubMembership.findMany({
+            where: { userId },
+        });
+    }
     // xem chi tiết một fan club membership
     async findById(id: number): Promise<FanClubMembership | null> {
         return await prisma.fanClubMembership.findUnique({

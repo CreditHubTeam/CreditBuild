@@ -1,11 +1,15 @@
 import { achievementRepository } from "@/repositories/achievementRepository";
 import { challengeRepository } from "@/repositories/challengeRepository";
 import { educationRepository } from "@/repositories/educationRepository";
+import { fanClubMembershipRepository } from "@/repositories/fanClubMembershipRepository";
+import { fanClubRepository } from "@/repositories/fanClubRepository";
+import { kolRepository } from "@/repositories/kolRepository";
 import { userAchievementRepository } from "@/repositories/userAchievementRepository";
 import { userChallengeRepository } from "@/repositories/userChallengeRepository";
 import { userEducationRepository } from "@/repositories/userEducationRepository";
 import { userRepository } from "@/repositories/userRepository";
 import { randomUUID } from "crypto";
+4
 
 const userRepo = new userRepository();
 const userChallengeRepo = new userChallengeRepository();
@@ -14,6 +18,10 @@ const userAchievementRepo = new userAchievementRepository();
 const userEducationRepo = new userEducationRepository();
 const educationRepo = new educationRepository();
 const achievementRepo = new achievementRepository();
+const fanClubMembershipRepo = new fanClubMembershipRepository();
+const kolRepo = new kolRepository();
+const fanClubRepo = new fanClubRepository();
+
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const serializeUser = (u: any) => {
@@ -235,9 +243,45 @@ export const UsersService = {
         return allEducations;
     },
 
+// [] getUserFanClubs(walletAddress): Lấy danh sách câu lạc bộ người hâm mộ của người dùng.
+    getUserFanClubs: async (walletAddress: string) => {
+        const user = await userRepo.getByWalletAddress(walletAddress);
+        if (!user) throw new Error("User not found");
+        const memberships = await fanClubMembershipRepo.findAllByUserId(user.id);
+        // for tu memberships de lay thong tin cua fan club
+        // eslint-disable-next-line prefer-const
+        let result = [];
+        for (const membership of memberships) {
+            //tim thong tin cua club bang membership.fanClubId
+            const club = await fanClubRepo.findById(membership.clubId);
+            // tim kol cua club
+            const kol = await kolRepo.findById(club!.kolId);
+            result.push({
+                id: club!.id,
+                kolName: kol?.kol_name || "Unknown",
+                kolVerified: kol?.verification_status !== "pending",
+                kolSubtitle: kol?.specialization || "",
+                title: club!.club_name,
+                description: club!.description,
+                members: club!.current_members || 0,
+                challenges: 2, // temporary placeholder
+                avgEarnings: 15, // temporary placeholder
+                socials: {
+                    twitter: "twitter.com/test",
+                    instagram: "instagram.com/test",
+                    youtube: "youtube.com/test",
+                },
+                priceLabel: (club!.membership_fee ?? 0) > 0 ? `${club!.membership_fee} MOCA` : "Free",
+                image: club!.club_image || "https://via.placeholder.com/300x150.png?text=Fan+Club",
+                isJoined: true, //== vì đây là câu lạc bộ mà user đã tham gia
+            });
+        }
+        return result;
+    },
+
 // updateProfileMetrics(): Cập nhật các chỉ số trên hồ sơ.
 
-// [] getUserProfile(userId): Lấy hồ sơ người dùng.
+// [x] getUserProfile(userId): Lấy hồ sơ người dùng.
     getUserProfile: async (walletAddress: string) => {
         const user = await userRepo.getByWalletAddress(walletAddress);
         if (!user) throw new Error("User not found");

@@ -1,5 +1,5 @@
+import { UsersService } from "@/services/UserService";
 import { NextRequest, NextResponse } from "next/server";
-import { FanClubsService } from "@/services/FanClubsService";
 
 // Handle CORS preflight requests
 export async function OPTIONS(_req: NextRequest) {
@@ -32,7 +32,7 @@ export async function GET(
     }
 
     // Get user's fan club memberships - temporary return empty array until service method is implemented
-    const userFanClubs = await FanClubsService.getAllFanClubs();
+    const userFanClubs = await UsersService.getUserFanClubs(address);
 
     const response = NextResponse.json({ ok: true, data: userFanClubs });
     response.headers.set(
