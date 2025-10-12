@@ -3,9 +3,9 @@ import { useApp } from "@/context/AppContext";
 import { useData } from "@/state/data";
 
 export default function CreditScore() {
-  const { creditPercentage } = useApp();
+  // const { creditPercentage } = useApp();
 
-  const { currentUser } = useData();
+  const { currentUser, creditPercentage } = useData();
 
   return (
     <div className="pixel-card p-5 mb-5">
@@ -18,7 +18,7 @@ export default function CreditScore() {
           />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-2xl">{currentUser?.creditScore | 0}</span>
+          <span className="text-2xl">{currentUser?.creditScore || 0}</span>
           <span className="opacity-80">/850</span>
         </div>
         <div>

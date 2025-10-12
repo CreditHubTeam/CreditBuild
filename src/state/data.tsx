@@ -199,6 +199,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       notify("Challenge Completed! 🎉", "success");
       qc.invalidateQueries({ queryKey: ["challenges"] });
       qc.invalidateQueries({ queryKey: ["achievements"] });
+      qc.invalidateQueries({ queryKey: ["currentUser"] });
     },
     onError: (e: Error) => notify(e.message ?? "Submit failed", "error"),
   });
@@ -227,6 +228,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       qc.invalidateQueries({ queryKey: ["education"] });
       qc.invalidateQueries({ queryKey: ["userEducations"] });
       qc.invalidateQueries({ queryKey: ["achievements"] });
+      qc.invalidateQueries({ queryKey: ["currentUser"] });
     },
     onError: (e: Error) => notify(e.message ?? "Complete failed", "error"),
   });
@@ -244,6 +246,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     onSuccess: () => {
       notify("Joined Fan Club! 🎊", "success");
       qc.invalidateQueries({ queryKey: ["fanClubs"] });
+      qc.invalidateQueries({ queryKey: ["challenges"] });
+      qc.invalidateQueries({ queryKey: ["achievements"] });
+      qc.invalidateQueries({ queryKey: ["currentUser"] });
     },
     onError: (e: Error) => notify(e.message ?? "Join failed", "error"),
   });
