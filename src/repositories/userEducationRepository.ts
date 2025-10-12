@@ -22,8 +22,11 @@ export class userEducationRepository {
       where: { userId: userId },
     });
   }
-// xem tat ca user education theo userid va educationId
-  async getByUserIdAndEducationId(userId: number, educationId: number): Promise<UserEducation[]> {
+  // xem tat ca user education theo userid va educationId
+  async getByUserIdAndEducationId(
+    userId: number,
+    educationId: number
+  ): Promise<UserEducation[]> {
     return await prisma.userEducation.findMany({
       where: { userId: userId, educationId: educationId },
     });
@@ -37,7 +40,10 @@ export class userEducationRepository {
   }
 
   // cập nhật user education
-  async update(id: number, data: Prisma.UserEducationUpdateInput): Promise<UserEducation> {
+  async update(
+    id: number,
+    data: Prisma.UserEducationUpdateInput
+  ): Promise<UserEducation> {
     return await prisma.userEducation.update({
       where: { id },
       data,

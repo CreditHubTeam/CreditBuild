@@ -3,22 +3,27 @@
 ## 🔧 **Các Lỗi Đã Fix:**
 
 ### 1. **Challenge Submit API** (`POST /api/challenges/1/submit`)
+
 **Vấn đề**: Zod validation lỗi khi FE gửi `value` là `number` thay vì `string`
 
 **✅ Fix**: Cập nhật schema để accept cả `number` và `string`:
+
 ```typescript
 // Before: value: z.string()
 // After: value: z.union([z.string(), z.number().transform(String)])
 ```
 
-### 2. **Education Complete API** 
+### 2. **Education Complete API**
+
 **Vấn đề**: Unique constraint error khi complete education đã hoàn thành
 
-**✅ Fix**: 
+**✅ Fix**:
+
 - Thêm `upsert` method vào `userEducationRepository`
 - Sử dụng `upsert` thay vì `create` trong `EducationsService`
 
 ### 3. **User Fan-Clubs API** (`GET /api/users/[address]/fan-clubs`)
+
 **Vấn đề**: API endpoint không tồn tại (404)
 
 **✅ Fix**: Tạo API route mới với CORS support
@@ -48,14 +53,17 @@ curl -X GET "http://localhost:3000/api/users/0xbEb7518cD8F8f096A23426AE3c8a9d778
 ## 📋 **Lời Khuyên Cho Frontend:**
 
 ### **Challenge Submit:**
+
 - ✅ Có thể gửi `value` dưới dạng `number` hoặc `string`
 - ✅ API sẽ tự convert `number` thành `string`
 
 ### **Education Complete:**
+
 - ✅ Có thể gọi multiple lần cho cùng education - không bị lỗi duplicate nữa
 - ✅ API sẽ update thời gian completion
 
 ### **User Fan-Clubs:**
+
 - ✅ API endpoint đã có sẵn
 - ✅ CORS support cho `http://localhost:3001`
 - ⚠️ Hiện tại trả về tất cả fan clubs (chưa filter theo user membership)
