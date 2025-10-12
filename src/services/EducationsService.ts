@@ -40,6 +40,11 @@ export const EducationsService = {
         completedAt: new Date(),
       },
     });
+    // cong diem cho user
+    await userRepo.update(user.id, {
+      credit_score: user.credit_score + (education.points || 0),
+      total_points: Number(user.total_points) + (education.points || 0),
+    });
     return {
       educationId: completed.educationId,
       isCompleted: true,

@@ -163,7 +163,6 @@ export const UsersService = {
         for (const ach of userAchievements) {
             // tìm thông tin của achievement theo ach.achievementId
             const achievement = await achievementRepo.findById(ach.achievementId);
-
             result.push({
                 id: ach.id,
                 name: achievement!.name,
@@ -172,6 +171,21 @@ export const UsersService = {
                 unlocked: true, //== luôn true vì chỉ lấy những thành tựu đã mở
             });
         }
+        //== chèn thêm các achievement mà user chưa có, với unlocked là false
+        const allAchievements = await achievementRepo.findAll();
+        for (const achievement of allAchievements) {
+            const userAchievement = userAchievements.find(ua => ua.achievementId === achievement.id);
+            if (!userAchievement) {
+                result.push({
+                    id: achievement.id,
+                    name: achievement.name,
+                    description: achievement.description,
+                    icon: achievement.icon,
+                    unlocked: false,
+                });
+            }
+        }
+        //=====================================
         return result;
     },
 // [x] getUserEducation(walletAddress, status): Lấy danh sách các khóa học của người dùng theo trạng thái (chưa đăng ký, đang học, đã hoàn thành).

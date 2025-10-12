@@ -36,6 +36,11 @@ export const ChallengesService = {
         await userChallengeRepo.update(userChallenge.id, { status: "APPROVED" }); 
         // trả về dữ liệu
 
+        //update user credit_score và total_points
+        await userRepo.update(user.id, {
+            credit_score: user.credit_score + (userChallenge.creditChange || 0),
+            total_points: Number(user.total_points) + (userChallenge.pointsAwarded || 0)
+        });
         return { 
             "challengeId": challengeId,
             "isCompleted": true,
