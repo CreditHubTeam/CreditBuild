@@ -1,17 +1,35 @@
-import { apiClient } from "./client";
-import { Challenge } from "@/lib/types";
+import { apiClient, handleApiResponse } from "./client";
+import { Challenge, ApiResponse } from "@/lib/types";
 
-type apiChallengeType = {
+type CompleteChallengeRequest = {
   walletAddress: string;
   amount?: number;
   proof?: unknown;
 };
 
+type CompleteChallengeResponse = {
+  id: number;
+  walletAddress: string;
+  creditScore: number;
+  totalPoints: number;
+};
+
 export const getChallenges = async (
   walletAddress: string
-): Promise<Challenge[]> => apiClient.get(`/user/${walletAddress}/challenges`);
+): Promise<Challenge[]> => {
+  const response: ApiResponse<Challenge[]> = await apiClient.get(
+    `/users/${walletAddress}/challenges`
+  );
+  return handleApiResponse(response);
+};
 
-export const postNewChallenge = async (
+export const completeChallenge = async (
   challId: string,
-  data: apiChallengeType
-) => apiClient.post(`/challenges/${challId}/complete`, data);
+  data: CompleteChallengeRequest
+): Promise<CompleteChallengeResponse> => {
+  const response: ApiResponse<CompleteChallengeResponse> = await apiClient.post(
+    `/challenges/${challId}/submit`,
+    data
+  );
+  return handleApiResponse(response);
+};

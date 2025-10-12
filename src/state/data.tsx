@@ -5,14 +5,19 @@ import { useWallet } from "./wallet";
 import { useUI } from "./ui";
 import { Achievement, Challenge, Education } from "@/lib/types";
 import { ViewFanClubCard } from "@/lib/types/view";
-import { getChallenges, postNewChallenge } from "@/lib/api/challenges";
-import { getEducation } from "@/lib/api/education";
-import { getFanClubs } from "@/lib/api/fanClubs";
+import { getChallenges, completeChallenge } from "@/lib/api/challenges";
+import {
+  getEducation,
+  getUserEducations,
+  completeEducation,
+} from "@/lib/api/education";
+import { getFanClubs, joinFanClub } from "@/lib/api/fanClubs";
 import { getAchievements } from "@/lib/api/achievements";
 
 type DataCtx = {
   challenges: Challenge[];
   education: Education[];
+  userEducations: Education[];
   achievements: Achievement[];
   fanClubs: ViewFanClubCard[];
   refreshChallenges: () => void;
@@ -20,6 +25,11 @@ type DataCtx = {
     challengeId: number,
     payload: { amount?: number; proof?: unknown }
   ) => Promise<void>;
+  completeEducation: (
+    eduId: string,
+    payload: { progress: number; proof?: unknown }
+  ) => Promise<void>;
+  joinFanClub: (clubId: string) => Promise<void>;
 };
 
 const DataContext = createContext<DataCtx | null>(null);
@@ -40,10 +50,21 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     enabled: !!address,
   });
 
-  // Education
+  // Education - General
   const qEducation = useQuery({
     queryKey: ["education"],
     queryFn: getEducation,
+  });
+
+  // User specific educations
+  const qUserEducations = useQuery({
+    queryKey: ["userEducations", address],
+    queryFn: ({ queryKey }) => {
+      const walletAddress = (queryKey as [string, string | undefined])[1];
+      if (!walletAddress) return Promise.resolve([] as Education[]);
+      return getUserEducations(walletAddress);
+    },
+    enabled: !!address,
   });
 
   // Fan Clubs
@@ -52,10 +73,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   // Achievements
   const qAchievements = useQuery<Achievement[]>({
     queryKey: ["achievements", address],
-    queryFn: () =>
-      getAchievements(address as string).then(
-        (res) => res.data as Achievement[]
-      ),
+    queryFn: () => getAchievements(address as string),
     enabled: !!address,
   });
 
@@ -70,7 +88,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       amount?: number;
       proof?: unknown;
     }) =>
-      postNewChallenge(String(challengeId), {
+      completeChallenge(String(challengeId), {
         walletAddress: address as string,
         amount,
         proof,
@@ -80,8 +98,53 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     onSuccess: () => {
       notify("Challenge Completed! 🎉", "success");
       qc.invalidateQueries({ queryKey: ["challenges"] });
+      qc.invalidateQueries({ queryKey: ["achievements"] });
     },
     onError: (e: Error) => notify(e.message ?? "Submit failed", "error"),
+  });
+
+  // Complete Education Mutation
+  const mCompleteEducation = useMutation({
+    mutationKey: ["completeEducation"],
+    mutationFn: async ({
+      eduId,
+      progress,
+      proof,
+    }: {
+      eduId: string;
+      progress: number;
+      proof?: unknown;
+    }) =>
+      completeEducation(eduId, {
+        walletAddress: address as string,
+        progress,
+        proof,
+      }),
+    onMutate: () => showLoading("Completing education..."),
+    onSettled: () => hideLoading(),
+    onSuccess: () => {
+      notify("Education Completed! 📚", "success");
+      qc.invalidateQueries({ queryKey: ["education"] });
+      qc.invalidateQueries({ queryKey: ["userEducations"] });
+      qc.invalidateQueries({ queryKey: ["achievements"] });
+    },
+    onError: (e: Error) => notify(e.message ?? "Complete failed", "error"),
+  });
+
+  // Join Fan Club Mutation
+  const mJoinFanClub = useMutation({
+    mutationKey: ["joinFanClub"],
+    mutationFn: async ({ clubId }: { clubId: string }) =>
+      joinFanClub(clubId, {
+        walletAddress: address as string,
+      }),
+    onMutate: () => showLoading("Joining fan club..."),
+    onSettled: () => hideLoading(),
+    onSuccess: () => {
+      notify("Joined Fan Club! 🎊", "success");
+      qc.invalidateQueries({ queryKey: ["fanClubs"] });
+    },
+    onError: (e: Error) => notify(e.message ?? "Join failed", "error"),
   });
 
   // return (
@@ -102,6 +165,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     () => ({
       challenges: qChallenges.data ?? [],
       education: qEducation.data ?? [],
+      userEducations: qUserEducations.data ?? [],
       fanClubs: qFanClubs.data ?? [],
       achievements: qAchievements.data ?? [],
       refreshChallenges: () =>
@@ -109,14 +173,23 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       submitChallenge: async (challengeId, payload) => {
         await mSubmitChallenge.mutateAsync({ challengeId, ...payload });
       },
+      completeEducation: async (eduId, payload) => {
+        await mCompleteEducation.mutateAsync({ eduId, ...payload });
+      },
+      joinFanClub: async (clubId) => {
+        await mJoinFanClub.mutateAsync({ clubId });
+      },
     }),
     [
       qChallenges.data,
       qEducation.data,
+      qUserEducations.data,
       qFanClubs.data,
       qAchievements.data,
       qc,
       mSubmitChallenge,
+      mCompleteEducation,
+      mJoinFanClub,
     ]
   );
 
