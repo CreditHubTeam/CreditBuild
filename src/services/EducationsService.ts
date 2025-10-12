@@ -24,11 +24,22 @@ export const EducationsService = {
         const education = await educationRepo.findById(educationId);
         if (!education) throw new Error("Education not found");
 
-        //== tạo một userEducation mới với completedAt là ngày hiện tại
-        const completed = await userEducationRepo.create({
-            user: { connect: { id: user.id } },
-            education: { connect: { id: educationId } },
-            completedAt: new Date()
+        //== tạo hoặc update userEducation với completedAt là ngày hiện tại
+        const completed = await userEducationRepo.upsert({
+            where: {
+                userId_educationId: {
+                    userId: user.id,
+                    educationId: educationId
+                }
+            },
+            update: {
+                completedAt: new Date()
+            },
+            create: {
+                user: { connect: { id: user.id } },
+                education: { connect: { id: educationId } },
+                completedAt: new Date()
+            }
         })
         return {
             educationId: completed.educationId,

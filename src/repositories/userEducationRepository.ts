@@ -44,6 +44,15 @@ export class userEducationRepository {
     });
   }
 
+  // upsert user education
+  async upsert(params: {
+    where: Prisma.UserEducationWhereUniqueInput;
+    update: Prisma.UserEducationUpdateInput;
+    create: Prisma.UserEducationCreateInput;
+  }): Promise<UserEducation> {
+    return await prisma.userEducation.upsert(params);
+  }
+
   // xóa user education
   async delete(id: number): Promise<UserEducation> {
     return await prisma.userEducation.delete({

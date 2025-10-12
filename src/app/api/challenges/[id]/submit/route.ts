@@ -2,11 +2,23 @@ import { ChallengesService } from "@/services/ChallengesService";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-// Proof schema
-const ProofUrl = z.object({ type: z.literal("url"), value: z.string().url() });
-const ProofTx = z.object({ type: z.literal("tx"), value: z.string().regex(/^0x[a-fA-F0-9]{40}$/) });
-const ProofAnswer = z.object({ type: z.literal("answer"), value: z.string() });
-const ProofFile = z.object({ type: z.literal("file"), value: z.string() });
+// Proof schema - flexible to accept both string and number for value
+const ProofUrl = z.object({ 
+  type: z.literal("url"), 
+  value: z.union([z.string().url(), z.number().transform(String)]) 
+});
+const ProofTx = z.object({ 
+  type: z.literal("tx"), 
+  value: z.union([z.string().regex(/^0x[a-fA-F0-9]{64}$/), z.number().transform(String)]) 
+});
+const ProofAnswer = z.object({ 
+  type: z.literal("answer"), 
+  value: z.union([z.string(), z.number().transform(String)]) 
+});
+const ProofFile = z.object({ 
+  type: z.literal("file"), 
+  value: z.union([z.string(), z.number().transform(String)]) 
+});
 const Proof = z.union([ProofUrl, ProofTx, ProofAnswer, ProofFile]);
 
 const SubmitChallengeInput = z.object({
