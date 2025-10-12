@@ -2,16 +2,22 @@
 import Image from "next/image";
 import { useApp } from "@/context/AppContext";
 import { useUI } from "@/state/ui";
+import { useData } from "@/state/data";
 
 export default function FanClubsPage() {
-  const { fanClubs, handleNavigation } = useApp();
+  const { handleNavigation } = useApp();
+  const { fanClubs } = useData();
+
   const { open } = useUI();
 
   // === Handlers ===
 
-  const handleJoinClub = (club: typeof fanClubs[number], isVerified: boolean) => {
+  const handleJoinClub = (
+    club: (typeof fanClubs)[number],
+    isVerified: boolean
+  ) => {
     if (!isVerified) return;
-
+    // joinFanClub(club.id.toString());
     open("fanClubs", club);
   };
 

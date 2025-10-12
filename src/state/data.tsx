@@ -3,7 +3,7 @@ import React, { createContext, useContext, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useWallet } from "./wallet";
 import { useUI } from "./ui";
-import { Achievement, Challenge, Education } from "@/lib/types";
+import { Achievement, Challenge, Education, User } from "@/lib/types";
 import { ViewFanClubCard } from "@/lib/types/view";
 import { getChallenges, completeChallenge } from "@/lib/api/challenges";
 import {
@@ -13,10 +13,12 @@ import {
 } from "@/lib/api/education";
 import { getFanClubs, joinFanClub } from "@/lib/api/fanClubs";
 import { getAchievements } from "@/lib/api/achievements";
+import { getUser } from "@/lib/api/user";
 
 type DataCtx = {
+  currentUser: User;
   challenges: Challenge[];
-  education: Education[];
+  educations: Education[];
   userEducations: Education[];
   achievements: Achievement[];
   fanClubs: ViewFanClubCard[];
@@ -38,6 +40,26 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const qc = useQueryClient();
   const { address } = useWallet();
   const { showLoading, hideLoading, notify } = useUI();
+
+  // User
+  const qCurrentUser = useQuery({
+    queryKey: ["currentUser", address],
+    queryFn: ({ queryKey }) => {
+      const walletAddress = (queryKey as [string, string | undefined])[1];
+      if (!walletAddress) return Promise.resolve(null);
+      return getUser(walletAddress);
+    },
+    enabled: !!address,
+  });
+
+  // calculate percentage for progress bar user
+  const creditPercentage = useMemo(() => {
+    const score = qCurrentUser.data?.creditScore ?? 300;
+    const percent = ((score - 300) / 550) * 100;
+    return Math.max(5, Math.min(100, percent));
+  }, [qCurrentUser.data?.creditScore]);
+
+  // console.log("creditPercentage", creditPercentage);
 
   // Challenges
   const qChallenges = useQuery({
@@ -163,8 +185,10 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<DataCtx>(
     () => ({
+      creditPercentage,
+      currentUser: qCurrentUser.data as User,
       challenges: qChallenges.data ?? [],
-      education: qEducation.data ?? [],
+      educations: qEducation.data ?? [],
       userEducations: qUserEducations.data ?? [],
       fanClubs: qFanClubs.data ?? [],
       achievements: qAchievements.data ?? [],
@@ -181,6 +205,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       },
     }),
     [
+      creditPercentage,
+      qCurrentUser.data,
       qChallenges.data,
       qEducation.data,
       qUserEducations.data,
