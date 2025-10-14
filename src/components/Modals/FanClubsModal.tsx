@@ -25,7 +25,7 @@ export default function FanClubsModal({ club }: FanClubsModalProps) {
     //   amount: 100, // Default amount, can be extracted from activeClub.priceLabel
     //   proof: { type: "club_join", value: activeClub.id },
     // });
-    await joinFanClub(activeClub.id.toString());
+    await joinFanClub(activeClub.id);
 
     close();
   }

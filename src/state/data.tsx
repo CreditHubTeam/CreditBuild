@@ -32,7 +32,7 @@ type DataCtx = {
     eduId: string,
     payload: { progress: number; proof?: unknown }
   ) => Promise<void>;
-  joinFanClub: (clubId: string) => Promise<void>;
+  joinFanClub: (clubId: number) => Promise<void>;
 };
 
 const DataContext = createContext<DataCtx | null>(null);
@@ -236,10 +236,10 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   // Join Fan Club Mutation
   const mJoinFanClub = useMutation({
     mutationKey: ["joinFanClub"],
-    mutationFn: async ({ clubId }: { clubId: string }) =>
-      joinFanClub(clubId, {
+    mutationFn: async ({ clubId }: { clubId: number }) =>
+      joinFanClub(String(clubId), {
         walletAddress: address as string,
-        fanClubId: Number(clubId),
+        fanClubId: clubId,
       }),
     onMutate: () => showLoading("Joining fan club..."),
     onSettled: () => hideLoading(),
