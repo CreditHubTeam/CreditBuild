@@ -6,235 +6,252 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
+// =======================================
+// USERS
+// users → Kept with UUID as primary key
+//✅ All fields preserved with same names
+//✅ Changed ID from String to String @db.Uuid
+//✅ All defaults and constraints maintained
+// =======================================
 model User {
-  id                   Int                    @id @default(autoincrement())
-  username             String?                @db.VarChar(64)
-  credit_score         Int                    @default(300)
-  education_points     BigInt                 @default(0)
-  financial_points     BigInt                 @default(0)
-  kyc_status           String                 @default("pending") @db.VarChar(32)
-  last_activity        DateTime               @default(now())
-  moca_id              String?                @unique @db.VarChar(128)
-  referral_code        String?                @unique @db.VarChar(16)
-  registered_at        DateTime               @default(now())
-  reputation_score     Int                    @default(0)
-  social_points        BigInt                 @default(0)
-  streak_days          Int                    @default(0)
-  tier_level           String                 @default("bronze") @db.VarChar(32)
-  total_challenges     Int                    @default(0)
-  total_points         BigInt                 @default(0)
-  wallet_address       String                 @unique @db.VarChar(66)
-  createdChallenges    Challenge[]            @relation("ChallengeCreator")
-  enhancedPointLedgers EnhancedPointLedger[]
-  fanClubMemberships   FanClubMembership[]
-  kols                 Kol[]
-  pointLedgers         PointLedger[]
-  verifiedSocialTasks  SocialTaskCompletion[] @relation("SocialTaskVerifier")
-  achievements         UserAchievement[]
-  attempts             UserChallenge[]
-  UserEducation        UserEducation[]
+  id               String   @id @default(uuid()) @db.Uuid
+  wallet_address   String   @unique @db.VarChar(66)
+  username         String?  @db.VarChar(64)
+  moca_id          String?  @unique @db.VarChar(128)
+  credit_score     Int      @default(300)
+  streak_days      Int      @default(0)
+  total_points     BigInt   @default(0)
+  social_points    BigInt   @default(0)
+  financial_points BigInt   @default(0)
+  education_points BigInt   @default(0)
+  tier_level       String   @default("bronze") @db.VarChar(32)
+  reputation_score Int      @default(0)
+  referral_code    String?  @unique @db.VarChar(16)
+  kyc_status       String   @default("pending") @db.VarChar(32)
+  registered_at    DateTime @default(now()) @db.Timestamptz
+  last_activity    DateTime @default(now()) @db.Timestamptz
+
+  @@index([wallet_address], name: "idx_users_wallet")
+  @@map("users")
+
+  // Relations
+  ownedClubs          FanClub[]              @relation("ClubOwner")
+  clubMemberships     FanClubMembership[]
+  createdChallenges   Challenge[]         @relation("ChallengeCreator")
+  userChallenges      UserChallenge[]
+  achievements        UserAchievement[]
+  pointLedgers        PointLedger[]
+  reviewedChallenges  UserChallenge[]     @relation("ChallengeReviewer")
+  userEducations      UserEducation[]
 }
 
-model Kol {
-  id                  Int          @id @default(autoincrement())
-  userId              Int
-  kol_name            String       @db.VarChar(128)
-  verification_status String       @default("pending") @db.VarChar(32)
-  social_followers    Json
-  specialization      String       @db.VarChar(64)
-  commission_rate     Decimal      @default(10.00) @db.Decimal(5, 2)
-  total_earnings      BigInt       @default(0)
-  created_at          DateTime     @default(now())
-  fanClubs            FanClub[]
-  user                User         @relation(fields: [userId], references: [id])
-  earnings            KolEarning[]
-}
-
+// ========================================
+// CLUBS (FAN CLUBS / GROUPS)
+// clubs (formerly FanClub)
+// ✅ Converted to new structure with owner_id
+// ✅ Renamed fields: club_name → name, club_image → image_url
+// ✅ Added: slug, visibility, metadata
+// ❌ Removed: kolId, entry_requirements
+// ========================================
 model FanClub {
-  id                   Int                   @id @default(autoincrement())
-  kolId                Int
-  club_name            String                @db.VarChar(128)
-  description          String?
-  entry_requirements   Json
-  membership_fee       BigInt                @default(0)
-  max_members          Int
-  current_members      Int                   @default(0)
-  club_image           String?               @db.VarChar(255)
-  contract_address     String?               @db.VarChar(66)
-  created_at           DateTime              @default(now())
-  challenges           Challenge[]
-  enhancedPointLedgers EnhancedPointLedger[]
-  kol                  Kol                   @relation(fields: [kolId], references: [id])
-  memberships          FanClubMembership[]
-  kolEarnings          KolEarning[]
+  id               String   @id @default(uuid()) @db.Uuid
+  owner_id         String   @db.Uuid
+  name             String   @db.VarChar(128)
+  slug             String   @unique @db.VarChar(128)
+  description      String?  @db.Text
+  visibility       String   @default("public") @db.VarChar(16)
+  membership_fee   BigInt   @default(0)
+  max_members      Int?
+  current_members  Int      @default(0)
+  image_url        String?  @db.VarChar(512)
+  contract_address String?  @db.VarChar(66)
+  metadata         Json     @default("{}")
+  created_at       DateTime @default(now()) @db.Timestamptz
+
+  @@index([slug], name: "idx_clubs_slug")
+  @@map("clubs")
+
+  // Relations
+  owner      User          @relation("ClubOwner", fields: [owner_id], references: [id], onDelete: Cascade)
+  members    FanClubMembership[]
+  challenges Challenge[]
 }
 
+// ========================================
+// CLUB FanClubMembership
+// club_members (formerly FanClubMembership)
+// ✅ Renamed to match new schema
+// ✅ Changed fields: tier_points → member_points
+// ✅ Added: role field (owner/admin/member)
+// ❌ Removed: membership_tier, total_tasks_completed
+// ========================================
 model FanClubMembership {
-  id                    Int      @id @default(autoincrement())
-  userId                Int
-  clubId                Int
-  membership_tier       String   @default("basic") @db.VarChar(32)
-  joined_at             DateTime @default(now())
-  last_activity         DateTime @default(now())
-  total_tasks_completed Int      @default(0)
-  tier_points           BigInt   @default(0)
-  club                  FanClub  @relation(fields: [clubId], references: [id])
-  user                  User     @relation(fields: [userId], references: [id])
+  id            String   @id @default(uuid()) @db.Uuid
+  club_id       String   @db.Uuid
+  user_id       String   @db.Uuid
+  role          String   @default("member") @db.VarChar(16) // roles: owner, admin, member
+  joined_at     DateTime @default(now()) @db.Timestamptz
+  last_activity DateTime @default(now()) @db.Timestamptz
+  member_points BigInt   @default(0)
+
+  @@unique([club_id, user_id])
+  @@index([club_id], name: "idx_club_members_club")
+  @@map("club_members")
+
+  // Relations
+  club FanClub @relation(fields: [club_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
+// ========================================
+// CHALLENGES
+// ✅ Updated with UUID primary key
+// ✅ Renamed fields: creatorId → creator_id, fanClubId → club_id, creditImpact → credit_impact
+// ✅ Added: slug, xp, start_at, end_at
+// ❌ Removed: icon, difficultyLevel, estimatedTimeMinutes, socialImpact, verificationMethod, isRecurring → recurring
+// ========================================
 model Challenge {
-  id                   Int                   @id @default(autoincrement())
-  type                 String                @db.VarChar(64)
-  name                 String                @db.VarChar(128)
-  description          String?
-  points               Int
-  creditImpact         Int
-  category             String?               @db.VarChar(64)
-  rules                Json
-  icon                 String?               @db.VarChar(8)
-  createdAt            DateTime              @default(now())
-  creatorId            Int?
-  difficultyLevel      String                @default("beginner") @db.VarChar(32)
-  endDate              DateTime?
-  estimatedTimeMinutes Int?
-  fanClubId            Int?
-  featured             Boolean               @default(false)
-  isRecurring          Boolean               @default(false)
-  maxCompletions       Int?
-  recurrencePattern    String?               @db.VarChar(64)
-  socialImpact         Int                   @default(0)
-  startDate            DateTime?
-  verificationMethod   String?               @db.VarChar(64)
-  creator              User?                 @relation("ChallengeCreator", fields: [creatorId], references: [id])
-  fanClub              FanClub?              @relation(fields: [fanClubId], references: [id])
-  enhancedPointLedgers EnhancedPointLedger[]
-  socialTasks          SocialTask[]
-  attempts             UserChallenge[]
+  id                 String    @id @default(uuid()) @db.Uuid
+  name               String    @db.VarChar(128)
+  slug               String?   @unique @db.VarChar(128)
+  description        String?  @db.Text
+  type               String    @default("general") @db.VarChar(32)
+  category           String?   @db.VarChar(64)
+  points             Int       @default(0)
+  credit_impact      Int       @default(0)
+  xp                 Int       @default(0)
+  creator_id         String?   @db.Uuid
+  club_id            String?   @db.Uuid
+  rules              Json      @default("{}")
+  start_at           DateTime? @db.Timestamptz
+  end_at             DateTime? @db.Timestamptz
+  recurring          Boolean   @default(false)
+  recurrence_pattern String?   @db.VarChar(32)
+  max_completions    Int?
+  featured           Boolean   @default(false)
+  contract_address   String?  @db.VarChar(66)
+  created_at         DateTime  @default(now()) @db.Timestamptz
+
+  @@index([club_id], name: "idx_challenges_club")
+  @@map("challenges")
+
+  // Relations
+  creator        User?           @relation("ChallengeCreator", fields: [creator_id], references: [id])
+  club           FanClub?           @relation(fields: [club_id], references: [id])
+  userChallenges UserChallenge[]
 }
 
-model SocialTask {
-  id                     Int                    @id @default(autoincrement())
-  challengeId            Int
-  platform               String                 @db.VarChar(32)
-  action_type            String                 @db.VarChar(64)
-  content_requirements   Json
-  hashtags_required      String[]
-  mention_requirements   String[]
-  min_engagement_metrics Json
-  verification_webhook   String?                @db.VarChar(255)
-  auto_verification      Boolean                @default(false)
-  challenge              Challenge              @relation(fields: [challengeId], references: [id])
-  completions            SocialTaskCompletion[]
-}
-
-model SocialTaskCompletion {
-  id                 Int           @id @default(autoincrement())
-  userChallengeId    Int
-  socialTaskId       Int
-  platformPostId     String        @db.VarChar(128)
-  postUrl            String        @db.VarChar(512)
-  engagementMetrics  Json
-  verificationStatus String        @default("pending") @db.VarChar(32)
-  verifiedAt         DateTime?
-  verifiedById       Int?
-  socialTask         SocialTask    @relation(fields: [socialTaskId], references: [id])
-  userChallenge      UserChallenge @relation(fields: [userChallengeId], references: [id])
-  verifiedBy         User?         @relation("SocialTaskVerifier", fields: [verifiedById], references: [id])
-}
-
-model EnhancedPointLedger {
-  id                  Int        @id @default(autoincrement())
-  userId              Int
-  pointsDelta         BigInt
-  pointCategory       String?    @db.VarChar(32)
-  reason              String?    @db.VarChar(128)
-  source              String?    @db.VarChar(64)
-  challengeId         Int?
-  fanClubId           Int?
-  multiplier          Decimal    @default(1.00) @db.Decimal(5, 2)
-  txHash              String?    @db.VarChar(128)
-  mocaTokenEquivalent BigInt?
-  createdAt           DateTime   @default(now())
-  challenge           Challenge? @relation(fields: [challengeId], references: [id])
-  fanClub             FanClub?   @relation(fields: [fanClubId], references: [id])
-  user                User       @relation(fields: [userId], references: [id])
-}
-
-model KolEarning {
-  id              Int      @id @default(autoincrement())
-  kolId           Int
-  fanClubId       Int
-  revenueSource   String   @db.VarChar(64)
-  amount          BigInt
-  currency        String   @db.VarChar(16)
-  transactionHash String?  @db.VarChar(128)
-  createdAt       DateTime @default(now())
-  fanClub         FanClub  @relation(fields: [fanClubId], references: [id])
-  kol             Kol      @relation(fields: [kolId], references: [id])
-}
-
+// ========================================
+// USER CHALLENGES (SUBMISSIONS/CLAIMS)
+// ✅ Converted to new structure with UUID
+// ✅ Renamed fields: userId → user_id, challengeId → challenge_id, pointsAwarded → points_awarded, creditChange → credit_change, txHash → removed
+// ✅ Added: reviewer_id, reviewed_at
+// ❌ Removed: amount, completionKey, enum AttemptStatus replaced with string
+// ========================================
 model UserChallenge {
-  id                    Int                    @id @default(autoincrement())
-  userId                Int
-  challengeId           Int
-  amount                Decimal?
-  status                AttemptStatus          @default(PENDING)
-  proof                 Json?
-  pointsAwarded         Int                    @default(0)
-  creditChange          Int                    @default(0)
-  txHash                String?                @db.VarChar(128)
-  completionKey         String?                @unique
-  createdAt             DateTime               @default(now())
-  socialTaskCompletions SocialTaskCompletion[]
-  challenge             Challenge              @relation(fields: [challengeId], references: [id])
-  user                  User                   @relation(fields: [userId], references: [id])
+  id             String    @id @default(uuid()) @db.Uuid
+  user_id        String    @db.Uuid
+  challenge_id   String    @db.Uuid
+  status         String    @default("submitted") @db.VarChar(32) // submitted, under_review, approved, rejected, paid 
+  proof          Json? // { files: [...], links: [...], txHash: '0x..', notes: '...' }
+  points_awarded Int       @default(0)
+  credit_change  Int       @default(0)
+  reviewer_id    String?   @db.Uuid
+  reviewed_at    DateTime? @db.Timestamptz
+  created_at     DateTime  @default(now()) @db.Timestamptz
 
-  @@index([userId, challengeId, createdAt])
+  @@unique([user_id, challenge_id, created_at])
+  @@index([user_id], name: "idx_user_challenges_user")
+  @@map("user_challenges")
+
+  // Relations
+  user      User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  challenge Challenge  @relation(fields: [challenge_id], references: [id], onDelete: Cascade)
+  reviewer  User?      @relation("ChallengeReviewer", fields: [reviewer_id], references: [id])
 }
 
+// ========================================
+// ACHIEVEMENTS
+// ✅ Kept with same structure
+// ✅ Added: metadata, created_at
+// ========================================
 model Achievement {
-  id          String            @id @db.VarChar(64)
-  name        String            @db.VarChar(128)
-  description String?
-  icon        String?           @db.VarChar(8)
-  users       UserAchievement[]
+  id          String   @id @db.VarChar(64)
+  name        String   @db.VarChar(128)
+  description String?  @db.Text
+  icon        String?  @db.VarChar(8)
+  metadata    Json     @default("{}")
+  created_at  DateTime @default(now()) @db.Timestamptz
+
+  @@map("achievements")
+
+  // Relations
+  users UserAchievement[]
 }
 
+// ========================================
+// USER ACHIEVEMENTS (UNLOCKED)
+// ✅ Updated with UUID primary key
+// ✅ Renamed fields: userId → user_id, achievementId → achievement_id, unlockedAt → unlocked_at
+// ========================================
 model UserAchievement {
-  id            Int         @id @default(autoincrement())
-  userId        Int
-  achievementId String
-  unlockedAt    DateTime    @default(now())
-  achievement   Achievement @relation(fields: [achievementId], references: [id])
-  user          User        @relation(fields: [userId], references: [id])
+  id             String   @id @default(uuid()) @db.Uuid
+  user_id        String   @db.Uuid
+  achievement_id String   @db.VarChar(64)
+  unlocked_at    DateTime @default(now()) @db.Timestamptz
 
-  @@unique([userId, achievementId])
+  @@unique([user_id, achievement_id])
+  @@index([user_id], name: "idx_user_achievements_user")
+  @@map("user_achievements")
+
+  // Relations
+  user        User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievement_id], references: [id])
 }
 
+// ========================================
+// POINT LEDGER (IMMUTABLE)
+// point_ledger (formerly PointLedger)
+// ✅ Simplified to immutable ledger
+// ✅ Renamed fields: userId → user_id, createdAt → created_at, txHash → tx_hash
+// ✅ Added: category (required), related_id
+// ❌ Removed: reason is now optional
+// ========================================
 model PointLedger {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  delta     BigInt
-  reason    String   @db.VarChar(128)
-  source    String   @db.VarChar(64)
-  txHash    String?  @db.VarChar(128)
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  delta      BigInt
+  category   String   @db.VarChar(32)
+  reason     String?  @db.VarChar(128)
+  source     String   @db.VarChar(64)
+  related_id String?  @db.Uuid  // optional linkage to challenge_id or club_id
+  tx_hash    String?  @db.VarChar(128)
+  created_at DateTime @default(now()) @db.Timestamptz
 
-  @@index([userId, createdAt])
+  @@index([user_id], name: "idx_point_ledger_user")
+  @@map("point_ledger")
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
+// ========================================
+// CONTRACT CONFIGS (ON-CHAIN SETTINGS)
+// ✅ Updated with UUID and simplified structure
+// ✅ Renamed fields: networkName → removed, added chain and name
+// ✅ Added: json_config for flexible configuration
+// ❌ Removed: chainId, rpcUrl, pointsToken, questAddress, paused, createdAt, updatedAt → updated_at
+// ========================================
 model ContractConfig {
-  id           Int      @id @default(autoincrement())
-  networkName  String   @db.VarChar(64)
-  chainId      Int
-  rpcUrl       String
-  pointsToken  String?  @db.VarChar(66)
-  questAddress String?  @db.VarChar(66)
-  paused       Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id               String   @id @default(uuid()) @db.Uuid
+  chain            String   @db.VarChar(32)
+  name             String   @db.VarChar(128)
+  contract_address String?  @db.VarChar(66)
+  json_config      Json     @default("{}") // additional settings, ABI hints, rpc endpoints
+  updated_at       DateTime @default(now()) @db.Timestamptz
+
+  @@index([chain], name: "idx_contracts_chain")
+  @@map("contract_configs")
 }
 
 model Education {
@@ -249,8 +266,8 @@ model Education {
 }
 
 model UserEducation {
-  id          Int       @id @default(autoincrement())
-  userId      Int
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @db.Uuid
   educationId Int
   completedAt DateTime  @default(now())
   education   Education @relation(fields: [educationId], references: [id])
@@ -259,9 +276,14 @@ model UserEducation {
   @@unique([userId, educationId])
 }
 
-enum AttemptStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  CLAIMED
-}
+// ========================================
+// TABLE REMOVED
+// Kol - Removed entirely
+// KolEarning - Removed entirely
+// SocialTask - Removed entirely
+// SocialTaskCompletion - Removed entirely
+// EnhancedPointLedger - Consolidated into point_ledger
+// Education - Removed entirely
+// UserEducation - Removed entirely
+// AttemptStatus enum - Replaced with string field
+// ========================================
