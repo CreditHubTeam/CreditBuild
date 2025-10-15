@@ -1,7 +1,7 @@
 import { prisma } from "@/core/db";
 import { Prisma, UserEducation } from "@prisma/client";
 
-// Repository for UserEducation model
+// Repository for UserEducation model (id and userId are UUIDs)
 export class userEducationRepository {
   // ...implement methods here
 
@@ -10,21 +10,23 @@ export class userEducationRepository {
     return await prisma.userEducation.findMany();
   }
 
-  // xem chi tiết một user education
-  async getById(id: number): Promise<UserEducation | null> {
+  // xem chi tiết một user education (UUID now)
+  async getById(id: string): Promise<UserEducation | null> {
     return await prisma.userEducation.findUnique({
       where: { id },
     });
   }
-  // xem tất cả user education theo userId
-  async getByUserId(userId: number): Promise<UserEducation[]> {
+  
+  // xem tất cả user education theo userId (UUID now)
+  async getByUserId(userId: string): Promise<UserEducation[]> {
     return await prisma.userEducation.findMany({
       where: { userId: userId },
     });
   }
-  // xem tat ca user education theo userid va educationId
+  
+  // xem tat ca user education theo userid va educationId (userId is UUID, educationId is Int)
   async getByUserIdAndEducationId(
-    userId: number,
+    userId: string,
     educationId: number
   ): Promise<UserEducation[]> {
     return await prisma.userEducation.findMany({
@@ -39,9 +41,9 @@ export class userEducationRepository {
     });
   }
 
-  // cập nhật user education
+  // cập nhật user education (UUID now)
   async update(
-    id: number,
+    id: string,
     data: Prisma.UserEducationUpdateInput
   ): Promise<UserEducation> {
     return await prisma.userEducation.update({
@@ -59,8 +61,8 @@ export class userEducationRepository {
     return await prisma.userEducation.upsert(params);
   }
 
-  // xóa user education
-  async delete(id: number): Promise<UserEducation> {
+  // xóa user education (UUID now)
+  async delete(id: string): Promise<UserEducation> {
     return await prisma.userEducation.delete({
       where: { id },
     });

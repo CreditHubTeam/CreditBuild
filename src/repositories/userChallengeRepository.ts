@@ -1,7 +1,7 @@
 import { prisma } from "@/core/db";
 import { Prisma, UserChallenge } from "@prisma/client";
 
-// Repository for UserChallenge model
+// Repository for UserChallenge model (now with UUID)
 export class userChallengeRepository {
   // ...implement methods here
 
@@ -10,8 +10,8 @@ export class userChallengeRepository {
     return await prisma.userChallenge.findMany();
   }
 
-  // xem chi tiết một user challenge
-  async getById(id: number): Promise<UserChallenge | null> {
+  // xem chi tiết một user challenge (UUID now)
+  async getById(id: string): Promise<UserChallenge | null> {
     return await prisma.userChallenge.findUnique({
       where: { id },
     });
@@ -24,31 +24,49 @@ export class userChallengeRepository {
     });
   }
 
-  // cập nhật user challenge
-  async update(id: number, data: Prisma.UserChallengeUpdateInput): Promise<UserChallenge> {
+  // cập nhật user challenge (UUID now)
+  async update(id: string, data: Prisma.UserChallengeUpdateInput): Promise<UserChallenge> {
     return await prisma.userChallenge.update({
       where: { id },
       data,
     });
   }
 
-  // xóa user challenge
-  async delete(id: number): Promise<UserChallenge> {
+  // xóa user challenge (UUID now)
+  async delete(id: string): Promise<UserChallenge> {
     return await prisma.userChallenge.delete({
       where: { id },
     });
   }
 
-  // getUserChallengesByUserId
-  async getByUserId(userId: number): Promise<UserChallenge[]> {
+  // getUserChallengesByUserId (UUID now)
+  async getByUserId(userId: string): Promise<UserChallenge[]> {
     return await prisma.userChallenge.findMany({
-      where: { userId },
+      where: { user_id: userId },
     });
   }
-  // getByUserIdAndChallengeId
-  async getByUserIdAndChallengeId(userId: number, challengeId: number): Promise<UserChallenge | null> {
+  
+  // getByUserIdAndChallengeId (UUID now)
+  async getByUserIdAndChallengeId(userId: string, challengeId: string): Promise<UserChallenge | null> {
     return await prisma.userChallenge.findFirst({
-      where: { userId, challengeId },
+      where: { 
+        user_id: userId, 
+        challenge_id: challengeId 
+      },
+    });
+  }
+  
+  // getByChallengeId (UUID now)
+  async getByChallengeId(challengeId: string): Promise<UserChallenge[]> {
+    return await prisma.userChallenge.findMany({
+      where: { challenge_id: challengeId },
+    });
+  }
+  
+  // getByStatus - lọc theo status
+  async getByStatus(status: string): Promise<UserChallenge[]> {
+    return await prisma.userChallenge.findMany({
+      where: { status },
     });
   }
 }

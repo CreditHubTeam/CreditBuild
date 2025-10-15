@@ -1,16 +1,28 @@
 import { prisma } from "@/core/db";
 import { Challenge, Prisma } from "@prisma/client";
 
-// Repository for Challenge model
+// Repository for Challenge model (now with UUID)
 export class challengeRepository {
     // xem tất cả challenges
     async findAll(): Promise<Challenge[]> {
         return await prisma.challenge.findMany();
     }
-    // xem chi tiết một challenge
-    async findById(id: number): Promise<Challenge | null> {
+    // xem chi tiết một challenge (UUID now)
+    async findById(id: string): Promise<Challenge | null> {
         return await prisma.challenge.findUnique({
             where: { id },
+        });
+    }
+    // tìm challenge theo slug
+    async findBySlug(slug: string): Promise<Challenge | null> {
+        return await prisma.challenge.findUnique({
+            where: { slug },
+        });
+    }
+    // tìm challenges theo club_id (UUID now)
+    async findByClubId(clubId: string): Promise<Challenge[]> {
+        return await prisma.challenge.findMany({
+            where: { club_id: clubId },
         });
     }
     // tạo challenge
@@ -19,15 +31,15 @@ export class challengeRepository {
             data,
         });
     }
-    // cập nhật challenge
-    async update(id: number, data: Prisma.ChallengeUpdateInput): Promise<Challenge | null> {
+    // cập nhật challenge (UUID now)
+    async update(id: string, data: Prisma.ChallengeUpdateInput): Promise<Challenge | null> {
         return await prisma.challenge.update({
             where: { id },
             data,
         });
     }
-    // xóa challenge
-    async delete(id: number): Promise<Challenge | null> {
+    // xóa challenge (UUID now)
+    async delete(id: string): Promise<Challenge | null> {
         return await prisma.challenge.delete({
             where: { id },
         });

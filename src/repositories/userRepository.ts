@@ -10,8 +10,8 @@ export class userRepository {
     return await prisma.user.findMany();
   }
 
-  // xem chi tiết một user
-  async getById(id: number): Promise<User | null> {
+  // xem chi tiết một user (UUID now)
+  async getById(id: string): Promise<User | null> {
     return await prisma.user.findUnique({
       where: { id },
     });
@@ -31,16 +31,16 @@ export class userRepository {
     });
   }
 
-  // cập nhật user
-  async update(id: number, data: Prisma.UserUpdateInput): Promise<User> {
+  // cập nhật user (UUID now)
+  async update(id: string, data: Prisma.UserUpdateInput): Promise<User> {
     return await prisma.user.update({
       where: { id },
       data,
     });
   }
 
-  // xóa user
-  async delete(id: number): Promise<User> {
+  // xóa user (UUID now)
+  async delete(id: string): Promise<User> {
     return await prisma.user.delete({
       where: { id },
     });

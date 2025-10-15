@@ -283,7 +283,5 @@ model UserEducation {
 // SocialTask - Removed entirely
 // SocialTaskCompletion - Removed entirely
 // EnhancedPointLedger - Consolidated into point_ledger
-// Education - Removed entirely
-// UserEducation - Removed entirely
 // AttemptStatus enum - Replaced with string field
 // ========================================
