@@ -3,8 +3,8 @@ import { useApp } from "@/context/AppContext";
 import { useData } from "@/state/data";
 
 export default function AchievementsPreview() {
-  const { achievements, handleNavigation } = useApp();
-  // const { achievements } = useData();
+  const { handleNavigation } = useApp();
+  const { achievements } = useData();
   return (
     <div className="pixel-card p-5 mb-20">
       <div className="flex items-center justify-between mb-4">
@@ -17,7 +17,7 @@ export default function AchievementsPreview() {
         </button>
       </div>
       <div className="grid md:grid-cols-3 gap-3">
-        {achievements.slice(0, 3).map((a) => (
+        {achievements.filter((a) => a.unlocked).slice(0, 3).map((a) => (
           <div
             key={a.id}
             className="bg-mc-oak text-black border-3 border-black rounded-pixel p-4"

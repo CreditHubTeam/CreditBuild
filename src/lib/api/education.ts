@@ -1,17 +1,40 @@
-import { Education } from "../types";
-import { apiClient } from "./client";
+import { Education, ApiResponse } from "../types";
+import { apiClient, handleApiResponse } from "./client";
 
-type apiEducationType = {
+type CompleteEducationRequest = {
   walletAddress: string;
   progress: number;
   proof: unknown;
 };
 
-export const getEducation = async (): Promise<Education[]> =>
-  apiClient.get("/education");
+type CompleteEducationResponse = {
+  id: number;
+  walletAddress: string;
+  creditScore: number;
+  totalPoints: number;
+};
 
-export const postNewEducation = async (eduId: string, data: apiEducationType) =>
-  apiClient.post(`/education/${eduId}/complete`, data);
+export const getEducation = async (): Promise<Education[]> => {
+  const response: ApiResponse<Education[]> = await apiClient.get("/education");
+  return handleApiResponse(response);
+};
 
-export const getEducationBySlug = async (slug: string) =>
-  apiClient.get(`/education/${slug}`);
+export const completeEducation = async (
+  eduId: string,
+  data: CompleteEducationRequest
+): Promise<CompleteEducationResponse> => {
+  const response: ApiResponse<CompleteEducationResponse> = await apiClient.post(
+    `/education/${eduId}/complete`,
+    data
+  );
+  return handleApiResponse(response);
+};
+
+export const getUserEducations = async (
+  walletAddress: string
+): Promise<Education[]> => {
+  const response: ApiResponse<{ userEducations: Education[] }> =
+    await apiClient.get(`/users/${walletAddress}/educations?status=no_enrollment`);
+  const data = handleApiResponse(response);
+  return data.userEducations;
+};

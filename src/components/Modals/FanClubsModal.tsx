@@ -10,7 +10,8 @@ interface FanClubsModalProps {
 
 export default function FanClubsModal({ club }: FanClubsModalProps) {
   const { modal, selectedClub, close } = useUI();
-  const { submitChallenge } = useData();
+  // const { submitChallenge } = useData();
+  const { joinFanClub } = useData();
 
   // Use selectedClub from UI state or club prop
   const activeClub = selectedClub || club;
@@ -20,10 +21,12 @@ export default function FanClubsModal({ club }: FanClubsModalProps) {
   async function handleJoin() {
     if (!activeClub) return;
 
-    await submitChallenge(activeClub.id, {
-      amount: 100, // Default amount, can be extracted from activeClub.priceLabel
-      proof: { type: "club_join", value: activeClub.id },
-    });
+    // await submitChallenge(activeClub.id, {
+    //   amount: 100, // Default amount, can be extracted from activeClub.priceLabel
+    //   proof: { type: "club_join", value: activeClub.id },
+    // });
+    await joinFanClub(activeClub.id);
+
     close();
   }
 

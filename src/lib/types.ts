@@ -1,5 +1,19 @@
 import { ViewFanClubCard } from "./types/view";
 
+// API Response Types
+export type ApiResponse<T> =
+  | {
+      ok: true;
+      data: T;
+    }
+  | {
+      ok: false;
+      error: {
+        message: string;
+        code: string;
+      };
+    };
+
 export type Challenge = {
   id: number;
   type: string;

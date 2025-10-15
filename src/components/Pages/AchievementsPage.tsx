@@ -1,8 +1,11 @@
 "use client";
 import { useApp } from "@/context/AppContext";
+import { useData } from "@/state/data";
 
 export default function AchievementsPage() {
-  const { achievements, handleNavigation } = useApp();
+  const { handleNavigation } = useApp();
+
+  const { achievements } = useData();
   return (
     <section className="container mx-auto px-4 py-6 pb-20 sm:pb-24">
       <div className="flex items-center justify-between mb-4">

@@ -22,8 +22,7 @@ export default function ChallengeModal() {
           }
           try {
             await submitChallenge(1, {
-              amount: value,
-              proof: { type: "number", value },
+              amount: value
             });
             close();
           } catch (error) {

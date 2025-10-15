@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ApiResponse } from "../types";
 
 export const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE || "", // Base URL for the API
@@ -7,6 +8,15 @@ export const apiClient = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+// Helper function to handle API response
+export const handleApiResponse = <T>(response: ApiResponse<T>): T => {
+  if (response.ok) {
+    return response.data;
+  } else {
+    throw new Error(`${response.error.code}: ${response.error.message}`);
+  }
+};
 
 // Log errors globally
 apiClient.interceptors.response.use(
