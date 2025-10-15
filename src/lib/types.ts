@@ -23,8 +23,8 @@ export type Challenge = {
   points: number;
   creditImpact: number;
   isCompleted: boolean;
-  // icon?: string;
-  // estimatedTimeMinutes?: number;
+  icon?: string;
+  estimatedTimeMinutes?: number;
 };
 
 export type Achievement = {
@@ -60,14 +60,6 @@ export type WalletProvider = {
 };
 
 export type User = {
-  //  "walletAddress": "0xbEb7518cD8F8f096A23426AE3c8a9d778b4CBf00",
-  //       "creditScore": 480,
-  //       "streakDays": 5,
-  //       "totalPoints": 210,
-  //       "isRegistered": true,
-  //       "bestStreak": 5
-
-
   walletAddress: string;
   creditScore: number;
   totalChallenges: number;

@@ -1,21 +1,25 @@
 "use client";
-import { useApp } from "@/context/AppContext";
+import { useData } from "@/state/data";
+import { useUI } from "@/state/ui";
 
 export default function ChallengesGrid() {
-  const { challenges, openChallenge } = useApp();
+  // const { challenges } = useApp(); // Thay vì hiện tại dùng data mock, thì đây tôi dùng call api giống useData đúng không
+  const { challenges } = useData(); // This is call by react query
+  const { open } = useUI();
+
   return (
     <div className="pixel-card p-5 mb-5">
       <h2 className="text-xl mb-4">Daily Challenges</h2>
       <div className="grid md:grid-cols-2 gap-3">
         {challenges.map((c) => (
           <button
-            key={c.type}
-            onClick={() => openChallenge(c)}
+            key={c.id}
+            onClick={() => open("challenge")}
             className="text-left bg-mc-dirt border-3 border-mc-darkbrown rounded-pixel p-4 hover:-translate-y-0.5 transition"
           >
             <div className="flex items-center gap-3 mb-2">
               <div className="text-2xl bg-mc-gold px-3 py-2 border-2 border-mc-darkbrown rounded-pixel">
-                {c.icon}
+                {c.icon ?? "🎯"}
               </div>
               <div className="font-bold">{c.name}</div>
             </div>

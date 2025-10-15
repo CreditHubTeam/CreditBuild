@@ -1,7 +1,7 @@
 "use client";
 import ConnectionPanel from "@/components/Dashboard/ConnectionPanel";
 import CreditScore from "@/components/Dashboard/CreditScore";
-import ChallengesGrid from "@/features/dashboard/ChallengesGrid";
+import ChallengesGrid from "@/components/dashboard/ChallengesGrid";
 import AchievementsPreview from "@/components/Dashboard/AchievementsPreview";
 
 export default function DashboardPage() {

@@ -41,7 +41,7 @@ export default function EducationPage() {
           <div
             key={c.id}
             className="pixel-card p-4 border-mc-yellow"
-            onClick={() => handleSubmitEducation(c.id)}
+            onClick={() => handleSubmitEducation(c.id.toString())}
           >
             <h3 className="font-bold mb-2">{c.title}</h3>
             <p className="text-[11px] opacity-90 mb-2">{c.description}</p>
