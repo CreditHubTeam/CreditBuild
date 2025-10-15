@@ -3,22 +3,30 @@ import { apiClient, handleApiResponse } from "./client";
 
 type CompleteEducationRequest = {
   walletAddress: string;
-  progress: number;
-  proof: unknown;
+  // progress: number;
+  // proof: unknown;
 };
 
 type CompleteEducationResponse = {
-  id: number;
-  walletAddress: string;
-  creditScore: number;
+  educationId: number;
+  isCompleted: boolean;
+  pointsAwarded: number;
   totalPoints: number;
+  educationPoints: number;
+  achievementUnlocked: string;
 };
 
-export const getEducation = async (): Promise<Education[]> => {
-  const response: ApiResponse<Education[]> = await apiClient.get("/education");
+// User get education
+export const getUserEducations = async (
+  walletAddress: string
+): Promise<Education[]> => {
+  const response: ApiResponse<Education[]> = await apiClient.get(
+    `/users/${walletAddress}/educations?status=no_enrollment`
+  );
   return handleApiResponse(response);
 };
 
+// Complete education
 export const completeEducation = async (
   eduId: string,
   data: CompleteEducationRequest
@@ -30,11 +38,8 @@ export const completeEducation = async (
   return handleApiResponse(response);
 };
 
-export const getUserEducations = async (
-  walletAddress: string
-): Promise<Education[]> => {
-  const response: ApiResponse<{ userEducations: Education[] }> =
-    await apiClient.get(`/users/${walletAddress}/educations?status=no_enrollment`);
-  const data = handleApiResponse(response);
-  return data.userEducations;
+// Get all education: ADMIN only call
+export const getEducation = async (): Promise<Education[]> => {
+  const response: ApiResponse<Education[]> = await apiClient.get("/education");
+  return handleApiResponse(response);
 };

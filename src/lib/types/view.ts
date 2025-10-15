@@ -1,7 +1,7 @@
 import { Difficulty, TierLevel } from "./common";
 
 export interface ViewFanClubCard {
-  id: number;
+  id: string;
   kolName: string;
   kolVerified: boolean;
   kolSubtitle?: string; // specialization

@@ -4,24 +4,28 @@ import { ViewFanClubCard } from "../types/view";
 
 type JoinFanClubRequest = {
   walletAddress: string;
-  fanClubId: number;
+  fanClubId: string;
 };
 
 type JoinFanClubResponse = {
-  id: number;
-  walletAddress: string;
-  creditScore: number;
-  totalPoints: number;
+  fanClubId: string;
+  joinedAt: string;
+  kolName: string;
+  members: number;
+  isJoined: boolean;
 };
 
-export const getFanClubs = async (walletAddress: string): Promise<ViewFanClubCard[]> => {
-  const response: ApiResponse<{ allFanClubs: ViewFanClubCard[] }> =
+// Get fan clubs: ADMIN only call
+export const getFanClubs = async (
+  walletAddress: string
+): Promise<ViewFanClubCard[]> => {
+  const response: ApiResponse<ViewFanClubCard[]> =
     // await apiClient.get(`users/${walletAddress}/fan-clubs`);
     await apiClient.get(`/fan-clubs`);
-  const data = handleApiResponse(response);
-  return data.allFanClubs;
+  return handleApiResponse(response);
 };
 
+// Join fan club
 export const joinFanClub = async (
   clubId: string,
   body: JoinFanClubRequest

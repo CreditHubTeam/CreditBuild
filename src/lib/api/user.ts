@@ -4,16 +4,21 @@ import { apiClient, handleApiResponse } from "./client";
 type RegisterRequest = {
   walletAddress: string;
   signature?: string;
-  referralCode?: string;
 };
 
 type RegisterResponse = {
-  id: number;
   walletAddress: string;
   creditScore: number;
-  totalPoints: number;
+  streakDays: number;
+  totalPoints: string;
+  socialPoints: string;
+  financialPoints: string;
+  educationPoints: string;
+  bestStreak: number;
+  isRegistered: boolean;
 };
 
+// Register user
 export const postRegister = async (
   data: RegisterRequest
 ): Promise<RegisterResponse> => {
@@ -23,7 +28,7 @@ export const postRegister = async (
   );
   return handleApiResponse(response);
 };
-
+// Get profile user
 export const getUser = async (walletAddress: string): Promise<User> => {
   const response: ApiResponse<User> = await apiClient.get(
     `/users/${walletAddress}`

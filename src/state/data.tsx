@@ -46,6 +46,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     Set<string>
   >(new Set());
 
+  // ======== HANDLE QUERIES: GET ========
   // User
   const qCurrentUser = useQuery({
     queryKey: ["currentUser", address],
@@ -107,13 +108,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     enabled: !!address,
   });
 
+  // ======== HANDLE MUTATIONS: POST, PUT, PATCH ========
   // Auto Register Mutation
   const mAutoRegister = useMutation({
     mutationKey: ["autoRegister"],
     mutationFn: async (walletAddress: string) => {
       // Mark that we've attempted registration for this address
       setRegistrationAttempted((prev) => new Set(prev).add(walletAddress));
-      return postRegister({ walletAddress });
+      return postRegister({ walletAddress, signature: "test" });
     },
     onSuccess: (data, walletAddress) => {
       notify("Welcome! Account created successfully! 🎉", "success");
@@ -177,6 +179,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }
   }, [address, qCurrentUser.data, qCurrentUser.isLoading, hasWelcomed, notify]);
 
+  // challenge submit
   const mSubmitChallenge = useMutation({
     mutationKey: ["submitChallenge"],
     mutationFn: async ({
@@ -190,8 +193,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }) =>
       completeChallenge(String(challengeId), {
         walletAddress: address as string,
-        amount,
-        proof,
+        amount: (amount as number) || 0,
+        // proof,
       }),
     onMutate: () => showLoading("Submitting challenge..."),
     onSettled: () => hideLoading(),
@@ -204,7 +207,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     onError: (e: Error) => notify(e.message ?? "Submit failed", "error"),
   });
 
-  // Complete Education Mutation
+  // education submit
   const mCompleteEducation = useMutation({
     mutationKey: ["completeEducation"],
     mutationFn: async ({
@@ -213,13 +216,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       proof,
     }: {
       eduId: string;
-      progress: number;
+      progress?: number;
       proof?: unknown;
     }) =>
       completeEducation(eduId, {
         walletAddress: address as string,
-        progress,
-        proof,
+        // progress,
+        // proof,
       }),
     onMutate: () => showLoading("Completing education..."),
     onSettled: () => hideLoading(),
@@ -233,13 +236,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     onError: (e: Error) => notify(e.message ?? "Complete failed", "error"),
   });
 
-  // Join Fan Club Mutation
+  // Join Fan Club
   const mJoinFanClub = useMutation({
     mutationKey: ["joinFanClub"],
     mutationFn: async ({ clubId }: { clubId: number }) =>
       joinFanClub(String(clubId), {
         walletAddress: address as string,
-        fanClubId: clubId,
+        fanClubId: clubId.toString(),
       }),
     onMutate: () => showLoading("Joining fan club..."),
     onSettled: () => hideLoading(),
@@ -252,20 +255,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     },
     onError: (e: Error) => notify(e.message ?? "Join failed", "error"),
   });
-
-  // return (
-  //   <DataContext.Provider
-  //     value={{
-  //       challenges: qChallenges.data ?? [],
-  //       education: qEducation.data ?? [],
-  //       fanClubs: qFanClubs.data ?? [],
-  //       submitChallenge: (id: number, payload: any) =>
-  //         mSubmitChallenge.mutateAsync({ id, ...payload }),
-  //     }}
-  //   >
-  //     {children}
-  //   </DataContext.Provider>
-  // )
 
   const value = useMemo<DataCtx>(
     () => ({

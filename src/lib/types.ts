@@ -15,16 +15,16 @@ export type ApiResponse<T> =
     };
 
 export type Challenge = {
-  id: number;
+  id: string;
   type: string;
   category: string;
   name: string;
   description?: string;
   points: number;
   creditImpact: number;
-  icon?: string;
-  estimatedTimeMinutes?: number;
   isCompleted: boolean;
+  // icon?: string;
+  // estimatedTimeMinutes?: number;
 };
 
 export type Achievement = {
@@ -36,7 +36,7 @@ export type Achievement = {
 };
 
 export type Education = {
-  id: string;
+  id: number;
   title: string;
   description: string;
   duration: string;
@@ -60,6 +60,14 @@ export type WalletProvider = {
 };
 
 export type User = {
+  //  "walletAddress": "0xbEb7518cD8F8f096A23426AE3c8a9d778b4CBf00",
+  //       "creditScore": 480,
+  //       "streakDays": 5,
+  //       "totalPoints": 210,
+  //       "isRegistered": true,
+  //       "bestStreak": 5
+
+
   walletAddress: string;
   creditScore: number;
   totalChallenges: number;
