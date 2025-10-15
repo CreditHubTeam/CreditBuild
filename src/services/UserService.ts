@@ -3,7 +3,6 @@ import { challengeRepository } from "@/repositories/challengeRepository";
 import { educationRepository } from "@/repositories/educationRepository";
 import { fanClubMembershipRepository } from "@/repositories/fanClubMembershipRepository";
 import { fanClubRepository } from "@/repositories/fanClubRepository";
-import { kolRepository } from "@/repositories/kolRepository";
 import { userAchievementRepository } from "@/repositories/userAchievementRepository";
 import { userChallengeRepository } from "@/repositories/userChallengeRepository";
 import { userEducationRepository } from "@/repositories/userEducationRepository";
@@ -19,7 +18,6 @@ const userEducationRepo = new userEducationRepository();
 const educationRepo = new educationRepository();
 const achievementRepo = new achievementRepository();
 const fanClubMembershipRepo = new fanClubMembershipRepository();
-const kolRepo = new kolRepository();
 const fanClubRepo = new fanClubRepository();
 
 
@@ -56,7 +54,7 @@ const serializeUserProfile = (u: any) => {
     return {
         walletAddress: u.wallet_address ?? null,
         creditScore: u.credit_score ?? null,
-        totalChallenges: u.total_challenges ?? 0,
+        // totalChallenges: u.total_challenges ?? 0,
         streakDays: u.streak_days ?? 0,
         // Convert BigInt/string/other -> number
         totalPoints: toNumber(u.total_points),
@@ -66,7 +64,7 @@ const serializeUserProfile = (u: any) => {
 };
 
 interface Challenge {
-  id: number;
+  id: string;
   type: string;
   category: string;
   name: string;
@@ -88,9 +86,12 @@ export const UsersService = {
             return serializeUser(existingUser) ?? {
                 walletAddress,
                 creditScore: 300,
-                totalChallenges: 0,
+                // totalChallenges: 0,
                 streakDays: 0,
                 totalPoints: "0",
+                socialPoints: "0",
+                financialPoints: "0",
+                educationPoints: "0",
                 bestStreak: 0,
                 isRegistered: true,
             };
@@ -102,7 +103,7 @@ export const UsersService = {
             username: "",
             credit_score: 300,
             streak_days: 0,
-            total_challenges: 0,
+            // total_challenges: 0,
             total_points: BigInt(0),
             social_points: BigInt(0),
             financial_points: BigInt(0),
@@ -125,23 +126,25 @@ export const UsersService = {
         const user = await userRepo.getByWalletAddress(walletAddress);
         if (!user) throw new Error("User not found");
         const userId = user.id;
+        // console.log("walletAddress", walletAddress); //dung
+        console.log("username", user.username); //sai
         // Lấy userChallenges từ repository
         const userChallenges = await userChallengeRepo.getByUserId(userId);
         //duyệt qua các userChallenges
         for (const userChallenge of userChallenges) {
             //== duyệt thông tin của challenge
-            const challenge = await challengeRepo.findById(userChallenge.challengeId);
+            const challenge = await challengeRepo.findById(userChallenge.challenge_id);
             // console.log(challenge);
             result.push({
-                id: userChallenge.id,
+                id: challenge!.id,
                 type: challenge!.type,
                 category: challenge!.category!,
                 name: challenge!.name,
                 description: challenge!.description!,
                 points: challenge!.points,
-                creditImpact: challenge!.creditImpact,
-                icon: challenge!.icon!,
-                estimatedTimeMinutes: challenge!.estimatedTimeMinutes!,
+                creditImpact: challenge!.credit_impact,
+                // icon: challenge!.icon!,
+                // estimatedTimeMinutes: challenge!.estimated_time_minutes!,
                 isCompleted: userChallenge.status !== "PENDING",
             })
         }
@@ -170,7 +173,7 @@ export const UsersService = {
         let result = [];
         for (const ach of userAchievements) {
             // tìm thông tin của achievement theo ach.achievementId
-            const achievement = await achievementRepo.findById(ach.achievementId);
+            const achievement = await achievementRepo.findById(ach.achievement_id);
             result.push({
                 id: ach.id,
                 name: achievement!.name,
@@ -182,7 +185,7 @@ export const UsersService = {
         //== chèn thêm các achievement mà user chưa có, với unlocked là false
         const allAchievements = await achievementRepo.findAll();
         for (const achievement of allAchievements) {
-            const userAchievement = userAchievements.find(ua => ua.achievementId === achievement.id);
+            const userAchievement = userAchievements.find(ua => ua.achievement_id === achievement.id);
             if (!userAchievement) {
                 result.push({
                     id: achievement.id,
@@ -253,15 +256,15 @@ export const UsersService = {
         let result = [];
         for (const membership of memberships) {
             //tim thong tin cua club bang membership.fanClubId
-            const club = await fanClubRepo.findById(membership.clubId);
-            // tim kol cua club
-            const kol = await kolRepo.findById(club!.kolId);
+            const club = await fanClubRepo.findById(membership.club_id);
+            // tim user la owner cua club
+            const owner = await userRepo.getById(club!.owner_id);
             result.push({
                 id: club!.id,
-                kolName: kol?.kol_name || "Unknown",
-                kolVerified: kol?.verification_status !== "pending",
-                kolSubtitle: kol?.specialization || "",
-                title: club!.club_name,
+                kolName: owner?.username || "Unknown",
+                kolVerified: owner?.kyc_status !== "pending", //kyc la verified
+                // kolSubtitle: owner?.specialization || "",
+                title: club!.name,
                 description: club!.description,
                 members: club!.current_members || 0,
                 challenges: 2, // temporary placeholder
@@ -272,7 +275,7 @@ export const UsersService = {
                     youtube: "youtube.com/test",
                 },
                 priceLabel: (club!.membership_fee ?? 0) > 0 ? `${club!.membership_fee} MOCA` : "Free",
-                image: club!.club_image || "https://via.placeholder.com/300x150.png?text=Fan+Club",
+                image: club!.image_url || "https://via.placeholder.com/300x150.png?text=Fan+Club",
                 isJoined: true, //== vì đây là câu lạc bộ mà user đã tham gia
             });
         }

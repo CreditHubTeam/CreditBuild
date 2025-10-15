@@ -12,7 +12,7 @@ export async function GET(
     // Lấy danh sách thành tựu của người dùng từ service
     const achievements = await UsersService.getUserAchievements(address, top ? parseInt(top) : undefined);
 
-    return NextResponse.json({ ok: true, data: { achievements } });
+    return NextResponse.json({ ok: true, data: achievements });
 
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);

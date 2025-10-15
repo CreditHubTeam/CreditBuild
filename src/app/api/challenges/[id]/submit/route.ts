@@ -48,8 +48,9 @@ export async function POST(
         : parsed.proof
       : undefined;
 
+    // console.log("Submitting challenge", { id, ...parsed, proof });
     const result = await ChallengesService.submitChallenge(
-      parseInt(id, 10),
+      id,
       parsed.walletAddress as `0x${string}`,
       parsed.amount,
       proof

@@ -5,7 +5,7 @@ import { z } from "zod";
 const RegisterInput = z
   .object({
     walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
-    fanClubId: z.number(),
+    fanClubId: z.string(),
   })
   .meta({ id: "RegisterInput" });
 

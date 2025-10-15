@@ -21,7 +21,7 @@ export const ChallengesService = {
 // storeUserChallengeRecord(record): Lưu trữ bản ghi thử thách của người dùng.
 
 // [x] submitChallenge(challengeId, walletAddress, amount, proof): Gửi thử thách đã hoàn thành.
-    submitChallenge: async (challengeId: number, walletAddress: `0x${string}`, amount?: number, proof?: Proof) => {
+    submitChallenge: async (challengeId: string, walletAddress: `0x${string}`, amount?: number, proof?: Proof) => {
         // lấy user từ walletAddress
         const user = await userRepo.getByWalletAddress(walletAddress);
         if(!user){
@@ -32,22 +32,22 @@ export const ChallengesService = {
         if(!userChallenge){
             throw new Error("User challenge not found");
         }
-        // sửa trạng thái của userChallenge thành APPROVED
-        await userChallengeRepo.update(userChallenge.id, { status: "APPROVED" }); 
+        // sửa trạng thái của userChallenge thành SUBMITTED
+        await userChallengeRepo.update(userChallenge.id, { status: "SUBMITTED" });
         // trả về dữ liệu
 
         //update user credit_score và total_points
         await userRepo.update(user.id, {
-            credit_score: user.credit_score + (userChallenge.creditChange || 0),
-            total_points: Number(user.total_points) + (userChallenge.pointsAwarded || 0)
+            credit_score: user.credit_score + (userChallenge.credit_change || 0),
+            total_points: Number(user.total_points) + (userChallenge.points_awarded || 0)
         });
         return { 
             "challengeId": challengeId,
             "isCompleted": true,
-            "pointsAwarded": userChallenge.pointsAwarded || 0,
-            "creditChange": userChallenge.creditChange || 0,
-            "newCreditScore": user.credit_score + (userChallenge.creditChange || 0),
-            "totalPoints": Number(user.total_points) + (userChallenge.pointsAwarded || 0),
+            "pointsAwarded": userChallenge.points_awarded || 0,
+            "creditChange": userChallenge.credit_change || 0,
+            "newCreditScore": user.credit_score + (userChallenge.credit_change || 0),
+            "totalPoints": Number(user.total_points) + (userChallenge.points_awarded || 0),
             "achievementUnlocked": "" //== hiện tại chưa có achievement
         };
 

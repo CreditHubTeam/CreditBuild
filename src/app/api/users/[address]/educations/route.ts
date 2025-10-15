@@ -10,7 +10,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ address:
 
         const userEducations = await UsersService.getUserEducation(address, status);
 
-        return NextResponse.json({ ok: true, data: { userEducations } });
+        return NextResponse.json({ ok: true, data: userEducations  });
     } catch (error: unknown) {
         const msg =
             error instanceof Error ? error.message : String(error ?? "Unknown error");

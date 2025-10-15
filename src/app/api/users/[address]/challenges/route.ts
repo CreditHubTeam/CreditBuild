@@ -10,7 +10,7 @@ export async function GET(
     const { address } = await params;
     const userChallenges = await UsersService.getUserChallenges(address);
 
-    return NextResponse.json({ ok: true, data: { userChallenges } });
+    return NextResponse.json({ ok: true, data: userChallenges });
     
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);

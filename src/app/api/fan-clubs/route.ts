@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function GET(req: Request) {
     try{
         const allFanClubs = await FanClubsService.getAllFanClubs(); 
-        return NextResponse.json({ ok: true, data: {allFanClubs} });
+        return NextResponse.json({ ok: true, data: allFanClubs });
     }
     catch (error: unknown) {
         const msg =
