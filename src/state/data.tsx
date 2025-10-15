@@ -25,14 +25,14 @@ type DataCtx = {
   fanClubs: ViewFanClubCard[];
   refreshChallenges: () => void;
   submitChallenge: (
-    challengeId: number,
+    challengeId: string,
     payload: { amount?: number; proof?: unknown }
   ) => Promise<void>;
   completeEducation: (
     eduId: string,
     payload: { progress: number; proof?: unknown }
   ) => Promise<void>;
-  joinFanClub: (clubId: number) => Promise<void>;
+  joinFanClub: (clubId: string) => Promise<void>;
 };
 
 const DataContext = createContext<DataCtx | null>(null);
@@ -187,7 +187,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       amount,
       proof,
     }: {
-      challengeId: number;
+      challengeId: string;
       amount?: number;
       proof?: unknown;
     }) =>
@@ -239,10 +239,10 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   // Join Fan Club
   const mJoinFanClub = useMutation({
     mutationKey: ["joinFanClub"],
-    mutationFn: async ({ clubId }: { clubId: number }) =>
-      joinFanClub(String(clubId), {
+    mutationFn: async ({ clubId }: { clubId: string }) =>
+      joinFanClub(clubId, {
         walletAddress: address as string,
-        fanClubId: clubId.toString(),
+        fanClubId: clubId,
       }),
     onMutate: () => showLoading("Joining fan club..."),
     onSettled: () => hideLoading(),

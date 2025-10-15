@@ -5,10 +5,9 @@ import { useData } from "@/state/data";
 import Modal from "@/ui/Modal";
 
 export default function ChallengeModal() {
-  const { modal, close } = useUI();
+  const { modal, close, id } = useUI();
   const { submitChallenge } = useData();
   const [amount, setAmount] = useState<string>("");
-
   if (modal !== "challenge") return null;
 
   return (
@@ -21,11 +20,11 @@ export default function ChallengeModal() {
             return;
           }
           try {
-            await submitChallenge(1, {
-              amount: value
+            await submitChallenge(id as string, {
+              amount: value,
             });
             close();
-          } catch (error) {
+          } catch {
             // Error already handled in data context
           }
         }}

@@ -102,10 +102,10 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const chainId = realChainId;
   const networkOk = chainId === creditcoinTestnet.id && !isValidating;
 
-  console.log("=== FINAL STATE ===");
-  console.log("chainId:", chainId);
-  console.log("networkOk:", networkOk);
-  console.log("isValidating:", isValidating);
+  // console.log("=== FINAL STATE ===");
+  // console.log("chainId:", chainId);
+  // console.log("networkOk:", networkOk);
+  // console.log("isValidating:", isValidating);
 
   const { connectors, connectAsync } = useConnect();
   const { disconnect } = useDisconnect();
@@ -135,12 +135,12 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
       // ✅ Chỉ log nếu thực sự wrong network
       if (isConnected && isProtectedRoute && chainId !== null && !networkOk) {
-        console.log("=== NETWORK CHECK DEBUG ===");
-        console.log("chainId:", chainId);
-        console.log("creditcoinTestnet.id:", creditcoinTestnet.id);
-        console.log("networkOk:", networkOk);
-        console.log("isProtectedRoute:", isProtectedRoute);
-        console.log("pathname:", pathname);
+        // console.log("=== NETWORK CHECK DEBUG ===");
+        // console.log("chainId:", chainId);
+        // console.log("creditcoinTestnet.id:", creditcoinTestnet.id);
+        // console.log("networkOk:", networkOk);
+        // console.log("isProtectedRoute:", isProtectedRoute);
+        // console.log("pathname:", pathname);
 
         console.log("⚠️ Wrong network detected on protected route");
         notify("Please switch to Creditcoin Testnet to continue!", "warning");
@@ -162,11 +162,11 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       ];
       const isProtectedRoute = protectedRoutes.includes(pathname);
 
-      console.log("=== POST-CONNECTION CHECK ===");
-      console.log("isConnected:", isConnected);
-      console.log("chainId:", chainId);
-      console.log("networkOk:", networkOk);
-      console.log("pathname:", pathname);
+      // console.log("=== POST-CONNECTION CHECK ===");
+      // console.log("isConnected:", isConnected);
+      // console.log("chainId:", chainId);
+      // console.log("networkOk:", networkOk);
+      // console.log("pathname:", pathname);
 
       // ✅ Nếu đăng nhập thành công nhưng sai network
       if (isConnected && !networkOk && pathname === "/") {

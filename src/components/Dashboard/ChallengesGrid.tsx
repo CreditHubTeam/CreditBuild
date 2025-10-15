@@ -14,7 +14,7 @@ export default function ChallengesGrid() {
         {challenges.map((c) => (
           <button
             key={c.id}
-            onClick={() => open("challenge")}
+            onClick={() => open("challenge", c.id)}
             className="text-left bg-mc-dirt border-3 border-mc-darkbrown rounded-pixel p-4 hover:-translate-y-0.5 transition"
           >
             <div className="flex items-center gap-3 mb-2">

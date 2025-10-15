@@ -16,11 +16,11 @@ export default function Header() {
 
   const [renderKey, setRenderKey] = useState(0);
 
-  console.log("=== HEADER STATE ===");
-  console.log("chainId:", chainId);
-  console.log("networkOk:", networkOk);
-  console.log("isConnected:", isConnected);
-  console.log("renderKey:", renderKey);
+  // console.log("=== HEADER STATE ===");
+  // console.log("chainId:", chainId);
+  // console.log("networkOk:", networkOk);
+  // console.log("isConnected:", isConnected);
+  // console.log("renderKey:", renderKey);
 
   useEffect(() => {
     console.log("🔄 Header: State changed, forcing re-render");
@@ -49,10 +49,10 @@ export default function Header() {
   const isReallyOnCreditcoin = chainId === 102031;
   const displayNetworkOk = networkOk && isReallyOnCreditcoin;
 
-  console.log("=== HEADER DISPLAY LOGIC ===");
-  console.log("chainId === 102031:", chainId === 102031);
-  console.log("networkOk from wallet:", networkOk);
-  console.log("displayNetworkOk (final):", displayNetworkOk);
+  // console.log("=== HEADER DISPLAY LOGIC ===");
+  // console.log("chainId === 102031:", chainId === 102031);
+  // console.log("networkOk from wallet:", networkOk);
+  // console.log("displayNetworkOk (final):", displayNetworkOk);
 
   return (
     <header

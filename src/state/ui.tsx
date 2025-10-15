@@ -14,12 +14,16 @@ type NoticeType = "success" | "error" | "warning" | "info";
 type UIState = {
   modal: ModalId;
   selectedClub: ViewFanClubCard | null; // Club data for FanClubsModal
+  id: string | number | null; // Generic ID for other modals if needed
   loading: { visible: boolean; message: string };
   notice: { visible: boolean; message: string; type: NoticeType };
 };
 
 type UIContextType = UIState & {
-  open: (m: Exclude<ModalId, null>, data?: ViewFanClubCard) => void;
+  open: (
+    m: Exclude<ModalId, null>,
+    data?: ViewFanClubCard | string | number
+  ) => void;
   close: () => void;
   showLoading: (msg?: string) => void;
   hideLoading: () => void;
@@ -34,6 +38,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   const [selectedClub, setSelectedClub] = useState<ViewFanClubCard | null>(
     null
   );
+  const [id, setId] = useState<string | number | null>(null);
   const [loading, setLoading] = useState({
     visible: false,
     message: "Processing...",
@@ -45,15 +50,17 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   });
 
   const open = useCallback(
-    (m: Exclude<ModalId, null>, data?: ViewFanClubCard) => {
+    (m: Exclude<ModalId, null>, data?: ViewFanClubCard | string | number) => {
       setModal(m);
-      if (data) setSelectedClub(data);
+      setId(data as string | number | null);
+      setSelectedClub(data as ViewFanClubCard | null);
     },
     []
   );
   const close = useCallback(() => {
     setModal(null);
     setSelectedClub(null);
+    setId(null);
   }, []);
   const showLoading = useCallback(
     (msg?: string) =>
@@ -79,6 +86,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
       value={{
         modal,
         selectedClub,
+        id,
         loading,
         notice,
         open,

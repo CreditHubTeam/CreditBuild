@@ -5,7 +5,6 @@ import { useData } from "@/state/data";
 export default function EducationPage() {
   const { handleNavigation } = useApp();
   const { userEducations, completeEducation } = useData();
-  console.log(userEducations);
   // Tách 2 nhóm
   const incomplete = userEducations.filter((e) => !e.isCompleted);
   const completed = userEducations.filter((e) => e.isCompleted);

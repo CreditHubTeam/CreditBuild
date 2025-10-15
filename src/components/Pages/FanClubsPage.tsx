@@ -8,16 +8,14 @@ export default function FanClubsPage() {
   const { fanClubs } = useData();
 
   const joinedClubs = fanClubs.filter((c) => !c.isJoined);
-  console.log("joinedClubs", joinedClubs);
   const { open } = useUI();
 
   // === Handlers ===
-
   const handleJoinClub = (
     club: (typeof fanClubs)[number],
     isVerified: boolean
   ) => {
-    if (!isVerified) return;
+    // if (!isVerified) return;
     // joinFanClub(club.id.toString());
     open("fanClubs", club);
   };
