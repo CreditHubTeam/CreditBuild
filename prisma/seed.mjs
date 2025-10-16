@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+const prisma = new PrismaClient(); 
 
 async function main() {
   console.log("🌱 Starting database seeding (updated to match schema.prisma)...");
@@ -36,10 +36,11 @@ async function main() {
       financial_points: BigInt(0),
       education_points: BigInt(0),
       tier_level: "silver",
+      kyc_status: "verified"
     },
   });
 
-  await prisma.user.upsert({
+  const bob = await prisma.user.upsert({
     where: { wallet_address: "0x2222222222222222222222222222222222222222" },
     update: {},
     create: {
@@ -52,6 +53,7 @@ async function main() {
       financial_points: BigInt(0),
       education_points: BigInt(0),
       tier_level: "bronze",
+      kyc_status: "pending"
     },
   });
 
@@ -83,6 +85,7 @@ async function main() {
   const challenges = [
     { type: "daily", category: "onboarding", name: "Daily Check-in", description: "Login every day", points: 10, credit_impact: 1, xp: 0, rules: {} },
     { type: "education", category: "education", name: "Complete Financial Course", description: "Finish a course", points: 100, credit_impact: 5, xp: 10, rules: {} },
+
   ];
   for (const c of challenges) {
     const found = await prisma.challenge.findFirst({ where: { name: c.name } });
@@ -107,6 +110,59 @@ async function main() {
         current_members: 0,
         metadata: {},
       },
+      data: {
+        owner_id: bob.id,
+        name: "Tech Innovators Club",
+        slug: "tech-innovators",
+        description: "A community for tech enthusiasts",
+        visibility: "public",
+        membership_fee: BigInt(0),
+        max_members: 300,
+        current_members: 0,
+        metadata: {},
+      }
+        });
+
+        await prisma.fanClub.create({
+      data: {
+        owner_id: alice.id,
+        name: "Fitness Fanatics",
+        slug: "fitness-fanatics",
+        description: "A club for fitness lovers",
+        visibility: "public",
+        membership_fee: BigInt(0),
+        max_members: 200,
+        current_members: 0,
+        metadata: {},
+      }
+        });
+
+        await prisma.fanClub.create({
+      data: {
+        owner_id: bob.id,
+        name: "Bookworms Society",
+        slug: "bookworms-society",
+        description: "A community for book lovers",
+        visibility: "public",
+        membership_fee: BigInt(0),
+        max_members: 150,
+        current_members: 0,
+        metadata: {},
+      }
+        });
+
+        await prisma.fanClub.create({
+      data: {
+        owner_id: alice.id,
+        name: "Travel Enthusiasts",
+        slug: "travel-enthusiasts",
+        description: "A club for travel lovers",
+        visibility: "public",
+        membership_fee: BigInt(0),
+        max_members: 250,
+        current_members: 0,
+        metadata: {},
+      }
     });
 
     // create a membership for alice

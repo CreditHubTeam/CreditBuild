@@ -23,7 +23,7 @@ export const FanClubsService = {
             result.push({
                 id: club.id,
                 kolName: kols?.username || "Unknown",
-                kolVerified: true, //== tạm thời để true, sau này có thể thêm trường verified vào bảng User
+                kolVerified: kols?.kyc_status == "pending" ? false : true,
                 // kolSubtitle: kols?.specialization || "",
                 title: club.name,
                 description: club.description,
