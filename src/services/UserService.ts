@@ -8,7 +8,6 @@ import { userChallengeRepository } from "@/repositories/userChallengeRepository"
 import { userEducationRepository } from "@/repositories/userEducationRepository";
 import { userRepository } from "@/repositories/userRepository";
 import { randomUUID } from "crypto";
-4
 
 const userRepo = new userRepository();
 const userChallengeRepo = new userChallengeRepository();
@@ -246,7 +245,7 @@ export const UsersService = {
         return allEducations;
     },
 
-// [] getUserFanClubs(walletAddress): Lấy danh sách câu lạc bộ người hâm mộ của người dùng.
+// [x] getUserFanClubs(walletAddress): Lấy danh sách câu lạc bộ người hâm mộ của người dùng.
     getUserFanClubs: async (walletAddress: string) => {
         const user = await userRepo.getByWalletAddress(walletAddress);
         if (!user) throw new Error("User not found");

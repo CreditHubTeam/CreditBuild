@@ -1,3 +1,4 @@
+import { challengeRepository } from "@/repositories/challengeRepository";
 import { userChallengeRepository } from "@/repositories/userChallengeRepository";
 import { userRepository } from "@/repositories/userRepository";
 
@@ -10,6 +11,7 @@ type Proof =
 
 const userRepo = new userRepository();
 const userChallengeRepo = new userChallengeRepository();
+const challengeRepo = new challengeRepository();
 
 export const ChallengesService = {
     
@@ -28,10 +30,23 @@ export const ChallengesService = {
             throw new Error("User not found");
         }
         // lấy userChallenge từ userId và challengeId
-        const userChallenge = await userChallengeRepo.getByUserIdAndChallengeId(user.id, challengeId);
+        let userChallenge = await userChallengeRepo.getByUserIdAndChallengeId(user.id, challengeId);
         // console.log("Found userChallenge:", userChallenge);
         if(!userChallenge){
-            throw new Error("User challenge not found");
+            //tim challenge
+            const challenge = await challengeRepo.findById(challengeId);
+            if(!challenge){
+                throw new Error("Challenge not found");
+            }
+            //tao moi userChallenge neu chua co
+            userChallenge = await userChallengeRepo.create({
+                user: { connect: { id: user.id } }, // Liên kết với bảng users
+                challenge: { connect: { id: challengeId } }, // Liên kết với bảng challenges
+                status: "SUBMITTED",
+                points_awarded: challenge.points,
+                credit_change: challenge.credit_impact,
+                proof: proof ? JSON.stringify(proof) : undefined,
+            });
         }
         // sửa trạng thái của userChallenge thành SUBMITTED
         await userChallengeRepo.update(userChallenge.id, { status: "SUBMITTED" });
