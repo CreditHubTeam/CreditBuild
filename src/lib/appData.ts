@@ -12,7 +12,7 @@ export const appData: AppData = {
   },
   fanClubs: [
     {
-      id: 1,
+      id: "1",
       kolName: "Crypto Titan",
       kolVerified: true,
       kolSubtitle: "DeFi Trading",
@@ -32,7 +32,7 @@ export const appData: AppData = {
       isJoined: true,
     },
     {
-      id: 2,
+      id: "2",
       kolName: "NFT Sensei",
       kolVerified: false,
       kolSubtitle: "NFT Collecting",
@@ -52,7 +52,7 @@ export const appData: AppData = {
       isJoined: false,
     },
     {
-      id: 3,
+      id: "3",
       kolName: "Yield Farmer X",
       kolVerified: true,
       kolSubtitle: "Liquidity Mining",
@@ -74,7 +74,7 @@ export const appData: AppData = {
   ],
   challenges: [
     {
-      id: 1,
+      id: "1",
       type: "daily_save",
       name: "Daily Saver",
       description: "Save at least $5 today",
@@ -86,7 +86,7 @@ export const appData: AppData = {
       isCompleted: false,
     },
     {
-      id: 2,
+      id: "2",
       type: "bill_early",
       name: "Early Bird",
       description: "Pay a bill 3+ days early",
@@ -97,7 +97,7 @@ export const appData: AppData = {
       isCompleted: false,
     },
     {
-      id: 3,
+      id: "3",
       type: "budget_check",
       name: "Budget Tracker",
       description: "Review and update your budget",
@@ -108,7 +108,7 @@ export const appData: AppData = {
       isCompleted: true,
     },
     {
-      id: 4,
+      id: "4",
       type: "weekly_goal",
       name: "Weekly Saver",
       description: "Save $50+ this week",
@@ -204,7 +204,7 @@ export const appData: AppData = {
   contractAddress: "0x1234567890123456789012345678901234567890",
   educationalContent: [
     {
-      id: "credit_basics",
+      id: 1,
       title: "Credit Score Basics",
       description: "Learn what affects your credit score",
       duration: "5 min",
@@ -212,7 +212,7 @@ export const appData: AppData = {
       isCompleted: false,
     },
     {
-      id: "budgeting_101",
+      id: 2,
       title: "Budgeting 101",
       description: "Create your first budget",
       duration: "10 min",
@@ -220,7 +220,7 @@ export const appData: AppData = {
       isCompleted: true,
     },
     {
-      id: "debt_management",
+      id: 3,
       title: "Debt Management",
       description: "Strategies to pay off debt faster",
       duration: "8 min",
@@ -228,7 +228,7 @@ export const appData: AppData = {
       isCompleted: false,
     },
     {
-      id: "investment_basics",
+      id: 4,
       title: "Investment Fundamentals",
       description: "Start building wealth with smart investments",
       duration: "12 min",
