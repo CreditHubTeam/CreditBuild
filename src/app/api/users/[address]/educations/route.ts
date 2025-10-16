@@ -5,10 +5,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ address:
     try {
         const { address } = await params;
 
-        const { searchParams } = new URL(req.url);
-        const status = searchParams.get("status") as "no_enrollment" | "in_progress" | "completed";
+        // const { searchParams } = new URL(req.url);
+        // // const status = searchParams.get("status") as "no_enrollment" | "in_progress" | "completed";
 
-        const userEducations = await UsersService.getUserEducation(address, status);
+        const userEducations = await UsersService.getUserEducation(address);
 
         return NextResponse.json({ ok: true, data: userEducations  });
     } catch (error: unknown) {

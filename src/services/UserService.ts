@@ -199,19 +199,27 @@ export const UsersService = {
         return result;
     },
 // [x] getUserEducation(walletAddress, status): Lấy danh sách các khóa học của người dùng theo trạng thái (chưa đăng ký, đang học, đã hoàn thành).
-    getUserEducation: async (walletAddress: string, status?: "no_enrollment" | "in_progress" | "completed") => {
+    getUserEducation: async (walletAddress: string) => {
         const user = await userRepo.getByWalletAddress(walletAddress);
         if (!user) throw new Error("User not found");
         const allEducations = await educationRepo.findAll();
         // lấy tất cả userEducations của user
         const userEducations = await userEducationRepo.getByUserId(user.id);
-        if(status == "no_enrollment"){
-            //lấy allEducations - userEducations
-            const enrolledEducationIds = userEducations.map(ue => ue.educationId);
-            const noEnrollmentEducations = allEducations.filter(e => !enrolledEducationIds.includes(e.id));
-            // eslint-disable-next-line prefer-const
-            let result = [];
-            for(const edu of noEnrollmentEducations){
+        // eslint-disable-next-line prefer-const
+        let result = [];
+        for(const edu of allEducations){
+            //nếu user co trong userEducation thi isCompleted la true, nguoc lai la false
+            if(await userEducationRepo.isExistByUserIdAndEducationId(user.id, edu.id)){
+                result.push({
+                    id: edu.id,
+                    title: edu.title,
+                    description: edu.description,
+                    duration: edu.duration!.toString() + " min",
+                    points: edu.points,
+                    isCompleted: true
+            });
+            }
+            else{
                 result.push({
                     id: edu.id,
                     title: edu.title,
@@ -221,41 +229,64 @@ export const UsersService = {
                     isCompleted: false
                 });
             }
-            return result;
+
         }
-        else if(status == "completed"){
-            // eslint-disable-next-line prefer-const
-            let result = [];
-            for(const userEdu of userEducations){
-                //tìm education theo userEdu.educationId
-                const education = await educationRepo.findById(userEdu.educationId);
-                if(education){
-                    result.push({
-                        id: education.id,
-                        title: education.title,
-                        description: education.description,
-                        duration: education.duration!.toString() + " min",
-                        points: education.points,
-                        isCompleted: true
-                    });
-                }
-            }
-            return result;
-        }
-        return allEducations;
+        return result;
+        
     },
 
 // [x] getUserFanClubs(walletAddress): Lấy danh sách câu lạc bộ người hâm mộ của người dùng.
+    // getUserFanClubs: async (walletAddress: string) => {
+    //     const user = await userRepo.getByWalletAddress(walletAddress);
+    //     if (!user) throw new Error("User not found");
+    //     const memberships = await fanClubMembershipRepo.findAllByUserId(user.id);
+    //     // for tu memberships de lay thong tin cua fan club
+    //     // eslint-disable-next-line prefer-const
+    //     let result = [];
+    //     for (const membership of memberships) {
+    //         //tim thong tin cua club bang membership.fanClubId
+    //         const club = await fanClubRepo.findById(membership.club_id);
+    //         // tim user la owner cua club
+    //         const owner = await userRepo.getById(club!.owner_id);
+    //         result.push({
+    //             id: club!.id,
+    //             kolName: owner?.username || "Unknown",
+    //             kolVerified: owner?.kyc_status !== "pending", //kyc la verified
+    //             // kolSubtitle: owner?.specialization || "",
+    //             title: club!.name,
+    //             description: club!.description,
+    //             members: club!.current_members || 0,
+    //             challenges: 2, // temporary placeholder
+    //             avgEarnings: 15, // temporary placeholder
+    //             socials: {
+    //                 twitter: "twitter.com/test",
+    //                 instagram: "instagram.com/test",
+    //                 youtube: "youtube.com/test",
+    //             },
+    //             priceLabel: (club!.membership_fee ?? 0) > 0 ? `${club!.membership_fee} MOCA` : "Free",
+    //             image: club!.image_url || "https://via.placeholder.com/300x150.png?text=Fan+Club",
+    //             isJoined: true, //== vì đây là câu lạc bộ mà user đã tham gia
+    //         });
+    //     }
+    //     return result;
+    // },
     getUserFanClubs: async (walletAddress: string) => {
         const user = await userRepo.getByWalletAddress(walletAddress);
         if (!user) throw new Error("User not found");
+        //getAllFanClub
+        const allFanClubs = await fanClubRepo.findAll();
         const memberships = await fanClubMembershipRepo.findAllByUserId(user.id);
         // for tu memberships de lay thong tin cua fan club
         // eslint-disable-next-line prefer-const
         let result = [];
-        for (const membership of memberships) {
+        for (const fanclub of allFanClubs) {
+            let isJoined = false; //== mac dinh la chua join
+            //kiem tra xem user da join chua
+            for(const membership of memberships){
+                if(membership.club_id === fanclub.id){ isJoined = true; break; }
+            }
             //tim thong tin cua club bang membership.fanClubId
-            const club = await fanClubRepo.findById(membership.club_id);
+            const club = await fanClubRepo.findById(fanclub.id);
             // tim user la owner cua club
             const owner = await userRepo.getById(club!.owner_id);
             result.push({
@@ -275,7 +306,7 @@ export const UsersService = {
                 },
                 priceLabel: (club!.membership_fee ?? 0) > 0 ? `${club!.membership_fee} MOCA` : "Free",
                 image: club!.image_url || "https://via.placeholder.com/300x150.png?text=Fan+Club",
-                isJoined: true, //== vì đây là câu lạc bộ mà user đã tham gia
+                isJoined: isJoined, //== vì đây là câu lạc bộ mà user đã tham gia
             });
         }
         return result;

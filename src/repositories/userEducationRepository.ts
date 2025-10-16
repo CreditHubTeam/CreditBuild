@@ -67,4 +67,14 @@ export class userEducationRepository {
       where: { id },
     });
   }
+  // isExistByUserIdAndEducationId
+  async isExistByUserIdAndEducationId(userId: string, educationId: number): Promise<boolean> {
+    const userEducation = await prisma.userEducation.findFirst({
+      where: {
+        userId: userId,
+        educationId: educationId,
+      },
+    });
+    return userEducation !== null;
+  }
 }

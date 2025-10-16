@@ -29,17 +29,19 @@ export const ChallengesService = {
         if(!user){
             throw new Error("User not found");
         }
-        // lấy userChallenge từ userId và challengeId
-        let userChallenge = await userChallengeRepo.getByUserIdAndChallengeId(user.id, challengeId);
-        // console.log("Found userChallenge:", userChallenge);
-        if(!userChallenge){
-            //tim challenge
+        // // lấy userChallenge từ userId và challengeId
+        // let userChallenge = await userChallengeRepo.getByUserIdAndChallengeId(user.id, challengeId);
+        // // console.log("Found userChallenge:", userChallenge);
+        // if(!userChallenge){
+            
+        // }
+        //tim challenge
             const challenge = await challengeRepo.findById(challengeId);
             if(!challenge){
                 throw new Error("Challenge not found");
             }
             //tao moi userChallenge neu chua co
-            userChallenge = await userChallengeRepo.create({
+            const userChallenge = await userChallengeRepo.create({
                 user: { connect: { id: user.id } }, // Liên kết với bảng users
                 challenge: { connect: { id: challengeId } }, // Liên kết với bảng challenges
                 status: "SUBMITTED",
@@ -47,11 +49,11 @@ export const ChallengesService = {
                 credit_change: challenge.credit_impact,
                 proof: proof ? JSON.stringify(proof) : undefined,
             });
-        }
-        // sửa trạng thái của userChallenge thành SUBMITTED
-        await userChallengeRepo.update(userChallenge.id, { status: "SUBMITTED" });
+        // // sửa trạng thái của userChallenge thành SUBMITTED
+        // await userChallengeRepo.update(userChallenge.id, { status: "SUBMITTED" });
         // trả về dữ liệu
-
+        // console.log("points_awarded:", userChallenge.points_awarded);
+        // console.log("credit_change:", userChallenge.credit_change);
         //update user credit_score và total_points
         await userRepo.update(user.id, {
             credit_score: user.credit_score + (userChallenge.credit_change || 0),
