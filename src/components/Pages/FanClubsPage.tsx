@@ -5,14 +5,14 @@ import { useData } from "@/state/data";
 
 export default function FanClubsPage() {
   const { handleNavigation } = useApp();
-  const { fanClubs } = useData();
+  const { userFanClubs } = useData();
 
-  const joinedClubs = fanClubs.filter((c) => !c.isJoined);
+  const joinedClubs = userFanClubs.filter((c) => !c.isJoined);
   const { open } = useUI();
 
   // === Handlers ===
   const handleJoinClub = (
-    club: (typeof fanClubs)[number],
+    club: (typeof userFanClubs)[number],
     isVerified: boolean
   ) => {
     if (!isVerified) return;
