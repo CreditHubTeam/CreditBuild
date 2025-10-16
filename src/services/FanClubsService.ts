@@ -23,7 +23,7 @@ export const FanClubsService = {
             result.push({
                 id: club.id,
                 kolName: kols?.username || "Unknown",
-                kolVerified: kols?.kyc_status !== "pending" ? true : false,
+                kolVerified: true, //== tạm thời để true, sau này có thể thêm trường verified vào bảng User
                 // kolSubtitle: kols?.specialization || "",
                 title: club.name,
                 description: club.description,
@@ -52,12 +52,15 @@ joinFanClub: async (walletAddress: string, clubId: string) => {
     //tìm club theo clubId
     const club = await fanClubRepo.findById(clubId);
     if (!club) throw new Error("Fan Club not found");
-    //tim kol cua club
-    const kol = await userRepo.getById(club.owner_id);
-    if (!kol) throw new Error("KOL not found");
+    //tim owner cua club
+    const owner = await userRepo.getById(club.owner_id);
+    if (!owner) throw new Error("Owner not found");
 
     //==kiểm tra user đã tham gia club chưa
     //tạo fan club membership
+    const existingMembership = await fanClubMembershipRepo.isUserInClub(user.id, clubId);
+    if (existingMembership) throw new Error("User already joined this club");
+
     const result = await fanClubMembershipRepo.create({
         user: { connect: { id: user.id } },
         club: { connect: { id: clubId } },
@@ -66,7 +69,7 @@ joinFanClub: async (walletAddress: string, clubId: string) => {
     return {
         fanClubId: result.club_id,
         joinedAt: result.joined_at,
-        kolName: kol.username,
+        kolName: owner.username,
         members: club.current_members + 1, //== giả sử số thành viên tăng lên 1 ngay khi tham gia, sau này có thể cập nhật từ database
         isJoined: true //== luôn tham gia thành công
     }

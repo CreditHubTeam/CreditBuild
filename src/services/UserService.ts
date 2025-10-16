@@ -54,7 +54,7 @@ const serializeUserProfile = (u: any) => {
     return {
         walletAddress: u.wallet_address ?? null,
         creditScore: u.credit_score ?? null,
-        // totalChallenges: u.total_challenges ?? 0,
+        totalChallenges: u.total_challenges ?? 0,
         streakDays: u.streak_days ?? 0,
         // Convert BigInt/string/other -> number
         totalPoints: toNumber(u.total_points),
@@ -86,7 +86,7 @@ export const UsersService = {
             return serializeUser(existingUser) ?? {
                 walletAddress,
                 creditScore: 300,
-                // totalChallenges: 0,
+                totalChallenges: 0,
                 streakDays: 0,
                 totalPoints: "0",
                 socialPoints: "0",

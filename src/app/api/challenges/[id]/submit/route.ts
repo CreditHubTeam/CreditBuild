@@ -57,7 +57,22 @@ export async function POST(
     );
 
     return NextResponse.json({ ok: true, data: result });
-  } catch (err: unknown) {
+    } catch (err: unknown) {
+    if (
+      (err instanceof Error && /user challenge not found/i.test(err.message)) ||
+      (typeof err === "string" && /user challenge not found/i.test(err))
+    ) {
+      return NextResponse.json(
+      { ok: false, 
+        error: {
+          message: "User challenge not found",
+          code: "USER_CHALLENGE_NOT_FOUND"
+        }
+      },
+      { status: 404 }
+      );
+    }
+    console.error("Error in submitting challenge:", err);
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ ok: false, msg: message }, { status: 500 });
   }

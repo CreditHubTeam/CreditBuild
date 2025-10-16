@@ -29,6 +29,7 @@ export const ChallengesService = {
         }
         // lấy userChallenge từ userId và challengeId
         const userChallenge = await userChallengeRepo.getByUserIdAndChallengeId(user.id, challengeId);
+        // console.log("Found userChallenge:", userChallenge);
         if(!userChallenge){
             throw new Error("User challenge not found");
         }
