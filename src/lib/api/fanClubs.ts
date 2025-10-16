@@ -16,12 +16,19 @@ type JoinFanClubResponse = {
 };
 
 // Get fan clubs: ADMIN only call
-export const getFanClubs = async (
-  walletAddress: string
-): Promise<ViewFanClubCard[]> => {
+export const getFanClubs = async (): Promise<ViewFanClubCard[]> => {
   const response: ApiResponse<ViewFanClubCard[]> =
     // await apiClient.get(`users/${walletAddress}/fan-clubs`);
     await apiClient.get(`/fan-clubs`);
+  return handleApiResponse(response);
+};
+
+export const getUserFanClubs = async (
+  walletAddress: string
+): Promise<ViewFanClubCard[]> => {
+  const response: ApiResponse<ViewFanClubCard[]> = await apiClient.get(
+    `/users/${walletAddress}/fan-clubs`
+  );
   return handleApiResponse(response);
 };
 

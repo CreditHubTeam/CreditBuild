@@ -15,7 +15,7 @@ export default function FanClubsPage() {
     club: (typeof fanClubs)[number],
     isVerified: boolean
   ) => {
-    // if (!isVerified) return;
+    if (!isVerified) return;
     // joinFanClub(club.id.toString());
     open("fanClubs", club);
   };
@@ -46,9 +46,9 @@ export default function FanClubsPage() {
           return (
             <div
               key={club.id}
-              className={`relative bg-[#f6dca3] text-black border-[3px] border-black rounded-[6px] p-4 shadow-[4px_4px_0_0_#000] pixel-card transition-transform hover:scale-[1.02] ${
-                club.kolVerified ? "" : "opacity-60"
-              }`}
+              className={`relative bg-[#f6dca3] text-black border-[3px] border-black rounded-[6px] p-4 shadow-[4px_4px_0_0_#000] pixel-card transition-transform hover:scale-[1.02] 
+                ${club.kolVerified ? "" : "opacity-60"}
+                `}
             >
               {/* Kol header */}
               <div className="flex items-start gap-3 mb-3">

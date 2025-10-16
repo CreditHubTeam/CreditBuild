@@ -11,7 +11,7 @@ import {
   getUserEducations,
   completeEducation,
 } from "@/lib/api/education";
-import { getFanClubs, joinFanClub } from "@/lib/api/fanClubs";
+import { getFanClubs, getUserFanClubs, joinFanClub } from "@/lib/api/fanClubs";
 import { getAchievements } from "@/lib/api/achievements";
 import { getUser, postRegister } from "@/lib/api/user";
 
@@ -23,6 +23,7 @@ type DataCtx = {
   userEducations: Education[];
   achievements: Achievement[];
   fanClubs: ViewFanClubCard[];
+  userFanClubs: ViewFanClubCard[];
   refreshChallenges: () => void;
   submitChallenge: (
     challengeId: string,
@@ -98,7 +99,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   // Fan Clubs
   const qFanClubs = useQuery({
     queryKey: ["fanClubs"],
-    queryFn: () => getFanClubs(address as string),
+    queryFn: () => getFanClubs(),
+  });
+
+  // User fan clubs
+  const qUserFanClubs = useQuery({
+    queryKey: ["userFanClubs", address],
+    queryFn: () => getUserFanClubs(address as string),
   });
 
   // Achievements
@@ -204,7 +211,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       qc.invalidateQueries({ queryKey: ["achievements"] });
       qc.invalidateQueries({ queryKey: ["currentUser"] });
     },
-    onError: (e: Error) => notify(e.message ?? "Submit failed", "error"),
+    onError: (error: unknown) => {
+      if (error instanceof Error) {
+        notify(error.message, "error");
+      } else {
+        notify("Submit failed", "error");
+      }
+    },
   });
 
   // education submit
@@ -233,7 +246,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       qc.invalidateQueries({ queryKey: ["achievements"] });
       qc.invalidateQueries({ queryKey: ["currentUser"] });
     },
-    onError: (e: Error) => notify(e.message ?? "Complete failed", "error"),
+    onError: (error: unknown) => {
+      if (error instanceof Error) {
+        notify(error.message, "error");
+      } else {
+        notify("Complete failed", "error");
+      }
+    },
   });
 
   // Join Fan Club
@@ -253,7 +272,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       qc.invalidateQueries({ queryKey: ["achievements"] });
       qc.invalidateQueries({ queryKey: ["currentUser"] });
     },
-    onError: (e: Error) => notify(e.message ?? "Join failed", "error"),
+    onError: (error: unknown) => {
+      if (error instanceof Error) {
+        console.error("Join Fan Club Error:", error);
+        notify(error.message, "error");
+      } else {
+        notify("Join failed", "error");
+      }
+    },
   });
 
   const value = useMemo<DataCtx>(
@@ -264,6 +290,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       educations: qEducation.data ?? [],
       userEducations: qUserEducations.data ?? [],
       fanClubs: qFanClubs.data ?? [],
+      userFanClubs: qUserFanClubs.data ?? [],
       achievements: qAchievements.data ?? [],
       refreshChallenges: () =>
         qc.invalidateQueries({ queryKey: ["challenges"] }),
@@ -284,6 +311,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       qEducation.data,
       qUserEducations.data,
       qFanClubs.data,
+      qUserFanClubs.data,
       qAchievements.data,
       qc,
       mSubmitChallenge,
