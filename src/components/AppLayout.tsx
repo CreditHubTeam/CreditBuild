@@ -29,7 +29,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Global Modals */}
       <WalletSelectionModal />
       <NetworkSwitchModal />
-      <RegistrationModal />
+      {/* <RegistrationModal /> */}
       <ChallengeModal />
       <FanClubsModal />
       <LoadingGlobal />

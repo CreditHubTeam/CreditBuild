@@ -1,10 +1,7 @@
 "use client";
-import { useApp } from "@/context/AppContext";
 import { useData } from "@/state/data";
 
 export default function CreditScore() {
-  // const { creditPercentage } = useApp();
-
   const { currentUser, creditPercentage } = useData();
 
   return (

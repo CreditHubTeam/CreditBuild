@@ -12,7 +12,7 @@ export default function Header() {
     disconnect,
     ensureCreditcoin,
   } = useWallet();
-  const { showModal, closeModals } = useApp();
+  const { showModal } = useApp();
 
   const [renderKey, setRenderKey] = useState(0);
 

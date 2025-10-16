@@ -15,9 +15,9 @@ export default function WalletSelectionModal() {
   // Auto close modal and check network when wallet connects
   useEffect(() => {
     if (isConnected && openModal === "walletSelectionModal") {
-      console.log("✅ Wallet connected - checking network...");
-      console.log("Current chainId:", chainId);
-      console.log("Expected chainId:", creditcoinTestnet.id);
+      // console.log("✅ Wallet connected - checking network...");
+      // console.log("Current chainId:", chainId);
+      // console.log("Expected chainId:", creditcoinTestnet.id);
       closeModals();
       
       // Kiểm tra network sau khi connect
