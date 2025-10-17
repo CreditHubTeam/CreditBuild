@@ -306,9 +306,9 @@ export const UsersService = {
                 challenges: 2, // temporary placeholder
                 avgEarnings: 15, // temporary placeholder
                 socials: {
-                    twitter: "twitter.com/test",
-                    instagram: "instagram.com/test",
-                    youtube: "youtube.com/test",
+                    twitter: "twitter.com/" + owner?.username || "test",
+                    instagram: "instagram.com/" + owner?.username || "test",
+                    youtube: "youtube.com/" + owner?.username || "test",
                 },
                 priceLabel: (club!.membership_fee ?? 0) > 0 ? `${club!.membership_fee} MOCA` : "Free",
                 image: club!.image_url || "https://via.placeholder.com/300x150.png?text=Fan+Club",
