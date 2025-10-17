@@ -1,6 +1,6 @@
 # API Documentation Updates
 ### Create Club 
-POST `/api/fan-clubs` ==Đã có== ==Chưa test==
+POST `/api/fan-clubs` ==Đã có==  ==Đã test phía BE==
 - [x]: thống nhất request, response
 - [x]: setup route
 - [x]: setup service
@@ -43,7 +43,7 @@ POST `/api/fan-clubs` ==Đã có== ==Chưa test==
 ```
 ---
 ### Create Challenge for Club
-POST `/api/fan-clubs/:id/challenges` ==Đã có== ==Chưa test==
+POST `/api/fan-clubs/:id/challenges` ==Đã có== ==Đã test phía BE==
 - [x]: thống nhất request, response
 - [x]: setup route
 - [x]: setup service
