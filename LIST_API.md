@@ -1,79 +1,82 @@
 # API Documentation Updates
 ### Create Club 
-POST `/api/fan-clubs` ==Chưa có==
-- [ ]: thống nhất request, response
+POST `/api/fan-clubs` ==Đã có== ==Chưa test==
+- [x]: thống nhất request, response
 - [x]: setup route
-- [ ]: setup service
-- [ ]: viet logic
+- [x]: setup service
+- [x]: viet logic
 ```json
 {
-    "walletAddress": "0xbbb7518cD8F8f096A23426AE3c8a9d778b4CBf00", //wallet cua owner club
-    "name": "CLub name",
-    "slug": "club-slug", //option
-    "description": "A community focused on saving habits",
-    "membershipFee": 0,
-    "maxMembers": 100,
-    "image": "https://via.placeholder.com/300x150.png?text=Fan+Club", // nay la logo //optiona
-    "contractAddress": "0x2222222222222222222222222222222222222222", //option
-    "metadata": { "twitter": "twitter.com/test", "instagram": "instagram.com/test", "youtube": "youtube.com/test" } //option
+    "walletAddress": "string", //wallet cua owner club
+  "name": "string",
+  "description": "string",
+  "membershipType": "open" | "invite_only",
+  "tags": ["string"],
+//   "logoFile": "File | null" // test thi bo qua file
 }
 ```
 ```json
 {
     "ok": true,
     "data": {
-        "id": "3f2b7bee-22fa-4f43-a5b4-cbecbdc10830",
-        "walletAddress": "0xbbb7518cD8F8f096A23426AE3c8a9d778b4CBf00",
-        "name": "CLub name",
-        "slug": "club-slug",
-        "description": "A community focused on saving habits",
-        "membershipFee": 0,
-        "maxMembers": 100,
-        "image": "https://via.placeholder.com/300x150.png?text=Fan+Club",
-        "contractAddress": "0x2222222222222222222222222222222222222222",
-        "metadata": { "twitter": "twitter.com/test", "instagram": "instagram.com/test", "youtube": "youtube.com/test" }
+            {
+            "id": "string",
+            "kolName": "string",
+            "kolVerified": true,
+            "kolSubtitle": "string",
+            "title": "string",
+            "description": "string",
+            "members": 0,
+            "challenges": 0,
+            "avgEarnings": 0,
+            "socials": {
+                "twitter": 0,
+                "youtube": 0,
+                "telegram": 0
+            },
+            "priceLabel": "string", // "100 MOCA"
+            "image": "string", // cover/thumb nếu có
+            "isJoined": true
+            }
     }
 }
 ```
 ---
 ### Create Challenge for Club
-POST `/api/fan-clubs/:id/challenges` ==Chưa có==
-- [ ]: thống nhất request, response
+POST `/api/fan-clubs/:id/challenges` ==Đã có== ==Chưa test==
+- [x]: thống nhất request, response
 - [x]: setup route
-- [ ]: setup service
-- [ ]: viet logic
+- [x]: setup service
+- [x]: viet logic
 ```json
 {
-    "walletAddress": "0xbbb7518cD8F8f096A23426AE3c8a9d778b4CBf00", //wallet cua owner club => nữa sẽ gán là creator_id
-    "name": "Challenge Title", //name la title
-    "description": "Challenge Description",
-    "type": "club", // general,  daily,  education,  kol_exclusive,  club
-    "category": "Technical", 
-    "points": 20,
-    "creditImpact": 2,
-    "xp": 50,
-    "rule": { }, //optional
-    "startDate": "2025-10-15T00:00:00Z",
-    "endDate": "2025-12-31T23:59:59Z"
+    "walletAddress": "0xbEb7518cD8F8f096A23426AE3c8a9d778b4CBf00",
+    "icon": "string 1",
+    "title": "string 1",
+    "description": "string",
+    "category": "string",
+    "points": 0,
+    "creditImpact": 0,
+    "estimatedTimeMinutes": 10,
+    "typeProof": "string",
+    "startDate": "2025-10-15T00:00:00Z", //thêm startDate
+    "endDate": "2025-12-31T23:59:59Z" //thêm endDate
 }
 ```
 ```json
 {
     "ok": true,
     "data": {
-        "id": "739acc34-772c-470c-b828-d6455d7e53b3",
-        "fanClubId": "3f2b7bee-22fa-4f43-a5b4-cbecbdc10830",
-        "name": "Challenge Title",
-        "description": "Challenge Description",
+        "id": "e0eca36e-297d-4fe6-9d1c-f1c7851eae21",
         "type": "club",
-        "category": "Technical",
-        "points": 20,
-        "creditImpact": 2,
-        "xp": 50,
-        "rule": { },
-        "startDate": "2025-10-15T00:00:00Z",
-        "endDate": "2025-12-31T23:59:59Z",
-        "createdAt": "2025-10-15T08:08:17.539Z"
+        "category": "string",
+        "name": "string 1",
+        "descrioption": "string",
+        "points": 0,
+        "creditImpact": 0,
+        "isCompleted": false,
+        "icon": "https://via.placeholder.com/100.png?text=Challenge",
+        "estimatedTimeMinutes": 10
     }
 }
 ```

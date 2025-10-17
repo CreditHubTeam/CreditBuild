@@ -15,26 +15,27 @@ export async function GET(req: Request) {
 }
 
 const FanClubInputSchema = z.object({
-    walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
-    name: z.string().min(1),
-    slug: z.string().optional(),
-    description: z.string().min(1),
-    membershipFee: z.number().min(0),
-    maxMembers: z.number().int().positive(),
-    image: z.string().url().optional(),
-    contractAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional(),
-    metadata: z.object({
-            twitter: z.string().optional(),
-            instagram: z.string().optional(),
-            youtube: z.string().optional(),
-    }).optional(),
+    walletAddress: z.string(),
+    name: z.string(),
+    description: z.string(),
+    membershipType: z.enum(["open", "invite_only"]).optional(),
+    tags: z.array(z.string()).optional(),
+    logoFile: z.instanceof(File).nullable().optional(),
 });
 export async function POST(req: Request) {
 
     try {
         const body = FanClubInputSchema.parse(await req.json());
+        const newFanClub = await FanClubsService.createFanClub(
+            body.walletAddress,
+            body.name,
+            body.description,
+            body.membershipType!,
+            body.tags!,
+            body.logoFile!
+        );
 
-        return NextResponse.json({ ok: true, data: body }, { status: 201 });
+        return NextResponse.json({ ok: true, data: newFanClub }, { status: 201 });
     } catch (error: unknown) {
         const msg =
             error instanceof Error ? error.message : String(error ?? "Unknown error");

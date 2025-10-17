@@ -68,6 +68,8 @@ model FanClub {
   contract_address String?  @db.VarChar(66)
   metadata         Json     @default("{}")
   created_at       DateTime @default(now()) @db.Timestamptz
+  membership_type  String   @default("open") @db.VarChar(16) // open, invite_only
+  tags             String[] @default([])
 
   @@index([slug], name: "idx_clubs_slug")
   @@map("clubs")
@@ -109,7 +111,7 @@ model FanClubMembership {
 // ✅ Updated with UUID primary key
 // ✅ Renamed fields: creatorId → creator_id, fanClubId → club_id, creditImpact → credit_impact
 // ✅ Added: slug, xp, start_at, end_at
-// ❌ Removed: icon, difficultyLevel, estimatedTimeMinutes, socialImpact, verificationMethod, isRecurring → recurring
+// ❌ Removed: icon, difficultyLevel, socialImpact, verificationMethod, isRecurring → recurring
 // ========================================
 model Challenge {
   id                 String    @id @default(uuid()) @db.Uuid
@@ -131,6 +133,8 @@ model Challenge {
   max_completions    Int?
   featured           Boolean   @default(false)
   contract_address   String?  @db.VarChar(66)
+  estimated_time_minutes Int  @default(0)  
+  type_proof        String?   @db.VarChar(64)
   created_at         DateTime  @default(now()) @db.Timestamptz
 
   @@index([club_id], name: "idx_challenges_club")

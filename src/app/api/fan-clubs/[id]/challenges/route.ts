@@ -1,3 +1,4 @@
+import { FanClubsService } from "@/services/FanClubsService";
 import { NextResponse } from "next/server";
 import * as z from "zod";
 
@@ -19,16 +20,16 @@ export async function GET(
 
 const ChallengeInputSchema = z.object({
     walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
-    name: z.string().min(1),
-    description: z.string().min(1),
-    type: z.enum(["general", "daily", "education", "kol_exclusive", "club"]),
+    icon: z.string().optional(),
+    title: z.string().min(1),
+    description: z.string().min(1).optional(),
     category: z.string().min(1),
-    points: z.number().int().positive(),
+    points: z.number().int(),
     creditImpact: z.number(),
-    xp: z.number().int().nonnegative(),
-    rule: z.object({}).optional(),
-    startDate: z.string().datetime(),
-    endDate: z.string().datetime()
+    estimatedTimeMinutes: z.number().int().positive().optional(),
+    typeProof: z.string().optional(),
+    startDate: z.string().datetime().optional(),
+    endDate: z.string().datetime().optional(),
 });
 
 export async function POST(
@@ -38,8 +39,10 @@ export async function POST(
     try{
         const body = ChallengeInputSchema.parse(await req.json());
         const { id: fanClubId } = await params;
+        const newChallenge = await FanClubsService.createChallange(fanClubId, body);
+
         return NextResponse.json({ ok: true, 
-            data: {}});
+            data: newChallenge});
     }
     catch (error: unknown) {
         const msg =
