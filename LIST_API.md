@@ -135,7 +135,7 @@ GET `/api/fan-clubs/{fanClubId}/members` ==Chưa có==
 ### Submit Challenge for Member
 POST `/fan-clubs/:id/challenges/:challengeId/submit` ==Chưa có==
 - [ ]: thống nhất request, response
-- [x]: setup route
+- [ ]: setup route
 - [ ]: setup service
 - [ ]: viet logic
 ```json
@@ -158,7 +158,7 @@ POST `/fan-clubs/:id/challenges/:challengeId/submit` ==Chưa có==
 ### Review Challenge Submission (Admin)
 POST `/api/fan-clubs/:id/challenges/:challengeId/review` ==Chưa có==
 - [ ]: thống nhất request, response
-- [x]: setup route
+- [ ]: setup route
 - [ ]: setup service
 - [ ]: viet logic
 ```json
