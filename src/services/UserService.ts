@@ -298,14 +298,14 @@ export const UsersService = {
             result.push({
                 id: club!.id,
                 kolName: owner?.username || "Unknown",
-                kolVerified: owner?.kyc_status !== "pending", //kyc la verified
+                kolVerified: owner?.kyc_status !== "pending", //==kyc la verified
                 // kolSubtitle: owner?.specialization || "",
                 title: club!.name,
                 description: club!.description,
                 members: club!.current_members || 0,
-                challenges: 2, // temporary placeholder
-                avgEarnings: 15, // temporary placeholder
-                socials: {
+                challenges: 2, //== temporary placeholder
+                avgEarnings: 15, //== temporary placeholder
+                socials: { //== update to include owner's username
                     twitter: "twitter.com/" + owner?.username || "test",
                     instagram: "instagram.com/" + owner?.username || "test",
                     youtube: "youtube.com/" + owner?.username || "test",

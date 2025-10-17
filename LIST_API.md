@@ -2,7 +2,8 @@
 ### Create Club 
 POST `/api/fan-clubs` ==Chưa có==
 - [ ]: thống nhất request, response
-- [ ]: setup route, service
+- [x]: setup route
+- [ ]: setup service
 - [ ]: viet logic
 ```json
 {
@@ -12,8 +13,8 @@ POST `/api/fan-clubs` ==Chưa có==
     "description": "A community focused on saving habits",
     "membershipFee": 0,
     "maxMembers": 100,
-    "image": "https://via.placeholder.com/300x150.png?text=Fan+Club", // nay la logo
-    "contractAddress": "0x2222222222222222222222222222222222222222",
+    "image": "https://via.placeholder.com/300x150.png?text=Fan+Club", // nay la logo //optiona
+    "contractAddress": "0x2222222222222222222222222222222222222222", //option
     "metadata": { "twitter": "twitter.com/test", "instagram": "instagram.com/test", "youtube": "youtube.com/test" } //option
 }
 ```
@@ -36,9 +37,10 @@ POST `/api/fan-clubs` ==Chưa có==
 ```
 ---
 ### Create Challenge for Club
-POST `/api/fan-clubs/{fanClubId}/challenges` ==Chưa có==
+POST `/api/fan-clubs/:id/challenges` ==Chưa có==
 - [ ]: thống nhất request, response
-- [ ]: setup route, service
+- [x]: setup route
+- [ ]: setup service
 - [ ]: viet logic
 ```json
 {
@@ -52,7 +54,7 @@ POST `/api/fan-clubs/{fanClubId}/challenges` ==Chưa có==
     "xp": 50,
     "rule": { }, //optional
     "startDate": "2025-10-15T00:00:00Z",
-    "endDate": "2025-12-31T23:59:59Z",
+    "endDate": "2025-12-31T23:59:59Z"
 }
 ```
 ```json
@@ -64,7 +66,7 @@ POST `/api/fan-clubs/{fanClubId}/challenges` ==Chưa có==
         "name": "Challenge Title",
         "description": "Challenge Description",
         "type": "club",
-        "category": "education",
+        "category": "Technical",
         "points": 20,
         "creditImpact": 2,
         "xp": 50,
@@ -77,9 +79,10 @@ POST `/api/fan-clubs/{fanClubId}/challenges` ==Chưa có==
 ```
 ---
 ### GET Challenges for Club
-GET `/api/fan-clubs/{fanClubId}/challenges` ==Chưa có==
+GET `/api/fan-clubs/:id/challenges` ==Chưa có==
 - [ ]: thống nhất request, response
-- [ ]: setup route, service
+- [x]: setup route
+- [ ]: setup service
 - [ ]: viet logic
 ```json
 {
@@ -106,7 +109,8 @@ GET `/api/fan-clubs/{fanClubId}/challenges` ==Chưa có==
 ### GET Members of Club
 GET `/api/fan-clubs/{fanClubId}/members` ==Chưa có==
 - [ ]: thống nhất request, response
-- [ ]: setup route, service
+- [x]: setup route
+- [ ]: setup service
 - [ ]: viet logic
 ```json
 {
@@ -126,16 +130,16 @@ GET `/api/fan-clubs/{fanClubId}/members` ==Chưa có==
 ```
 ---
 ### Submit Challenge for Member
-POST `/fan-clubs/{fanClubId}/challenges/{challengeId}/submit` ==Chưa có==
+POST `/fan-clubs/:id/challenges/:challengeId/submit` ==Chưa có==
 - [ ]: thống nhất request, response
-- [ ]: setup route, service
+- [x]: setup route
+- [ ]: setup service
 - [ ]: viet logic
 ```json
 {
     "walletAddress": "0xbbb7518cD8F8f096A23426AE3c8a9d778b4CBf00",
     "signature": "test", //option
     "proof": {}, //option
-
 }
 ```
 ```json
@@ -149,9 +153,10 @@ POST `/fan-clubs/{fanClubId}/challenges/{challengeId}/submit` ==Chưa có==
 ```
 ---
 ### Review Challenge Submission (Admin)
-POST `/api/fan-clubs/{fanClubId}/challenges/{challengeId}/review` ==Chưa có==
+POST `/api/fan-clubs/:id/challenges/:challengeId/review` ==Chưa có==
 - [ ]: thống nhất request, response
-- [ ]: setup route, service
+- [x]: setup route
+- [ ]: setup service
 - [ ]: viet logic
 ```json
 {
