@@ -50,19 +50,23 @@
 import { useApp } from "@/context/AppContext";
 import { Challenge, User } from "@/lib/types";
 import { ViewFanClubCard } from "@/lib/types/view";
+import { useUI } from "@/state/ui";
 import Image from "next/image";
+import * as React from "react";
 
 /* ----------------------------
    Mock types
 ----------------------------- */
 
-type Props = { params: { id: string } };
+type Props = { params: Promise<{ id: string }> };
 
 export default function ClubDetailPage({ params }: Props) {
-  const { id } = params;
+  const { id } = React.use(params);
   console.log("ClubDetailPage id:", id);
 
   const { handleNavigation } = useApp();
+
+  const { open } = useUI();
   /* ----------------------------
      Mock data
   ----------------------------- */
@@ -198,7 +202,10 @@ export default function ClubDetailPage({ params }: Props) {
         <h2 className="text-lg sm:text-xl font-bold mb-3 flex items-center justify-between">
           Club Challenges
           {isOwner && (
-            <button className="pixel-btn pixel-btn--primary text-xs sm:text-sm py-2 px-3">
+            <button
+              className="pixel-btn pixel-btn--primary text-xs sm:text-sm py-2 px-3"
+              onClick={() => open("formClubChallenge", club.id)}
+            >
               + Add Task
             </button>
           )}

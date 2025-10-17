@@ -17,6 +17,21 @@ type CompleteChallengeResponse = {
   achievementUnlocked: string;
 };
 
+// --- Club challenge ---
+export type CreateClubChallengeRequest = {
+  walletAddress: string;
+  icon?: string;
+  title: string;
+  description: string;
+  category: string;
+  points: number;
+  creditImpact: number;
+  estimatedTimeMinutes?: number;
+  typeProof?: string;
+  // acceptanceCriteria: string[]; // for off-chain
+  // verificationLogic: object; // for on-chain
+};
+
 // Get user's challenges
 export const getChallenges = async (
   walletAddress: string
@@ -34,6 +49,18 @@ export const completeChallenge = async (
 ): Promise<CompleteChallengeResponse> => {
   const response: ApiResponse<CompleteChallengeResponse> = await apiClient.post(
     `/challenges/${challId}/submit`,
+    data
+  );
+  return handleApiResponse(response);
+};
+
+// ======= FOR Submit club create challenge =======
+export const createClubChallenge = async (
+  clubId: string,
+  data: CreateClubChallengeRequest
+): Promise<Challenge> => {
+  const response: ApiResponse<Challenge> = await apiClient.post(
+    `/fan-clubs/${clubId}/challenges`,
     data
   );
   return handleApiResponse(response);

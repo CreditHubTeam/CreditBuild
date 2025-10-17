@@ -36,14 +36,38 @@
 }
 ```
 
-###
+## Create Challenge for Club
+
+### POST /api/fan-clubs/{fanClubId}/challenges 
 
 ```bash
-
+export type CreateClubChallengeRequest = {
+  walletAddress: string;
+  icon?: string;
+  title: string;
+  description: string;
+  category: string;
+  points: number;
+  creditImpact: number;
+  estimatedTimeMinutes?: number;
+  typeProof?: string;
+};
 ```
 
 ```bash
-
+# Res thì giống đối tượng Challenge là xong
+export type Challenge = {
+  id: string;
+  type: string;
+  category: string;
+  name: string;
+  description?: string;
+  points: number;
+  creditImpact: number;
+  isCompleted: boolean;
+  icon?: string;
+  estimatedTimeMinutes?: number;
+};
 ```
 
 ```bash

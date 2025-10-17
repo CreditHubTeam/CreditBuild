@@ -138,7 +138,7 @@ export default function MyFanClubsPage() {
                   className="pixel-btn pixel-btn--primary text-sm"
                   onClick={() => handleManageClub(club, club.kolVerified)}
                 >
-                  Manage Club
+                  Explore
                 </button>
               </div>
             </div>

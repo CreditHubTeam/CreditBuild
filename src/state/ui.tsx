@@ -7,6 +7,7 @@ type ModalId =
   | "networkSwitch"
   | "registration"
   | "challenge"
+  | "formClubChallenge"
   | "formChallenge"
   | "fanClubs"
   | "formFanClub"

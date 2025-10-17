@@ -5,13 +5,24 @@ import { useWallet } from "./wallet";
 import { useUI } from "./ui";
 import { Achievement, Challenge, Education, User } from "@/lib/types";
 import { ViewFanClubCard } from "@/lib/types/view";
-import { getChallenges, completeChallenge } from "@/lib/api/challenges";
+import {
+  getChallenges,
+  completeChallenge,
+  CreateClubChallengeRequest,
+  createClubChallenge,
+} from "@/lib/api/challenges";
 import {
   getEducation,
   getUserEducations,
   completeEducation,
 } from "@/lib/api/education";
-import { CreateFanClubRequest, getFanClubs, getUserFanClubs, joinFanClub, createFanClub } from "@/lib/api/fanClubs";
+import {
+  CreateFanClubRequest,
+  getFanClubs,
+  getUserFanClubs,
+  joinFanClub,
+  createFanClub,
+} from "@/lib/api/fanClubs";
 import { getAchievements } from "@/lib/api/achievements";
 import { getUser, postRegister } from "@/lib/api/user";
 
@@ -35,6 +46,10 @@ type DataCtx = {
   ) => Promise<void>;
   joinFanClub: (clubId: string) => Promise<void>;
   createFanClub: (clubData: CreateFanClubRequest) => Promise<void>;
+  createClubChallenge: (
+    clubId: string,
+    data: CreateClubChallengeRequest
+  ) => Promise<void>;
 };
 
 const DataContext = createContext<DataCtx | null>(null);
@@ -306,6 +321,20 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     },
   });
 
+  // create club challenge mutation
+  const mCreateClubChallenge = useMutation({
+    mutationKey: ["createClubChallenge"],
+    mutationFn: async ({
+      clubId,
+      data,
+    }: {
+      clubId: string;
+      data: CreateClubChallengeRequest;
+    }) => {
+      return createClubChallenge(clubId, data);
+    },
+  });
+
   const value = useMemo<DataCtx>(
     () => ({
       creditPercentage,
@@ -329,7 +358,10 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       },
       createFanClub: async (clubData: CreateFanClubRequest) => {
         await mCreateFanClub.mutateAsync(clubData);
-      }
+      },
+      createClubChallenge: async (clubId, data) => {
+        await mCreateClubChallenge.mutateAsync({ clubId, data });
+      },
     }),
     [
       creditPercentage,
@@ -345,6 +377,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       mCompleteEducation,
       mJoinFanClub,
       mCreateFanClub,
+      mCreateClubChallenge,
     ]
   );
 
