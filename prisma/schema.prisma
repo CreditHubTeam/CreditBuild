@@ -21,6 +21,7 @@ model User {
   credit_score     Int      @default(300)
   streak_days      Int      @default(0)
   total_points     BigInt   @default(0)
+  total_challenges BigInt   @default(0)
   social_points    BigInt   @default(0)
   financial_points BigInt   @default(0)
   education_points BigInt   @default(0)

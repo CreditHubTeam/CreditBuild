@@ -1,4 +1,184 @@
- POST /api/auth/register
+# API Documentation Updates
+### Create Club 
+POST `/api/fan-clubs` ==Chưa có==
+- [ ]: thống nhất request, response
+- [ ]: setup route, service
+- [ ]: viet logic
+```json
+{
+    "walletAddress": "0xbbb7518cD8F8f096A23426AE3c8a9d778b4CBf00", //wallet cua owner club
+    "name": "CLub name",
+    "slug": "club-slug", //option
+    "description": "A community focused on saving habits",
+    "membershipFee": 0,
+    "maxMembers": 100,
+    "image": "https://via.placeholder.com/300x150.png?text=Fan+Club", // nay la logo
+    "contractAddress": "0x2222222222222222222222222222222222222222",
+    "metadata": { "twitter": "twitter.com/test", "instagram": "instagram.com/test", "youtube": "youtube.com/test" } //option
+}
+```
+```json
+{
+    "ok": true,
+    "data": {
+        "id": "3f2b7bee-22fa-4f43-a5b4-cbecbdc10830",
+        "walletAddress": "0xbbb7518cD8F8f096A23426AE3c8a9d778b4CBf00",
+        "name": "CLub name",
+        "slug": "club-slug",
+        "description": "A community focused on saving habits",
+        "membershipFee": 0,
+        "maxMembers": 100,
+        "image": "https://via.placeholder.com/300x150.png?text=Fan+Club",
+        "contractAddress": "0x2222222222222222222222222222222222222222",
+        "metadata": { "twitter": "twitter.com/test", "instagram": "instagram.com/test", "youtube": "youtube.com/test" }
+    }
+}
+```
+---
+### Create Challenge for Club
+POST `/api/fan-clubs/{fanClubId}/challenges` ==Chưa có==
+- [ ]: thống nhất request, response
+- [ ]: setup route, service
+- [ ]: viet logic
+```json
+{
+    "walletAddress": "0xbbb7518cD8F8f096A23426AE3c8a9d778b4CBf00", //wallet cua owner club => nữa sẽ gán là creator_id
+    "name": "Challenge Title", //name la title
+    "description": "Challenge Description",
+    "type": "club", // general,  daily,  education,  kol_exclusive,  club
+    "category": "Technical", 
+    "points": 20,
+    "creditImpact": 2,
+    "xp": 50,
+    "rule": { }, //optional
+    "startDate": "2025-10-15T00:00:00Z",
+    "endDate": "2025-12-31T23:59:59Z",
+}
+```
+```json
+{
+    "ok": true,
+    "data": {
+        "id": "739acc34-772c-470c-b828-d6455d7e53b3",
+        "fanClubId": "3f2b7bee-22fa-4f43-a5b4-cbecbdc10830",
+        "name": "Challenge Title",
+        "description": "Challenge Description",
+        "type": "club",
+        "category": "education",
+        "points": 20,
+        "creditImpact": 2,
+        "xp": 50,
+        "rule": { },
+        "startDate": "2025-10-15T00:00:00Z",
+        "endDate": "2025-12-31T23:59:59Z",
+        "createdAt": "2025-10-15T08:08:17.539Z"
+    }
+}
+```
+---
+### GET Challenges for Club
+GET `/api/fan-clubs/{fanClubId}/challenges` ==Chưa có==
+- [ ]: thống nhất request, response
+- [ ]: setup route, service
+- [ ]: viet logic
+```json
+{
+    "ok": true,
+    "data": [
+        {
+            "id": "739acc34-772c-470c-b828-d6455d7e53b3",
+            "fanClubId": "3f2b7bee-22fa-4f43-a5b4-cbecbdc10830",
+            "name": "Challenge Title",
+            "description": "Challenge Description",
+            "type": "daily",
+            "category": "education",
+            "points": 20,
+            "creditImpact": 2,
+            "xp": 50,
+            "rule": { },
+            "startDate": "2025-10-15T00:00:00Z",
+            "endDate": "2025-12-31T23:59:59Z"
+            }
+    ]
+}
+```
+---
+### GET Members of Club
+GET `/api/fan-clubs/{fanClubId}/members` ==Chưa có==
+- [ ]: thống nhất request, response
+- [ ]: setup route, service
+- [ ]: viet logic
+```json
+{
+    "ok": true,
+    "data": [
+        {
+            "walletAddress": "0xccc7518cD8F8f096A23426AE3c8a9d778b4CBf00",
+            "joinedAt": "2025-10-15T08:08:17.539Z",
+            "username": "bob",
+            "totalPoints": 50,
+            "creditScore": 320,
+            "challengesCompleted": 3,
+            "achievementsUnlocked": 1
+        }
+    ]
+}
+```
+---
+### Submit Challenge for Member
+POST `/fan-clubs/{fanClubId}/challenges/{challengeId}/submit` ==Chưa có==
+- [ ]: thống nhất request, response
+- [ ]: setup route, service
+- [ ]: viet logic
+```json
+{
+    "walletAddress": "0xbbb7518cD8F8f096A23426AE3c8a9d778b4CBf00",
+    "signature": "test", //option
+    "proof": {}, //option
+
+}
+```
+```json
+{
+    "ok": true,
+    "data": {
+        "challengeId": "739acc34-772c-470c-b828-d6455d7e53b3",
+        "status": "Under Review", //đợi admin duyệt
+    }
+}
+```
+---
+### Review Challenge Submission (Admin)
+POST `/api/fan-clubs/{fanClubId}/challenges/{challengeId}/review` ==Chưa có==
+- [ ]: thống nhất request, response
+- [ ]: setup route, service
+- [ ]: viet logic
+```json
+{
+    "walletAddress": "0xbbb7518cD8F8f096A23426AE3c8a9d778b4CBf00", //wallet cua owner club
+    "isApproved": true
+    //lấy challenge ở trên
+}
+```
+```json
+{
+    "ok": true,
+    "data": {
+        "challengeId": "739acc34-772c-470c-b828-d6455d7e53b3",
+        "memberAddress": "0xccc7518cD8F8f096A23426AE3c8a9d778b4CBf00",
+        "isCompleted": true,
+        "status": "Approved",
+        "pointsAwarded": 20,
+        "creditChange": 2,
+        "newCreditScore": 302,
+        "totalPoints": 20,
+        "achievementUnlocked": null
+    }
+}
+```
+---
+### Register User
+POST `/api/auth/register`
  ```json
  {
     "walletAddress": "0xbbb7518cD8F8f096A23426AE3c8a9d778b4CBf00",
@@ -22,6 +202,7 @@
 }
 ```
 ---
+
 GET /api/users/0xbEb7518cD8F8f096A23426AE3c8a9d778b4CBf00/challenges
 ```json 
 {
@@ -120,7 +301,7 @@ GET /api/users/0xbEb7518cD8F8f096A23426AE3c8a9d778b4CBf00/achievements
 }
 ```
 ---
-GET /api/users/0xbEb7518cD8F8f096A23426AE3c8a9d778b4CBf00/educations?status=no_enrollment
+GET /api/users/0xbEb7518cD8F8f096A23426AE3c8a9d778b4CBf00/educations
 ```json
 {
     "ok": true,
@@ -147,7 +328,7 @@ GET /api/users/0xbEb7518cD8F8f096A23426AE3c8a9d778b4CBf00/educations?status=no_e
             "description": "Strategies to establish and improve your credit history",
             "duration": "15 min",
             "points": 75,
-            "isCompleted": false
+            "isCompleted": true
         }
     ]
 }

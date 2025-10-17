@@ -57,7 +57,8 @@ export const ChallengesService = {
         //update user credit_score và total_points
         await userRepo.update(user.id, {
             credit_score: user.credit_score + (userChallenge.credit_change || 0),
-            total_points: Number(user.total_points) + (userChallenge.points_awarded || 0)
+            total_points: Number(user.total_points) + (userChallenge.points_awarded || 0),
+            total_challenges: Number(user.total_challenges) + 1, //== SUBMITED đã cộng rồi
         });
         return { 
             "challengeId": challengeId,
