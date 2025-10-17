@@ -20,20 +20,28 @@ const fanClubMembershipRepo = new fanClubMembershipRepository();
 const fanClubRepo = new fanClubRepository();
 
 
+// Helper function to convert BigInt or string to number safely
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const toNumber = (v: any) => {
+        if (v === undefined || v === null) return 0;
+        if (typeof v === "bigint") return Number(v);
+        const n = Number(v);
+        return Number.isNaN(n) ? 0 : n;
+    };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const serializeUser = (u: any) => {
     if (!u) return null;
     return {
         walletAddress: u.wallet_address ?? null,
-        creditScore: u.credit_score ?? null,
-        totalChallenges: u.total_challenges ?? 0,
-        streakDays: u.streak_days ?? 0,
+        creditScore: toNumber(u.credit_score),
+        totalChallenges: toNumber(u.total_challenges),
+        streakDays: toNumber(u.streak_days),
         // Convert BigInt -> string to avoid JSON serialization error
-        totalPoints: u.total_points !== undefined ? u.total_points.toString() : "0",
-        socialPoints: u.social_points !== undefined ? u.social_points.toString() : "0",
-        financialPoints: u.financial_points !== undefined ? u.financial_points.toString() : "0",
-        educationPoints: u.education_points !== undefined ? u.education_points.toString() : "0",
-        bestStreak: u.streak_days ?? 0,
+        totalPoints: toNumber(u.total_points),
+        socialPoints: toNumber(u.social_points),
+        financialPoints: toNumber(u.financial_points),
+        educationPoints: toNumber(u.education_points),
+        bestStreak: toNumber(u.streak_days),
         isRegistered: true,
         // include other fields you need, converting BigInt as above
     };
@@ -42,14 +50,6 @@ const serializeUser = (u: any) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const serializeUserProfile = (u: any) => {
     if (!u) return null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const toNumber = (v: any) => {
-        if (v === undefined || v === null) return 0;
-        if (typeof v === "bigint") return Number(v);
-        const n = Number(v);
-        return Number.isNaN(n) ? 0 : n;
-    };
-
     return {
         walletAddress: u.wallet_address ?? null,
         creditScore: u.credit_score ?? null,
@@ -84,13 +84,13 @@ export const UsersService = {
             // use serializer to ensure no BigInt remains
             return serializeUser(existingUser) ?? {
                 walletAddress,
-                creditScore: 300,
-                totalChallenges: 0,
-                streakDays: 0,
-                totalPoints: "0",
-                socialPoints: "0",
-                financialPoints: "0",
-                educationPoints: "0",
+                creditScore: Number(existingUser?.credit_score),
+                totalChallenges: Number(existingUser?.total_challenges),
+                streakDays: Number(existingUser?.streak_days),
+                totalPoints: Number(existingUser?.total_points),
+                socialPoints: Number(existingUser?.social_points),
+                financialPoints: Number(existingUser?.financial_points),
+                educationPoints: Number(existingUser?.education_points),
                 bestStreak: 0,
                 isRegistered: true,
             };
@@ -102,11 +102,11 @@ export const UsersService = {
             username: "",
             credit_score: 300,
             streak_days: 0,
-            // total_challenges: 0,
-            total_points: BigInt(0),
-            social_points: BigInt(0),
-            financial_points: BigInt(0),
-            education_points: BigInt(0),
+            total_challenges: Number(0),
+            total_points: Number(0),
+            social_points: Number(0),
+            financial_points: Number(0),
+            education_points: Number(0),
             tier_level: "bronze",
             reputation_score: 0,
             referral_code: referralCode ?? undefined,
