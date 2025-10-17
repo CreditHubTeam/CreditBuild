@@ -281,6 +281,12 @@ export const UsersService = {
         let result = [];
         for (const fanclub of allFanClubs) {
             let isJoined = false; //== mac dinh la chua join
+            let isOwner = false; //== mac dinh la khong phai owner
+            //kiểm tra xem user co phai owner khong
+            if(fanclub.owner_id === user.id){
+                isOwner = true;
+            }
+
             //kiem tra xem user da join chua
             for(const membership of memberships){
                 if(membership.club_id === fanclub.id){ isJoined = true; break; }
@@ -306,7 +312,9 @@ export const UsersService = {
                 },
                 priceLabel: (club!.membership_fee ?? 0) > 0 ? `${club!.membership_fee} MOCA` : "Free",
                 image: club!.image_url || "https://via.placeholder.com/300x150.png?text=Fan+Club",
-                isJoined: isJoined, //== vì đây là câu lạc bộ mà user đã tham gia
+                isJoined: isJoined,
+                isOwner: isOwner
+
             });
         }
         return result;
