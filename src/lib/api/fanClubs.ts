@@ -15,6 +15,14 @@ type JoinFanClubResponse = {
   isJoined: boolean;
 };
 
+export type CreateFanClubRequest = {
+  name: string;
+  description: string;
+  membershipType: "open" | "invite_only";
+  tags: string[];
+  logoFile?: File | null;
+};
+
 // Get fan clubs: ADMIN only call
 export const getFanClubs = async (): Promise<ViewFanClubCard[]> => {
   const response: ApiResponse<ViewFanClubCard[]> =
@@ -41,5 +49,13 @@ export const joinFanClub = async (
     `/fan-clubs/join`,
     body
   );
+  return handleApiResponse(response);
+};
+
+// CreateFanClubRequest
+export const createFanClub = async (
+  data: CreateFanClubRequest
+): Promise<ViewFanClubCard> => {
+  const response: ApiResponse<ViewFanClubCard> = await apiClient.post(`/fan-clubs`, data);
   return handleApiResponse(response);
 };

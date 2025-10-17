@@ -1,0 +1,51 @@
+# FE request
+
+## Create Club
+
+### POST /api/fan-clubs
+
+```bash
+{
+  name: string;
+  description: string;
+  membershipType: "open" | "invite_only";
+  tags: string[];
+  logoFile?: File | null;
+};
+```
+
+```bash
+{
+  id: string;
+  kolName: string;
+  kolVerified: boolean;
+  kolSubtitle?: string; // specialization
+  title: string;
+  description?: string;
+  members: number;
+  challenges: number;
+  avgEarnings: number; // number hiển thị
+  socials: {
+    twitter?: number;
+    youtube?: number;
+    telegram?: number;
+  };
+  priceLabel: string; // "100 MOCA"
+  image?: string; // cover/thumb nếu có
+  isJoined: boolean;
+}
+```
+
+###
+
+```bash
+
+```
+
+```bash
+
+```
+
+```bash
+
+```

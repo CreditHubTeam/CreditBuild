@@ -11,7 +11,7 @@ import {
   getUserEducations,
   completeEducation,
 } from "@/lib/api/education";
-import { getFanClubs, getUserFanClubs, joinFanClub } from "@/lib/api/fanClubs";
+import { CreateFanClubRequest, getFanClubs, getUserFanClubs, joinFanClub, createFanClub } from "@/lib/api/fanClubs";
 import { getAchievements } from "@/lib/api/achievements";
 import { getUser, postRegister } from "@/lib/api/user";
 
@@ -34,6 +34,7 @@ type DataCtx = {
     payload: { progress: number; proof?: unknown }
   ) => Promise<void>;
   joinFanClub: (clubId: string) => Promise<void>;
+  createFanClub: (clubData: CreateFanClubRequest) => Promise<void>;
 };
 
 const DataContext = createContext<DataCtx | null>(null);
@@ -282,6 +283,29 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     },
   });
 
+  // create fan club mutation
+  const mCreateFanClub = useMutation({
+    mutationKey: ["createFanClub"],
+    mutationFn: async (clubData: CreateFanClubRequest) => {
+      return createFanClub(clubData);
+    },
+    onMutate: () => showLoading("Creating fan club..."),
+    onSettled: () => hideLoading(),
+    onSuccess: () => {
+      notify("Fan Club Created! 🎉", "success");
+      qc.invalidateQueries({ queryKey: ["fanClubs"] });
+      qc.invalidateQueries({ queryKey: ["currentUser"] });
+    },
+    onError: (error: unknown) => {
+      if (error instanceof Error) {
+        console.error("Create Fan Club Error:", error);
+        notify(error.message, "error");
+      } else {
+        notify("Create failed", "error");
+      }
+    },
+  });
+
   const value = useMemo<DataCtx>(
     () => ({
       creditPercentage,
@@ -303,6 +327,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       joinFanClub: async (clubId) => {
         await mJoinFanClub.mutateAsync({ clubId });
       },
+      createFanClub: async (clubData: CreateFanClubRequest) => {
+        await mCreateFanClub.mutateAsync(clubData);
+      }
     }),
     [
       creditPercentage,
@@ -317,6 +344,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       mSubmitChallenge,
       mCompleteEducation,
       mJoinFanClub,
+      mCreateFanClub,
     ]
   );
 

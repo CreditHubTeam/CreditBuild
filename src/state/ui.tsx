@@ -7,7 +7,9 @@ type ModalId =
   | "networkSwitch"
   | "registration"
   | "challenge"
+  | "formChallenge"
   | "fanClubs"
+  | "formFanClub"
   | null;
 type NoticeType = "success" | "error" | "warning" | "info";
 

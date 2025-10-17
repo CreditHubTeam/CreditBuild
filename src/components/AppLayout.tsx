@@ -9,6 +9,7 @@ import ChallengeModal from "@/components/Modals/ChallengeModal";
 import LoadingGlobal from "@/ui/Loading";
 import Notification from "@/ui/Notification";
 import FanClubsModal from "./Modals/FanClubsModal";
+import FormFanClubModal from "./Modals/FormFanClubModal";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -32,6 +33,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* <RegistrationModal /> */}
       <ChallengeModal />
       <FanClubsModal />
+      <FormFanClubModal />
       <LoadingGlobal />
       <Notification />
     </>

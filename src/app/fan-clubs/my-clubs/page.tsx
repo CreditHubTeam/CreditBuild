@@ -3,45 +3,39 @@ import { useApp } from "@/context/AppContext";
 import { useUI } from "@/state/ui";
 import { useData } from "@/state/data";
 
-export default function FanClubsPage() {
+export default function MyFanClubsPage() {
   const { handleNavigation } = useApp();
   const { userFanClubs } = useData();
 
   const joinedClubs = userFanClubs.filter((c) => !c.isJoined);
-  const { open } = useUI();
 
   // === Handlers ===
-  const handleJoinClub = (
+  const handleManageClub = (
     club: (typeof userFanClubs)[number],
     isVerified: boolean
   ) => {
     if (!isVerified) return;
-    // joinFanClub(club.id.toString());
-    open("fanClubs", club);
-  };
-
-  // -- Create fan club --
-  const handleCreateFanClub = () => {
-    open("formFanClub");
+    // handleNavigation(`/fan-clubs/my-clubs/${club.id}`);
+    handleNavigation(`/fan-clubs/my-clubs/1101`);
   };
 
   return (
     <section className="container mx-auto px-4 py-6 pb-20 sm:pb-24">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold pixel-font">🎮 Fan Clubs</h1>
+        <h1 className="text-3xl font-bold pixel-font">🎮 My Fan Clubs</h1>
         <button
-          onClick={() => handleNavigation("/dashboard")}
+          onClick={() => handleNavigation("/fan-clubs")}
           className="pixel-btn pixel-btn--secondary"
         >
-          ⬅ Back to Dashboard
+          ⬅ Back to Fan Clubs
         </button>
       </div>
 
       {/* Menu functionality */}
-      <div className="mb-6">
-        <ul className=" pl-5 list-none ">
-          <li className="flex flex-wrap gap-3">
+      {/* <div className="mb-6">
+        <ul className="list-disc pl-5">
+          <li>
             <button
               onClick={() => handleCreateFanClub()}
               className="pixel-btn pixel-btn--primary"
@@ -52,11 +46,11 @@ export default function FanClubsPage() {
               onClick={() => handleNavigation("/fan-clubs/my-clubs")}
               className="pixel-btn pixel-btn--primary"
             >
-              My Fan Clubs
+              + My Fan Clubs
             </button>
           </li>
         </ul>
-      </div>
+      </div> */}
 
       {/* Grid */}
       <div className="grid md:grid-cols-2 sm:grid-cols-2 gap-4">
@@ -142,9 +136,9 @@ export default function FanClubsPage() {
                 <span className="font-bold pixel-font">{club.priceLabel}</span>
                 <button
                   className="pixel-btn pixel-btn--primary text-sm"
-                  onClick={() => handleJoinClub(club, club.kolVerified)}
+                  onClick={() => handleManageClub(club, club.kolVerified)}
                 >
-                  Join Club
+                  Manage Club
                 </button>
               </div>
             </div>
