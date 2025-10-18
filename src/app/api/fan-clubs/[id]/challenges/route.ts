@@ -8,8 +8,9 @@ export async function GET(
 ) {
     try{
         const { id: fanClubId } = await params;
+        const challengesInClub = await FanClubsService.getChallengesForClub(fanClubId);
 
-        return NextResponse.json({ ok: true, data: {} } );
+        return NextResponse.json({ ok: true, data: challengesInClub });
     }
     catch (error: unknown) {
         const msg =

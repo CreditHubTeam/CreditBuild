@@ -112,52 +112,73 @@ POST `/api/fan-clubs/:id/challenges` ==Đã có== ==Đã test phía BE==
 ```
 ---
 ### GET Challenges for Club
-GET `/api/fan-clubs/:id/challenges` ==Chưa có==
-- [ ]: thống nhất request, response
+GET `/api/fan-clubs/:id/challenges` ==Đã có== ==Đã test phía BE==
+- [x]: thống nhất request, response
 - [x]: setup route
-- [ ]: setup service
-- [ ]: viet logic
+- [x]: setup service
+- [x]: viet logic
+*: Test với fanClub là: `ad852792-440e-451d-baa3-98994a2e67d8`
 ```json
 {
     "ok": true,
     "data": [
         {
-            "id": "739acc34-772c-470c-b828-d6455d7e53b3",
-            "fanClubId": "3f2b7bee-22fa-4f43-a5b4-cbecbdc10830",
-            "name": "Challenge Title",
-            "description": "Challenge Description",
-            "type": "daily",
-            "category": "education",
-            "points": 20,
-            "creditImpact": 2,
-            "xp": 50,
-            "rule": { },
-            "startDate": "2025-10-15T00:00:00Z",
-            "endDate": "2025-12-31T23:59:59Z"
-            }
+            "id": "e589baf7-a9ff-4b5e-b3a5-e41351fd7025",
+            "type": "club",
+            "category": "string",
+            "name": "challenge 5",
+            "description": "string",
+            "points": 0,
+            "creditImpact": 0,
+            "isCompleted": false,
+            "estimatedTimeMinutes": 10
+        },
+        {
+            "id": "2cf87119-6193-4a57-8b7b-4d18414724d3",
+            "type": "club",
+            "category": "string",
+            "name": "challenge 2",
+            "description": "string",
+            "points": 0,
+            "creditImpact": 0,
+            "isCompleted": false,
+            "estimatedTimeMinutes": 10
+        }
+        //...
     ]
 }
 ```
 ---
 ### GET Members of Club
-GET `/api/fan-clubs/{fanClubId}/members` ==Chưa có==
-- [ ]: thống nhất request, response
+GET `/api/fan-clubs/{fanClubId}/members` ==Đã có== ==Đã test phía BE==
+- [x]: thống nhất request, response
 - [x]: setup route
-- [ ]: setup service
-- [ ]: viet logic
+- [x]: setup service
+- [x]: viet logic
+*: Test với fanClub là: `ad852792-440e-451d-baa3-98994a2e67d8`
 ```json
 {
     "ok": true,
     "data": [
         {
-            "walletAddress": "0xccc7518cD8F8f096A23426AE3c8a9d778b4CBf00",
-            "joinedAt": "2025-10-15T08:08:17.539Z",
-            "username": "bob",
-            "totalPoints": 50,
-            "creditScore": 320,
-            "challengesCompleted": 3,
-            "achievementsUnlocked": 1
+            "walletAddress": "0xbEb7518cD8F8f096A23426AE3c8a9d778b4CBf00",
+            "creditScore": 516,
+            "totalChallenges": 2,
+            "streakDays": 5,
+            "totalPoints": 585,
+            "isRegistered": true,
+            "bestStreak": 5
+        },
+        {
+            "walletAddress": "0xbbc7518cD8F8f096A23426AE3c8a9d778b4CBf00",
+            "creditScore": 300,
+            "totalChallenges": 0,
+            "streakDays": 0,
+            "totalPoints": 0,
+            "isRegistered": true,
+            "bestStreak": 0
         }
+        //...
     ]
 }
 ```

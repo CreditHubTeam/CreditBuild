@@ -1,5 +1,6 @@
 
 
+import { FanClubsService } from "@/services/FanClubsService";
 import { NextRequest, NextResponse } from "next/server";
 export async function GET(
     req: NextRequest,
@@ -8,8 +9,8 @@ export async function GET(
     const { id } = await params;
 
     try {
-
-        return NextResponse.json({ ok: true, data: { id } });
+        const listMemberships = await FanClubsService.getClubMembers(id);
+        return NextResponse.json({ ok: true, data: listMemberships });
     } catch (error) {
         const msg = error instanceof Error ? error.message : String(error ?? "Unknown error");
         return NextResponse.json({ ok: false, msg }, { status: 500 });

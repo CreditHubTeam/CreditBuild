@@ -62,4 +62,11 @@ export class fanClubMembershipRepository {
             },
         });
     }
+
+    //find all memberships by clubId
+    async getByClubId(clubId: string): Promise<FanClubMembership[]> {
+        return await prisma.fanClubMembership.findMany({
+            where: { club_id: clubId },
+        });
+    }
 }

@@ -1,12 +1,15 @@
+/* eslint-disable prefer-const */
 import { challengeRepository } from "@/repositories/challengeRepository";
 import { fanClubMembershipRepository } from "@/repositories/fanClubMembershipRepository";
 import { fanClubRepository } from "@/repositories/fanClubRepository";
+import { userChallengeRepository } from "@/repositories/userChallengeRepository";
 import { userRepository } from "@/repositories/userRepository";
 
 const fanClubRepo = new fanClubRepository();
 const fanClubMembershipRepo = new fanClubMembershipRepository();
 const userRepo = new userRepository();
 const challengeRepo = new challengeRepository();
+const userChallengeRepo = new userChallengeRepository();
 
 export const FanClubsService = {
 
@@ -159,8 +162,59 @@ export const FanClubsService = {
             icon: "https://via.placeholder.com/100.png?text=Challenge", //== tạm thời để ảnh placeholder, sau này có thể thêm trường icon trong bảng Challenge
             estimatedTimeMinutes: newChallenge.estimated_time_minutes
         }
-   }
+   },
+// [x] getChallengesForClub(clubId): Lấy danh sách thử thách cho câu lạc bộ.
+   getChallengesForClub: async (clubId: string) => {
+        //tim challenge theo clubId
+        const challenges = await challengeRepo.findByClubId(clubId);
+
+        // eslint-disable-next-line prefer-const
+        let result = [];
+        for(const challenge of challenges){
+            // // tim trong userChallengeRepository de biet user da hoan thanh chua
+            // let isCompleted = false;
+            // const userChallenge = await userChallengeRepo.getByChallengeId(challenge.id);
+            // if(userChallenge){
+            //     isCompleted = true;
+            // }
+            
+            result.push({
+                id: challenge.id,
+                type: challenge.type,
+                category: challenge.category,
+                name: challenge.name,
+                description: challenge.description,
+                points: challenge.points,
+                creditImpact: challenge.credit_impact,
+                isCompleted: false, //== tạm thời để false, sau này có thể kiểm tra từ userChallengeRepo
+                estimatedTimeMinutes: challenge.estimated_time_minutes,
+            })
+        }
+        return result;
+   },
+// [] getClubMembers(clubId): Lấy danh sách thành viên câu lạc bộ.
+   getClubMembers: async (clubId: string) => {
+        //tim membership theo clubId
+        const memberships = await fanClubMembershipRepo.getByClubId(clubId);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        let result = [];
+        for(const membership of memberships){
+            // tim user theo membership.user_id
+            const user = await userRepo.getById(membership.user_id);
+            if(!user) throw new Error("User not found");
+            result.push({
+                walletAddress: user.wallet_address,
+                creditScore: Number(user.credit_score),
+                totalChallenges: Number(user.total_challenges),
+                streakDays: Number(user.streak_days),
+                totalPoints: Number(user.total_points),
+                isRegistered: true, //== tạm thời để true, sau này có thể thêm trường is_registered trong bảng User
+                bestStreak: Number(user.streak_days), //== tạm thời để streak_days, sau này có thể thêm trường best_streak trong bảng User
+            })
+        }
+        return result;
+   },
+
 // getMembershipRequirements(clubId): Lấy yêu cầu tham gia câu lạc bộ.
-// getClubMembers(clubId): Lấy danh sách thành viên câu lạc bộ.
 
 }
