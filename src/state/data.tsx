@@ -163,6 +163,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const qUserFanClubs = useQuery({
     queryKey: ["userFanClubs", address],
     queryFn: () => getUserFanClubs(address as string),
+    enabled: !!address,
   });
 
   // Achievements
