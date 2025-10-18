@@ -1,4 +1,34 @@
 # API Documentation Updates
+### Get Fan Club User Detail
+GET `http://localhost:3000/api/users/:walletAddress/fan-clubs/:idClub` ==Đã có== ==Đã test phía BE==
+- [x]: thống nhất request, response
+- [x]: setup route
+- [x]: setup service
+- [x]: viet logic
+```json
+{
+    "ok": true,
+    "data": {
+        "id": "31c37b37-b9d1-4c29-88c3-8f0deb0e56d3",
+        "kolName": "alice",
+        "kolVerified": true,
+        "title": "Fitness Fanatics",
+        "description": "A club for fitness lovers",
+        "members": 0,
+        "challenges": 2,
+        "avgEarnings": 15,
+        "socials": {
+            "twitter": "twitter.com/alice",
+            "instagram": "instagram.com/alice",
+            "youtube": "youtube.com/alice"
+        },
+        "priceLabel": "Free",
+        "image": "https://via.placeholder.com/300x150.png?text=Fan+Club",
+        "isJoined": true,
+        "isOwner": true
+    }
+}
+```
 ### Create Club 
 POST `/api/fan-clubs` ==Đã có==  ==Đã test phía BE==
 - [x]: thống nhất request, response

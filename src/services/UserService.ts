@@ -327,7 +327,43 @@ export const UsersService = {
         const user = await userRepo.getByWalletAddress(walletAddress);
         if (!user) throw new Error("User not found");
         return serializeUserProfile(user);
-    }
+    },
+// [] getUserFanClubDetails(walletAddress, clubId): Lấy chi tiết câu lạc bộ người hâm mộ của người dùng.
+    getUserFanClubDetails: async (walletAddress: string, clubId: string) => {
+        //tim user theo walletAddress
+        const user = await userRepo.getByWalletAddress(walletAddress);
+        if (!user) throw new Error("User not found");
+        //tim club theo clubId
+        const club = await fanClubRepo.findById(clubId);
+        if (!club) throw new Error("Fan Club not found");
+        //return ve
+        // kiem tra user da tham gia club chua
+        const existingMembership = await fanClubMembershipRepo.isUserInClub(user.id, clubId);
+        if (!existingMembership) throw new Error("User has not joined this club");
+        //kiem tra user co phai owner khong
+        const isOwner = club.owner_id === user.id;
+        const owner = await userRepo.getById(club.owner_id);
+
+        return {
+            id: club.id,
+            kolName: owner?.username || "Unknown",
+            kolVerified: owner?.kyc_status !== "pending",
+            title: club.name,
+            description: club.description,
+            members: club.current_members || 0,
+            challenges: 2, //== temporary placeholder
+            avgEarnings: 15, //== temporary placeholder
+            socials: {
+                twitter: owner?.username ? `twitter.com/${owner.username}` : "twitter.com/test",
+                instagram: owner?.username ? `instagram.com/${owner.username}` : "instagram.com/test",
+                youtube: owner?.username ? `youtube.com/${owner.username}` : "youtube.com/test",
+            },
+            priceLabel: (club.membership_fee ?? 0) > 0 ? `${club.membership_fee} MOCA` : "Free",
+            image: club.image_url || "https://via.placeholder.com/300x150.png?text=Fan+Club",
+            isJoined: true, //== vì user đã tham gia
+            isOwner: isOwner
+        }
+    },
 // [] updateUserSettings(userId, settings): Cập nhật cài đặt người dùng (mục tiêu, sở thích).
 // [] getUserAchievements(userId): Lấy thành tích của người dùng.
 }
