@@ -6,17 +6,16 @@ import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import "./IPointsToken.sol";
 
-interface ICreditBuildPoints {
-    function mint(address to, uint256 amount) external;
-}
+
 
 /**
  * @title QuestPlatform
  * @notice Manages quest completions and rewards distribution for CreditBuild
  * @dev Supports both operator-driven minting and user attestation claims
  */
-contract QuestPlatform is AccessControl, Pausable, ReentrancyGuard {
+contract QuestPlatform is AccessControl, Pausable {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
 
@@ -25,7 +24,7 @@ contract QuestPlatform is AccessControl, Pausable, ReentrancyGuard {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
     // State variables
-    ICreditBuildPoints public pointsToken;
+    IPointsToken public pointsToken;
     
     // Quest completion tracking
     mapping(address => mapping(uint256 => bool)) public questCompleted;
@@ -93,7 +92,7 @@ contract QuestPlatform is AccessControl, Pausable, ReentrancyGuard {
             revert ZeroAddress();
         }
 
-        pointsToken = ICreditBuildPoints(_pointsToken);
+        pointsToken = IPointsToken(_pointsToken);
         
         _grantRole(DEFAULT_ADMIN_ROLE, _admin);
         _grantRole(OPERATOR_ROLE, _operator);
@@ -154,7 +153,6 @@ contract QuestPlatform is AccessControl, Pausable, ReentrancyGuard {
         external
         onlyRole(OPERATOR_ROLE)
         whenNotPaused
-        nonReentrant
     {
         if (user == address(0)) revert ZeroAddress();
         if (questId >= questCount) revert QuestDoesNotExist();
@@ -188,7 +186,6 @@ contract QuestPlatform is AccessControl, Pausable, ReentrancyGuard {
         external
         onlyRole(OPERATOR_ROLE)
         whenNotPaused
-        nonReentrant
     {
         if (users.length != questIds.length) revert("Arrays length mismatch");
         if (users.length > 100) revert("Too many operations");
@@ -227,7 +224,7 @@ contract QuestPlatform is AccessControl, Pausable, ReentrancyGuard {
         uint256 nonce,
         uint256 deadline,
         bytes calldata signature
-    ) external whenNotPaused nonReentrant {
+    ) external whenNotPaused {
         if (block.timestamp > deadline) revert AttestationExpired();
         if (questId >= questCount) revert QuestDoesNotExist();
         if (nonce != userNonces[msg.sender]) revert InvalidNonce();
@@ -321,7 +318,7 @@ contract QuestPlatform is AccessControl, Pausable, ReentrancyGuard {
     {
         if (newToken == address(0)) revert ZeroAddress();
         address oldToken = address(pointsToken);
-        pointsToken = ICreditBuildPoints(newToken);
+        pointsToken = IPointsToken(newToken);
         emit PointsTokenUpdated(oldToken, newToken);
     }
 
