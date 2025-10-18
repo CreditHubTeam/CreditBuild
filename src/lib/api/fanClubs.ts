@@ -1,4 +1,4 @@
-import { ApiResponse } from "../types";
+import { ApiResponse, User } from "../types";
 import { apiClient, handleApiResponse } from "./client";
 import { ViewFanClubCard } from "../types/view";
 
@@ -38,6 +38,15 @@ export const getUserFanClubs = async (
 ): Promise<ViewFanClubCard[]> => {
   const response: ApiResponse<ViewFanClubCard[]> = await apiClient.get(
     `/users/${walletAddress}/fan-clubs`
+  );
+  return handleApiResponse(response);
+};
+
+// Get fan clubs member
+// /fan-clubs/{fanClubId}/members
+export const getFanClubMembers = async (fanClubId: string): Promise<User[]> => {
+  const response: ApiResponse<User[]> = await apiClient.get(
+    `/fan-clubs/${fanClubId}/members`
   );
   return handleApiResponse(response);
 };

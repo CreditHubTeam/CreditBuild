@@ -44,7 +44,7 @@ import { CreateClubChallengeRequest } from "@/lib/api/challenges";
 export default function FormClubChallengeModal() {
   const { modal, close, id } = useUI();
   const { currentUser, createClubChallenge } = useData();
-  console.log("FormClubChallengeModal - clubId:", id); // Pass ID ok
+  // console.log("FormClubChallengeModal - clubId:", id); // Pass ID ok
 
   const [form, setForm] = useState<CreateClubChallengeRequest>({
     walletAddress: currentUser?.walletAddress || "",
@@ -67,9 +67,20 @@ export default function FormClubChallengeModal() {
     const payload: CreateClubChallengeRequest = {
       ...form,
     };
-    console.log("Create Challenge Payload:", payload);
-    // createClubChallenge(id, payload);
+    // console.log("Create Challenge Payload:", payload);
+    createClubChallenge(id as string, payload);
 
+    setForm({
+      walletAddress: currentUser?.walletAddress || "",
+      title: "",
+      description: "",
+      points: 0,
+      category: "Community",
+      creditImpact: 0,
+      estimatedTimeMinutes: 0,
+      icon: "",
+      typeProof: "",
+    });
     setTimeout(() => {
       setLoading(false);
       close();

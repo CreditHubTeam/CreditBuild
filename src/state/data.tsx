@@ -29,6 +29,7 @@ import {
   joinFanClub,
   createFanClub,
   getUserFanClubById,
+  getFanClubMembers,
 } from "@/lib/api/fanClubs";
 import { getAchievements } from "@/lib/api/achievements";
 import { getUser, postRegister } from "@/lib/api/user";
@@ -43,6 +44,7 @@ type DataCtx = {
   fanClubs: ViewFanClubCard[];
   userFanClubs: ViewFanClubCard[];
   getClubChallenges: (clubId: string) => UseQueryResult<Challenge[], Error>;
+  getFanClubMembers: (fanClubId: string) => UseQueryResult<User[], Error>;
   refreshChallenges: () => void;
   submitChallenge: (
     challengeId: string,
@@ -114,6 +116,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       enabled: !!clubId,
       refetchInterval: 60000, // Refetch every 60 seconds
       refetchOnWindowFocus: true,
+    });
+
+  const useGetFanClubMembersQuery = (fanClubId: string) =>
+    useQuery({
+      queryKey: ["fanClubMembers", fanClubId],
+      queryFn: () => getFanClubMembers(fanClubId),
+      enabled: !!fanClubId,
     });
 
   // Education - General
@@ -319,6 +328,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       qc.invalidateQueries({ queryKey: ["challenges"] });
       qc.invalidateQueries({ queryKey: ["achievements"] });
       qc.invalidateQueries({ queryKey: ["currentUser"] });
+      qc.invalidateQueries({ queryKey: ["userFanClubs"] });
     },
     onError: (error: unknown) => {
       if (error instanceof Error) {
@@ -365,7 +375,28 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       clubId: string;
       data: CreateClubChallengeRequest;
     }) => {
-      return createClubChallenge(clubId, data);
+      return createClubChallenge(clubId, {
+        ...data,
+        walletAddress: address as string,
+      });
+    },
+
+    onMutate: () => showLoading("Creating club challenge..."),
+    onSettled: () => hideLoading(),
+    onSuccess: () => {
+      notify("Fan Club challenge Created! 🎉", "success");
+      qc.invalidateQueries({ queryKey: ["fanClubs"] });
+      qc.invalidateQueries({ queryKey: ["currentUser"] });
+      qc.invalidateQueries({ queryKey: ["clubChallenges"] });
+      qc.invalidateQueries({ queryKey: ["achievements"] });
+    },
+    onError: (error: unknown) => {
+      if (error instanceof Error) {
+        console.error("Create Fan Club Error:", error);
+        notify(error.message, "error");
+      } else {
+        notify("Create failed", "error");
+      }
     },
   });
 
@@ -399,6 +430,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       // === GET ===
       getUserFanClubDetail: useUserFanClubDetailQuery,
       getClubChallenges: useGetClubChallengesQuery,
+      getFanClubMembers: useGetFanClubMembersQuery,
     }),
     [
       creditPercentage,

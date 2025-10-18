@@ -58,19 +58,41 @@ import * as React from "react";
 type Props = { params: Promise<{ id: string }> };
 
 export default function ClubDetailPage({ params }: Props) {
-  const { getUserFanClubDetail } = useData();
+  const {
+    getUserFanClubDetail,
+    getClubChallenges,
+    getFanClubMembers,
+    currentUser,
+  } = useData();
   const { id } = React.use(params);
-  console.log("ClubDetailPage id:", id);
+  // console.log("ClubDetailPage id:", id);
   const { handleNavigation } = useApp();
 
   const { open } = useUI();
 
   // // fetch and log club detail
-  const { data: club, isLoading, error } = getUserFanClubDetail(id);
-  console.log("Fan Club Detail:", club);
+  const {
+    data: club,
+    isLoading: isLoadingUserFanClub,
+    error: errorUserFanClub,
+  } = getUserFanClubDetail(id);
+
+  const {
+    data: challenges,
+    isLoading: isLoadingChallenges,
+    error: errorChallenges,
+  } = getClubChallenges(id);
+
+  const {
+    data: members,
+    isLoading: isLoadingMembers,
+    error: errorMembers,
+  } = getFanClubMembers(id);
+
+  // console.log("Fan Club Detail:", club);
 
   // // Handle loading state
-  if (isLoading) {
+  if (isLoadingUserFanClub || isLoadingChallenges || isLoadingMembers) {
     return (
       <div className="bg-[#f6dca3] text-black min-h-screen pixel-font p-4">
         <div className="container mx-auto flex items-center justify-center min-h-screen">
@@ -84,7 +106,7 @@ export default function ClubDetailPage({ params }: Props) {
   }
 
   // // Handle error state
-  if (error) {
+  if (errorUserFanClub || errorChallenges || errorMembers) {
     return (
       <div className="bg-[#f6dca3] text-black min-h-screen pixel-font p-4">
         <div className="container mx-auto flex items-center justify-center min-h-screen">
@@ -125,7 +147,7 @@ export default function ClubDetailPage({ params }: Props) {
   // };
 
   // Guard: ensure `club` is defined before rendering the detailed UI to avoid "possibly null or undefined" errors.
-  if (!club) {
+  if (!club || !challenges || !members || !currentUser) {
     return (
       <div className="bg-[#f6dca3] text-black min-h-screen pixel-font p-4">
         <div className="container mx-auto flex items-center justify-center min-h-screen">
@@ -144,47 +166,47 @@ export default function ClubDetailPage({ params }: Props) {
     );
   }
 
-  const challenges: Challenge[] = [
-    {
-      id: "c1",
-      type: "offchain",
-      category: "Education",
-      name: "Write an Article on Yield Farming",
-      description: "Share your insights on DeFi yield strategies.",
-      points: 100,
-      creditImpact: 10,
-      isCompleted: false,
-      estimatedTimeMinutes: 30,
-    },
-    {
-      id: "c2",
-      type: "onchain",
-      category: "Technical",
-      name: "Deploy a Smart Contract",
-      description: "Deploy your first verified contract on Base Sepolia.",
-      points: 200,
-      creditImpact: 25,
-      isCompleted: true,
-      estimatedTimeMinutes: 60,
-    },
-  ];
+  // const challenges: Challenge[] = [
+  //   {
+  //     id: "c1",
+  //     type: "offchain",
+  //     category: "Education",
+  //     name: "Write an Article on Yield Farming",
+  //     description: "Share your insights on DeFi yield strategies.",
+  //     points: 100,
+  //     creditImpact: 10,
+  //     isCompleted: false,
+  //     estimatedTimeMinutes: 30,
+  //   },
+  //   {
+  //     id: "c2",
+  //     type: "onchain",
+  //     category: "Technical",
+  //     name: "Deploy a Smart Contract",
+  //     description: "Deploy your first verified contract on Base Sepolia.",
+  //     points: 200,
+  //     creditImpact: 25,
+  //     isCompleted: true,
+  //     estimatedTimeMinutes: 60,
+  //   },
+  // ];
 
-  const currentUser: User = {
-    walletAddress: "0x1234...abcd",
-    creditScore: 460,
-    totalChallenges: 12,
-    streakDays: 5,
-    totalPoints: 840,
-    isRegistered: true,
-    bestStreak: 14,
-  };
+  // const currentUser: User = {
+  //   walletAddress: "0x1234...abcd",
+  //   creditScore: 460,
+  //   totalChallenges: 12,
+  //   streakDays: 5,
+  //   totalPoints: 840,
+  //   isRegistered: true,
+  //   bestStreak: 14,
+  // };
 
-  const members = [
-    { name: "0xF3a2...91bC", creditScore: 450 },
-    { name: "0xC1B4...02Df", creditScore: 520 },
-    { name: "0xE4C5...77a1", creditScore: 390 },
-    { name: "0x99A2...A3CC", creditScore: 610 },
-  ];
+  // const members = [
+  //   { name: "0xF3a2...91bC", creditScore: 450 },
+  //   { name: "0xC1B4...02Df", creditScore: 520 },
+  //   { name: "0xE4C5...77a1", creditScore: 390 },
+  //   { name: "0x99A2...A3CC", creditScore: 610 },
+  // ];
 
   const isOwner = true; // giả lập user là chủ club
 
@@ -327,8 +349,8 @@ export default function ClubDetailPage({ params }: Props) {
               key={i}
               className="relative bg-[#f6dca3] text-black border-[3px] border-black rounded-[6px] p-4 shadow-[4px_4px_0_0_#000] pixel-card transition-transform hover:scale-[1.02]"
             >
-              <div className="font-bold text-xs sm:text-sm truncate">
-                {m.name}
+              <div className={`font-bold text-xs sm:text-sm truncate`}>
+                {m.walletAddress}
               </div>
               <div className="text-[10px] text-gray-300">
                 Score: {m.creditScore}

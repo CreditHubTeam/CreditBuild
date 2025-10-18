@@ -7,7 +7,7 @@ export default function FanClubsPage() {
   const { handleNavigation } = useApp();
   const { userFanClubs } = useData();
 
-  const joinedClubs = userFanClubs.filter((c) => !c.isJoined);
+  const joinedClubs = userFanClubs.filter((c) => c.isJoined === false);
   const { open } = useUI();
 
   // === Handlers ===
