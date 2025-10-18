@@ -56,5 +56,3 @@ In **Deploy & Run Transactions**:
    ```solidity
    defaultAdmin = 0xB8Ee4C4e0D231B376067384F63721Cc46535c8F9
    minter       = 0x0000000000000000000000000000000000000000
-
-là nguyên cái này là đủ đó hả?
