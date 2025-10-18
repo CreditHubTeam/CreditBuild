@@ -95,6 +95,12 @@ export const FanClubsService = {
             image_url: logoFile ? URL.createObjectURL(logoFile) : null,
             membership_fee: 0, //== tạm thời để 0, sau này có thể thêm trường phí thành viên
         });
+        // them fan club membership cho owner
+        await fanClubMembershipRepo.create({
+            user: { connect: { id: owner.id } },
+            club: { connect: { id: newClub.id } },
+            role: "owner"
+        });
         return {
             id: newClub.id,
             kolName: owner.username,
@@ -116,7 +122,7 @@ export const FanClubsService = {
         }
     },
 
-// [] createChallange(clubId, challengeData): Tạo thử thách mới cho câu lạc bộ.
+// [x] createChallange(clubId, challengeData): Tạo thử thách mới cho câu lạc bộ.
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    createChallange: async (clubId: string, body: any) => {
         //tim club theo clubId
