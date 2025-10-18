@@ -42,6 +42,17 @@ export const getUserFanClubs = async (
   return handleApiResponse(response);
 };
 
+// Get user's clubs by ID and user wallet address
+export const getUserFanClubById = async (
+  walletAddress: string,
+  clubId: string
+): Promise<ViewFanClubCard> => {
+  const response: ApiResponse<ViewFanClubCard> = await apiClient.get(
+    `/users/${walletAddress}/fan-clubs/${clubId}`
+  );
+  return handleApiResponse(response);
+};
+
 // Join fan club
 export const joinFanClub = async (
   clubId: string,

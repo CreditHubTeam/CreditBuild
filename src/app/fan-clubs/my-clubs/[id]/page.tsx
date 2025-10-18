@@ -50,43 +50,99 @@
 import { useApp } from "@/context/AppContext";
 import { Challenge, User } from "@/lib/types";
 import { ViewFanClubCard } from "@/lib/types/view";
+import { useData } from "@/state/data";
 import { useUI } from "@/state/ui";
 import Image from "next/image";
 import * as React from "react";
 
-/* ----------------------------
-   Mock types
------------------------------ */
-
 type Props = { params: Promise<{ id: string }> };
 
 export default function ClubDetailPage({ params }: Props) {
+  const { getUserFanClubDetail } = useData();
   const { id } = React.use(params);
   console.log("ClubDetailPage id:", id);
-
   const { handleNavigation } = useApp();
 
   const { open } = useUI();
+
+  // // fetch and log club detail
+  const { data: club, isLoading, error } = getUserFanClubDetail(id);
+  console.log("Fan Club Detail:", club);
+
+  // // Handle loading state
+  if (isLoading) {
+    return (
+      <div className="bg-[#f6dca3] text-black min-h-screen pixel-font p-4">
+        <div className="container mx-auto flex items-center justify-center min-h-screen">
+          <div className="pixel-card p-6 text-center">
+            <div className="text-2xl mb-4">🎮</div>
+            <div>Loading club details...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // // Handle error state
+  if (error) {
+    return (
+      <div className="bg-[#f6dca3] text-black min-h-screen pixel-font p-4">
+        <div className="container mx-auto flex items-center justify-center min-h-screen">
+          <div className="pixel-card p-6 text-center">
+            <div className="text-2xl mb-4 text-red-600">❌</div>
+            <div className="mb-4">Failed to load club details</div>
+            <button
+              onClick={() => handleNavigation("/fan-clubs/my-clubs")}
+              className="pixel-btn pixel-btn--secondary"
+            >
+              ⬅ Back to Fan Clubs
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   /* ----------------------------
      Mock data
   ----------------------------- */
-  const club: ViewFanClubCard = {
-    id: "1",
-    kolName: "Sinoo",
-    kolVerified: true,
-    kolSubtitle: "DeFi Analyst",
-    title: "Crypto Builders Club",
-    description:
-      "A place for DeFi enthusiasts and builders to share, learn, and earn together.",
-    members: 128,
-    challenges: 4,
-    avgEarnings: 520,
-    socials: { twitter: 1024, youtube: 480, telegram: 680 },
-    priceLabel: "100 MOCA",
-    image: "/club-cover.png",
-    isJoined: true,
-    isOwner: true,
-  };
+  // const club: ViewFanClubCard = {
+  //   id: "1",
+  //   kolName: "Sinoo",
+  //   kolVerified: true,
+  //   kolSubtitle: "DeFi Analyst",
+  //   title: "Crypto Builders Club",
+  //   description:
+  //     "A place for DeFi enthusiasts and builders to share, learn, and earn together.",
+  //   members: 128,
+  //   challenges: 4,
+  //   avgEarnings: 520,
+  //   socials: { twitter: 1024, youtube: 480, telegram: 680 },
+  //   priceLabel: "100 MOCA",
+  //   image: "/club-cover.png",
+  //   isJoined: true,
+  //   isOwner: true,
+  // };
+
+  // Guard: ensure `club` is defined before rendering the detailed UI to avoid "possibly null or undefined" errors.
+  if (!club) {
+    return (
+      <div className="bg-[#f6dca3] text-black min-h-screen pixel-font p-4">
+        <div className="container mx-auto flex items-center justify-center min-h-screen">
+          <div className="pixel-card p-6 text-center">
+            <div className="text-2xl mb-4">ℹ️</div>
+            <div>Club details not found.</div>
+            <button
+              onClick={() => handleNavigation("/fan-clubs/my-clubs")}
+              className="pixel-btn pixel-btn--secondary mt-4"
+            >
+              ⬅ Back to Fan Clubs
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const challenges: Challenge[] = [
     {
@@ -152,8 +208,15 @@ export default function ClubDetailPage({ params }: Props) {
       <header className="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-6">
         <div className="w-20 h-20 sm:w-24 sm:h-24 bg-[#ffeeb0] border-[3px] border-black rounded-[6px] overflow-hidden flex items-center justify-center">
           {club.image ? (
-            <Image
-              src={club.image}
+            // <Image
+            //   src={club.image || ""}
+            //   alt={club.title}
+            //   width={96}
+            //   height={96}
+            //   className="object-cover w-full h-full"
+            // />
+            <img
+              src={club.image || ""}
               alt={club.title}
               width={96}
               height={96}

@@ -1,8 +1,22 @@
 "use client";
 import { useUI } from "@/state/ui";
+import { useEffect } from "react";
 
 export default function Notification() {
   const { notice, clearNotice } = useUI();
+
+  useEffect(() => {
+    if (notice.visible) {
+      const timer = setTimeout(() => {
+        clearNotice();
+      }, 3000);
+
+      // cleanup function
+
+      return () => clearTimeout(timer);
+    }
+  }, [notice.visible, clearNotice]);
+
   if (!notice.visible) return null;
 
   const bgColorClass = {

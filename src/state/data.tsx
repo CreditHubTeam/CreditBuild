@@ -1,6 +1,11 @@
 "use client";
 import React, { createContext, useContext, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  UseQueryResult,
+} from "@tanstack/react-query";
 import { useWallet } from "./wallet";
 import { useUI } from "./ui";
 import { Achievement, Challenge, Education, User } from "@/lib/types";
@@ -10,6 +15,7 @@ import {
   completeChallenge,
   CreateClubChallengeRequest,
   createClubChallenge,
+  getClubChallenges,
 } from "@/lib/api/challenges";
 import {
   getEducation,
@@ -22,6 +28,7 @@ import {
   getUserFanClubs,
   joinFanClub,
   createFanClub,
+  getUserFanClubById,
 } from "@/lib/api/fanClubs";
 import { getAchievements } from "@/lib/api/achievements";
 import { getUser, postRegister } from "@/lib/api/user";
@@ -35,6 +42,7 @@ type DataCtx = {
   achievements: Achievement[];
   fanClubs: ViewFanClubCard[];
   userFanClubs: ViewFanClubCard[];
+  getClubChallenges: (clubId: string) => UseQueryResult<Challenge[], Error>;
   refreshChallenges: () => void;
   submitChallenge: (
     challengeId: string,
@@ -44,6 +52,9 @@ type DataCtx = {
     eduId: string,
     payload: { progress: number; proof?: unknown }
   ) => Promise<void>;
+  getUserFanClubDetail: (
+    clubId?: string
+  ) => UseQueryResult<ViewFanClubCard | null, Error>;
   joinFanClub: (clubId: string) => Promise<void>;
   createFanClub: (clubData: CreateFanClubRequest) => Promise<void>;
   createClubChallenge: (
@@ -95,6 +106,16 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     enabled: !!address,
   });
 
+  // Get club challenges by club ID
+  const useGetClubChallengesQuery = (clubId: string) =>
+    useQuery({
+      queryKey: ["clubChallenges", clubId],
+      queryFn: () => getClubChallenges(clubId),
+      enabled: !!clubId,
+      refetchInterval: 60000, // Refetch every 60 seconds
+      refetchOnWindowFocus: true,
+    });
+
   // Education - General
   const qEducation = useQuery({
     queryKey: ["education"],
@@ -117,6 +138,17 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     queryKey: ["fanClubs"],
     queryFn: () => getFanClubs(),
   });
+
+  // Fan Clubs detail by id and wallet address
+  const useUserFanClubDetailQuery = (clubId?: string) =>
+    useQuery({
+      queryKey: ["fanClubDetail", address, clubId],
+      queryFn: () => {
+        if (!address || !clubId) return Promise.resolve(null);
+        return getUserFanClubById(address, clubId);
+      },
+      enabled: !!(address && clubId),
+    });
 
   // User fan clubs
   const qUserFanClubs = useQuery({
@@ -310,6 +342,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       notify("Fan Club Created! 🎉", "success");
       qc.invalidateQueries({ queryKey: ["fanClubs"] });
       qc.invalidateQueries({ queryKey: ["currentUser"] });
+      qc.invalidateQueries({ queryKey: ["userFanClubs"] });
+      qc.invalidateQueries({ queryKey: ["achievements"] });
     },
     onError: (error: unknown) => {
       if (error instanceof Error) {
@@ -362,6 +396,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       createClubChallenge: async (clubId, data) => {
         await mCreateClubChallenge.mutateAsync({ clubId, data });
       },
+      // === GET ===
+      getUserFanClubDetail: useUserFanClubDetailQuery,
+      getClubChallenges: useGetClubChallengesQuery,
     }),
     [
       creditPercentage,

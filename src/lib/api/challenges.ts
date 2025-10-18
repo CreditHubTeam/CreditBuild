@@ -54,6 +54,17 @@ export const completeChallenge = async (
   return handleApiResponse(response);
 };
 
+// Get club challenges
+// fan-clubs/:id/challenges
+export const getClubChallenges = async (
+  clubId: string
+): Promise<Challenge[]> => {
+  const response: ApiResponse<Challenge[]> = await apiClient.get(
+    `/fan-clubs/${clubId}/challenges`
+  );
+  return handleApiResponse(response);
+};
+
 // ======= FOR Submit club create challenge =======
 export const createClubChallenge = async (
   clubId: string,
