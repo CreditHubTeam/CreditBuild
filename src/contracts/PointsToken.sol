@@ -8,11 +8,11 @@ import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20P
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 
 /**
- * @title CreditBuildPoints
+ * @title PointsToken
  * @notice Points token for CreditBuild platform with enhanced security features
  * @dev Implements ERC20 with minting, burning, permit, and emergency pause
  */
-contract CreditBuildPoints is ERC20, ERC20Burnable, ERC20Permit, AccessControl, Pausable {
+contract PointsToken is ERC20, ERC20Burnable, ERC20Permit, AccessControl, Pausable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
@@ -26,8 +26,8 @@ contract CreditBuildPoints is ERC20, ERC20Burnable, ERC20Permit, AccessControl, 
     uint256 public constant MAX_SUPPLY = 1_000_000_000 * 10**18; // 1 billion tokens
 
     constructor(address defaultAdmin, address minter)
-        ERC20("CreditBuildPoints", "CBP")
-        ERC20Permit("CreditBuildPoints")
+        ERC20("PointsToken", "CBP")
+        ERC20Permit("PointsToken")
     {
         require(defaultAdmin != address(0), "Invalid admin address");
         require(minter != address(0), "Invalid minter address");
