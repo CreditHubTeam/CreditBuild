@@ -5,11 +5,11 @@ import { useData } from "@/state/data";
 
 export default function MyFanClubsPage() {
   const { handleNavigation } = useApp();
-  const { userFanClubs } = useData();
+  const { userFanClubs,  } = useData();
 
   const joinedClubs = userFanClubs.filter((c) => !c.isJoined);
 
-  // === Handlers ===
+  // === Handlers === 
   const handleManageClub = (
     club: (typeof userFanClubs)[number],
     isVerified: boolean
@@ -54,7 +54,7 @@ export default function MyFanClubsPage() {
 
       {/* Grid */}
       <div className="grid md:grid-cols-2 sm:grid-cols-2 gap-4">
-        {joinedClubs.map((club) => {
+        {joinedClubs.filter((club) => club.isOwner).map((club) => {
           const initials = club.kolName
             .split(" ")
             .map((w) => w[0])

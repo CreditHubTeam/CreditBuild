@@ -1,6 +1,6 @@
 # FE request
 
-## Create Club
+## Create Club // DONE
 
 ### POST /api/fan-clubs
 
@@ -38,7 +38,7 @@
 
 ## Create Challenge for Club
 
-### POST /api/fan-clubs/{fanClubId}/challenges 
+### POST /api/fan-clubs/{fanClubId}/challenges
 
 ```bash
 export type CreateClubChallengeRequest = {

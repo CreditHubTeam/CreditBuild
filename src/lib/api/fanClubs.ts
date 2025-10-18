@@ -16,6 +16,7 @@ type JoinFanClubResponse = {
 };
 
 export type CreateFanClubRequest = {
+  walletAddress: string;
   name: string;
   description: string;
   membershipType: "open" | "invite_only";
@@ -31,6 +32,7 @@ export const getFanClubs = async (): Promise<ViewFanClubCard[]> => {
   return handleApiResponse(response);
 };
 
+// Get user's fan clubs
 export const getUserFanClubs = async (
   walletAddress: string
 ): Promise<ViewFanClubCard[]> => {
@@ -56,6 +58,9 @@ export const joinFanClub = async (
 export const createFanClub = async (
   data: CreateFanClubRequest
 ): Promise<ViewFanClubCard> => {
-  const response: ApiResponse<ViewFanClubCard> = await apiClient.post(`/fan-clubs`, data);
+  const response: ApiResponse<ViewFanClubCard> = await apiClient.post(
+    `/fan-clubs`,
+    data
+  );
   return handleApiResponse(response);
 };

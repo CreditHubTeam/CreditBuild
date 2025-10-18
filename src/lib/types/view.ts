@@ -18,4 +18,5 @@ export interface ViewFanClubCard {
   priceLabel: string; // "100 MOCA"
   image?: string; // cover/thumb nếu có
   isJoined: boolean;
+  isOwner: boolean;
 }

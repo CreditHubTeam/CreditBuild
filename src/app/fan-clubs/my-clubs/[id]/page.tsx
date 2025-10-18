@@ -85,6 +85,7 @@ export default function ClubDetailPage({ params }: Props) {
     priceLabel: "100 MOCA",
     image: "/club-cover.png",
     isJoined: true,
+    isOwner: true,
   };
 
   const challenges: Challenge[] = [

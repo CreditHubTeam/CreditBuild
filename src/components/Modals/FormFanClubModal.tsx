@@ -7,7 +7,7 @@ import Image from "next/image";
 
 export default function FormFanClubModal() {
   const { modal, close } = useUI();
-  const { createFanClub } = useData();
+  const { createFanClub, currentUser } = useData();
 
   type FormState = {
     name: string;
@@ -44,13 +44,14 @@ export default function FormFanClubModal() {
     setLoading(true);
     try {
       const tagsArray = form.tags.split(",").map((t) => t.trim());
-      // await createFanClub({
-      //   name: form.name,
-      //   description: form.description,
-      //   membershipType: form.membershipType,
-      //   tags: tagsArray,
-      //   logoFile: form.logoFile,
-      // });
+      await createFanClub({
+        walletAddress: currentUser?.walletAddress as string,
+        name: form.name,
+        description: form.description,
+        membershipType: form.membershipType,
+        tags: tagsArray,
+        logoFile: form.logoFile,
+      });
       console.log("club", {
         name: form.name,
         description: form.description,
