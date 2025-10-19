@@ -10,6 +10,8 @@ const PROTECTED_ROUTES = [
 ];
 const DEBUG = process.env.NODE_ENV === "development";
 
+const ALLOWED_ORIGIN = process.env.NEXT_PUBLIC_ALLOWED_ORIGIN ?? "*";
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 

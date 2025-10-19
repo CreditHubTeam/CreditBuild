@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ChallengesService } from "@/modules/challenges/service";
+// import { ChallengesService } from "@/modules/challenges/service";
 import * as z from "zod";
 
 const CompleteChallengeInput = z.object({
@@ -13,14 +13,14 @@ export async function POST(req: NextRequest) {
   try {
     const body = CompleteChallengeInput.parse(await req.json());
 
-    const result = await ChallengesService.submit(
-      body.challengeId,
-      body.walletAddress as `0x${string}`,
-      body.amount,
-      body.proof
-    );
+    // const result = await ChallengesService.submit(
+    //   body.challengeId,
+    //   body.walletAddress as `0x${string}`,
+    //   body.amount,
+    //   body.proof
+    // );
 
-    return NextResponse.json({ ok: true, ...result });
+    return NextResponse.json({ ok: true, data: null });
   } catch (error: unknown) {
     const msg =
       error instanceof Error

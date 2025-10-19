@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ChallengesService } from "@/modules/challenges/service";
+// import { ChallengesService } from "@/modules/challenges/service";
 
 export async function GET(req: NextRequest) {
   try {
@@ -12,10 +12,10 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const challenges = await ChallengesService.getDailyChallenges(
-      walletAddress as `0x${string}`
-    );
-    return NextResponse.json({ ok: true, challenges });
+    // const challenges = await ChallengesService.getDailyChallenges(
+    //   walletAddress as `0x${string}`
+    // );
+    return NextResponse.json({ ok: true, data: [] });
   } catch (error: unknown) {
     const msg =
       error instanceof Error ? error.message : String(error);
