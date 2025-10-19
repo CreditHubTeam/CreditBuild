@@ -1,10 +1,3 @@
-// "use client";
-// import { AppProvider } from "@/context/AppContext";
-
-// export default function Providers({ children }: { children: React.ReactNode }) {
-//   return <AppProvider>{children}</AppProvider>;
-// }
-
 "use client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
