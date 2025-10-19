@@ -4,7 +4,6 @@ import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 import WalletSelectionModal from "@/components/Modals/WalletSelectionModal";
 import NetworkSwitchModal from "@/components/Modals/NetworkSwitchModal";
-import RegistrationModal from "@/components/Modals/RegistrationModal";
 import ChallengeModal from "@/components/Modals/ChallengeModal";
 import LoadingGlobal from "@/ui/Loading";
 import Notification from "@/ui/Notification";

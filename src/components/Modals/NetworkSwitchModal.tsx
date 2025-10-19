@@ -3,7 +3,7 @@ import { useApp } from "@/context/AppContext";
 import { creditcoinTestnet } from "@/lib/chains";
 import { useUI } from "@/state/ui";
 import { useSwitchChain } from "wagmi";
-import PixelModal from "./PixelModal";
+import PixelModal from "@/components/Modals/PixelModal";
 
 export default function NetworkSwitchModal() {
   const { openModal, closeModals } = useApp();
