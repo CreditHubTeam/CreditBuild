@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --turbopack -p 3001",
     "build": "prisma generate && ESLINT_NO_DEV_ERRORS=true next build --turbopack",
     "start": "next start",
     "db:push": "prisma db push",
@@ -16,6 +16,7 @@
   "dependencies": {
     "@prisma/client": "^6.17.0",
     "@tanstack/react-query": "^5.90.2",
+    "axios": "^1.12.2",
     "next": "15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",

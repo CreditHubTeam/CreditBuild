@@ -1,11 +1,30 @@
+import { ViewFanClubCard } from "./types/view";
+
+// API Response Types
+export type ApiResponse<T> =
+  | {
+      ok: true;
+      data: T;
+    }
+  | {
+      ok: false;
+      error: {
+        message: string;
+        code: string;
+      };
+    };
+
 export type Challenge = {
+  id: string;
   type: string;
+  category: string;
   name: string;
-  description: string;
+  description?: string;
   points: number;
   creditImpact: number;
-  category: "daily" | "weekly";
-  icon: string;
+  isCompleted: boolean;
+  icon?: string;
+  estimatedTimeMinutes?: number;
 };
 
 export type Achievement = {
@@ -16,8 +35,22 @@ export type Achievement = {
   unlocked: boolean;
 };
 
+export type Education = {
+  id: number;
+  title: string;
+  description: string;
+  duration: string;
+  points: number;
+  isCompleted: boolean;
+};
+
 export type WalletProvider = {
-  id: "baseAccount"| "walletConnect" | "io.metamask" | "app.subwallet" | string;
+  id:
+    | "baseAccount"
+    | "walletConnect"
+    | "io.metamask"
+    | "app.subwallet"
+    | string;
   name: string;
   // type: "metamask" | "coinbase" | "walletconnect" | "generic";
   icon: string;
@@ -27,12 +60,13 @@ export type WalletProvider = {
 };
 
 export type User = {
-  address: string;
+  walletAddress: string;
   creditScore: number;
   totalChallenges: number;
   streakDays: number;
-  totalPointsEarned: number;
+  totalPoints: number;
   isRegistered: boolean;
+  bestStreak: number;
 };
 
 export type Network = {
@@ -48,14 +82,9 @@ export type AppData = {
   sampleUser: User;
   challenges: Challenge[];
   achievements: Achievement[];
+  fanClubs: ViewFanClubCard[];
   walletProviders: WalletProvider[];
   creditcoinNetwork: Network;
   contractAddress: string;
-  educationalContent: {
-    id: string;
-    title: string;
-    description: string;
-    duration: string;
-    points: number;
-  }[];
+  educationalContent: Education[];
 };
