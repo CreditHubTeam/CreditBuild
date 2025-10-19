@@ -1,55 +1,6 @@
-// Hãy xây dựng trang chi tiết câu lạc bộ fan clubs theo style 8bit mô tả sau:
-// - Header: Hiển thị tên câu lạc bộ, mô tả ngắn, tên chủ sở hữu và lấy một vài thuộc tính cơ bản từ type có sẵn
-
-// export interface ViewFanClubCard {
-//   id: string;
-//   kolName: string;
-//   kolVerified: boolean;
-//   kolSubtitle?: string; // specialization
-//   title: string;
-//   description?: string;
-//   members: number;
-//   challenges: number;
-//   avgEarnings: number; // number hiển thị
-//   socials: {
-//     twitter?: number;
-//     youtube?: number;
-//     telegram?: number;
-//   };
-//   priceLabel: string; // "100 MOCA"
-//   image?: string; // cover/thumb nếu có
-//   isJoined: boolean;
-// }
-
-// - Body: Danh sách nhiệm vụ (tasks) của câu lạc bộ với khả năng CRUD (tạo, đọc, cập nhật, xóa) nếu người dùng là chủ sở hữu và thuộc tính của challenge type có sẵn như:
-// export type Challenge = {
-//   id: string;
-//   type: string;
-//   category: string;
-//   name: string;
-//   description?: string;
-//   points: number;
-//   creditImpact: number;
-//   isCompleted: boolean;
-//   icon?: string;
-//   estimatedTimeMinutes?: number;
-// };
-
-// - Footer: Danh sách thành viên của câu lạc bộ và thông tin của user hiện tại như type có sẵn User:
-// export type User = {
-//   walletAddress: string;
-//   creditScore: number;
-//   totalChallenges: number;
-//   streakDays: number;
-//   totalPoints: number;
-//   isRegistered: boolean;
-//   bestStreak: number;
-// };
-
 "use client";
 import { useApp } from "@/context/AppContext";
-import { Challenge, User } from "@/lib/types";
-import { ViewFanClubCard } from "@/lib/types/view";
+import { Challenge } from "@/lib/types";
 import { useData } from "@/state/data";
 import { useUI } from "@/state/ui";
 import Image from "next/image";
@@ -68,7 +19,7 @@ export default function ClubDetailPage({ params }: Props) {
   // console.log("ClubDetailPage id:", id);
   const { handleNavigation } = useApp();
 
-  const { open } = useUI();
+  const { open, close } = useUI();
 
   // // fetch and log club detail
   const {
@@ -125,27 +76,6 @@ export default function ClubDetailPage({ params }: Props) {
     );
   }
 
-  /* ----------------------------
-     Mock data
-  ----------------------------- */
-  // const club: ViewFanClubCard = {
-  //   id: "1",
-  //   kolName: "Sinoo",
-  //   kolVerified: true,
-  //   kolSubtitle: "DeFi Analyst",
-  //   title: "Crypto Builders Club",
-  //   description:
-  //     "A place for DeFi enthusiasts and builders to share, learn, and earn together.",
-  //   members: 128,
-  //   challenges: 4,
-  //   avgEarnings: 520,
-  //   socials: { twitter: 1024, youtube: 480, telegram: 680 },
-  //   priceLabel: "100 MOCA",
-  //   image: "/club-cover.png",
-  //   isJoined: true,
-  //   isOwner: true,
-  // };
-
   // Guard: ensure `club` is defined before rendering the detailed UI to avoid "possibly null or undefined" errors.
   if (!club || !challenges || !members || !currentUser) {
     return (
@@ -165,48 +95,6 @@ export default function ClubDetailPage({ params }: Props) {
       </div>
     );
   }
-
-  // const challenges: Challenge[] = [
-  //   {
-  //     id: "c1",
-  //     type: "offchain",
-  //     category: "Education",
-  //     name: "Write an Article on Yield Farming",
-  //     description: "Share your insights on DeFi yield strategies.",
-  //     points: 100,
-  //     creditImpact: 10,
-  //     isCompleted: false,
-  //     estimatedTimeMinutes: 30,
-  //   },
-  //   {
-  //     id: "c2",
-  //     type: "onchain",
-  //     category: "Technical",
-  //     name: "Deploy a Smart Contract",
-  //     description: "Deploy your first verified contract on Base Sepolia.",
-  //     points: 200,
-  //     creditImpact: 25,
-  //     isCompleted: true,
-  //     estimatedTimeMinutes: 60,
-  //   },
-  // ];
-
-  // const currentUser: User = {
-  //   walletAddress: "0x1234...abcd",
-  //   creditScore: 460,
-  //   totalChallenges: 12,
-  //   streakDays: 5,
-  //   totalPoints: 840,
-  //   isRegistered: true,
-  //   bestStreak: 14,
-  // };
-
-  // const members = [
-  //   { name: "0xF3a2...91bC", creditScore: 450 },
-  //   { name: "0xC1B4...02Df", creditScore: 520 },
-  //   { name: "0xE4C5...77a1", creditScore: 390 },
-  //   { name: "0x99A2...A3CC", creditScore: 610 },
-  // ];
 
   const isOwner = true; // giả lập user là chủ club
 
@@ -304,13 +192,11 @@ export default function ClubDetailPage({ params }: Props) {
             {challenges.map((task) => (
               <div
                 key={task.id}
-                // className="bg-[#ffeeb0] border-[3px] border-black rounded-[6px] p-3 shadow-[3px_3px_0_#000]"
-                className="relative bg-[#f6dca3] text-black border-[3px] border-black rounded-[6px] p-4 shadow-[4px_4px_0_0_#000] pixel-card transition-transform hover:scale-[1.02] 
-                
-                "
+                className="relative bg-[#f6dca3] text-black border-[3px] border-black rounded-[6px] p-4 shadow-[4px_4px_0_0_#000] pixel-card transition-transform hover:scale-[1.02] cursor-pointer"
+                onClick={() => open("clubChallenge", task)}
               >
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-bold text-sm sm:text-base text-white">
+                  <h3 className="font-bold text-sm sm:text-base ">
                     {task.name}
                   </h3>
                   {isOwner && (
@@ -322,7 +208,7 @@ export default function ClubDetailPage({ params }: Props) {
                 <p className="text-xs sm:text-sm mb-2 text-gray-800">
                   {task.description || "No description."}
                 </p>
-                <div className="flex justify-between text-xs sm:text-sm">
+                <div className="flex justify-between text-xs sm:text-sm text-white">
                   <span>Points: {task.points}</span>
                   <span>Impact: +{task.creditImpact}</span>
                 </div>
@@ -330,7 +216,7 @@ export default function ClubDetailPage({ params }: Props) {
                   {task.isCompleted ? (
                     <span className="text-green-600">✅ Completed</span>
                   ) : (
-                    <span className="text-gray-200">🕹 In progress</span>
+                    <span className="text-mc-gold">🕹 In progress</span>
                   )}
                 </div>
               </div>

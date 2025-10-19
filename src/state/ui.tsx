@@ -1,4 +1,5 @@
 "use client";
+import { Challenge } from "@/lib/types";
 import { ViewFanClubCard } from "@/lib/types/view";
 import React, { createContext, useContext, useCallback, useState } from "react";
 
@@ -7,6 +8,7 @@ type ModalId =
   | "networkSwitch"
   | "registration"
   | "challenge"
+  | "clubChallenge"
   | "formClubChallenge"
   | "formChallenge"
   | "fanClubs"
@@ -16,7 +18,7 @@ type NoticeType = "success" | "error" | "warning" | "info";
 
 type UIState = {
   modal: ModalId;
-  selectedClub: ViewFanClubCard | null; // Club data for FanClubsModal
+  modalData: ViewFanClubCard | Challenge | null; // Club data for FanClubsModal
   id: string | number | null; // Generic ID for other modals if needed
   loading: { visible: boolean; message: string };
   notice: { visible: boolean; message: string; type: NoticeType };
@@ -25,7 +27,7 @@ type UIState = {
 type UIContextType = UIState & {
   open: (
     m: Exclude<ModalId, null>,
-    data?: ViewFanClubCard | string | number
+    data?: ViewFanClubCard | Challenge | string | number
   ) => void;
   close: () => void;
   showLoading: (msg?: string) => void;
@@ -38,9 +40,9 @@ const UIContext = createContext<UIContextType | null>(null);
 
 export function UIProvider({ children }: { children: React.ReactNode }) {
   const [modal, setModal] = useState<ModalId>(null);
-  const [selectedClub, setSelectedClub] = useState<ViewFanClubCard | null>(
-    null
-  );
+  const [modalData, setModalData] = useState<
+    ViewFanClubCard | Challenge | null
+  >(null);
   const [id, setId] = useState<string | number | null>(null);
   const [loading, setLoading] = useState({
     visible: false,
@@ -53,16 +55,16 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   });
 
   const open = useCallback(
-    (m: Exclude<ModalId, null>, data?: ViewFanClubCard | string | number) => {
+    (m: Exclude<ModalId, null>, data?: ViewFanClubCard | Challenge | string | number) => {
       setModal(m);
       setId(data as string | number | null);
-      setSelectedClub(data as ViewFanClubCard | null);
+      setModalData(data as ViewFanClubCard | Challenge | null);
     },
     []
   );
   const close = useCallback(() => {
     setModal(null);
-    setSelectedClub(null);
+    setModalData(null);
     setId(null);
   }, []);
   const showLoading = useCallback(
@@ -88,7 +90,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
     <UIContext.Provider
       value={{
         modal,
-        selectedClub,
+        modalData,
         id,
         loading,
         notice,

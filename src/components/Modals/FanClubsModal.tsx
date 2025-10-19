@@ -9,12 +9,13 @@ interface FanClubsModalProps {
 }
 
 export default function FanClubsModal({ club }: FanClubsModalProps) {
-  const { modal, selectedClub, close } = useUI();
+  const { modal, modalData, close } = useUI();
   // const { submitChallenge } = useData();
   const { joinFanClub } = useData();
 
   // Use selectedClub from UI state or club prop
-  const activeClub = selectedClub || club;
+  const activeClub = modalData as ViewFanClubCard | null;
+
 
   if (modal !== "fanClubs" || !activeClub) return null;
 

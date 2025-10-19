@@ -1,13 +1,18 @@
 import { apiClient, handleApiResponse } from "./client";
 import { Challenge, ApiResponse } from "@/lib/types";
 
-type CompleteChallengeRequest = {
-  walletAddress: string;
-  amount: number;
-  // proof?: unknown;
+export type proofCompleteChallenge = {
+  url: string;
+  type: "image" | "video" | "document" | "link";
 };
 
-type CompleteChallengeResponse = {
+export type CompleteChallengeRequest = {
+  walletAddress: string;
+  amount: number;
+  proof?: proofCompleteChallenge;
+};
+
+export type CompleteChallengeResponse = {
   challengeId: string;
   isCompleted: boolean;
   pointsAwarded: number;
@@ -49,6 +54,20 @@ export const completeChallenge = async (
 ): Promise<CompleteChallengeResponse> => {
   const response: ApiResponse<CompleteChallengeResponse> = await apiClient.post(
     `/challenges/${challId}/submit`,
+    data
+  );
+  return handleApiResponse(response);
+};
+
+// Submit challenge for club
+// /fan-clubs/:id/challenges/:challengeId/submit
+export const completeClubChallenge = async (
+  clubId: string,
+  challId: string,
+  data: CompleteChallengeRequest
+): Promise<CompleteChallengeResponse> => {
+  const response: ApiResponse<CompleteChallengeResponse> = await apiClient.post(
+    `/fan-clubs/${clubId}/challenges/${challId}/submit`,
     data
   );
   return handleApiResponse(response);

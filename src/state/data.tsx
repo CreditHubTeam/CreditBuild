@@ -16,6 +16,9 @@ import {
   CreateClubChallengeRequest,
   createClubChallenge,
   getClubChallenges,
+  completeClubChallenge,
+  proofCompleteChallenge,
+  CompleteChallengeRequest,
 } from "@/lib/api/challenges";
 import {
   getEducation,
@@ -48,7 +51,12 @@ type DataCtx = {
   refreshChallenges: () => void;
   submitChallenge: (
     challengeId: string,
-    payload: { amount?: number; proof?: unknown }
+    payload: { amount?: number; proof?: proofCompleteChallenge }
+  ) => Promise<void>;
+  submitClubChallenge: (
+    clubId: string,
+    challengeId: string,
+    payload: { amount?: number; proof?: proofCompleteChallenge }
   ) => Promise<void>;
   completeEducation: (
     eduId: string,
@@ -278,6 +286,42 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     },
   });
 
+  // submit club challenge
+  const mSubmitClubChallenge = useMutation({
+    mutationKey: ["submitClubChallenge"],
+    mutationFn: async ({
+      clubId,
+      challengeId,
+      payload,
+    }: {
+      clubId: string;
+      challengeId: string;
+      payload: Omit<CompleteChallengeRequest, "walletAddress">;
+    }) => {
+      return completeClubChallenge(clubId, challengeId, {
+        walletAddress: address as string,
+        amount: (payload.amount as number) || 0,
+        proof: payload.proof,
+      });
+    },
+    onMutate: () => showLoading("Submitting club challenge..."),
+    onSettled: () => hideLoading(),
+    onSuccess: () => {
+      notify("Club Challenge Completed! 🎉", "success");
+      qc.invalidateQueries({ queryKey: ["clubChallenges"] });
+      qc.invalidateQueries({ queryKey: ["achievements"] });
+      qc.invalidateQueries({ queryKey: ["currentUser"] });
+      qc.invalidateQueries({ queryKey: ["fanClubDetail"] });
+    },
+    onError: (error: unknown) => {
+      if (error instanceof Error) {
+        notify(error.message, "error");
+      } else {
+        notify("Submit failed", "error");
+      }
+    },
+  });
+
   // education submit
   const mCompleteEducation = useMutation({
     mutationKey: ["completeEducation"],
@@ -416,6 +460,18 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       submitChallenge: async (challengeId, payload) => {
         await mSubmitChallenge.mutateAsync({ challengeId, ...payload });
       },
+      submitClubChallenge: async (clubId, challengeId, payload) => {
+        // ensure amount is provided (default to 0) so the payload matches the required type
+        const safePayload = {
+          ...(payload as { amount?: number; proof?: proofCompleteChallenge }),
+          amount: payload.amount ?? 0,
+        };
+        await mSubmitClubChallenge.mutateAsync({
+          clubId,
+          challengeId,
+          payload: safePayload,
+        });
+      },
       completeEducation: async (eduId, payload) => {
         await mCompleteEducation.mutateAsync({ eduId, ...payload });
       },
@@ -444,6 +500,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       qAchievements.data,
       qc,
       mSubmitChallenge,
+      mSubmitClubChallenge,
       mCompleteEducation,
       mJoinFanClub,
       mCreateFanClub,
