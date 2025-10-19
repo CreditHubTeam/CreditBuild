@@ -10,6 +10,18 @@ const nextConfig: NextConfig = {
     // TS errors will still be shown but won't fail the build
     ignoreBuildErrors: false,
   },
+  async headers() {
+    return [
+      {
+        source: "/api/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: process.env.NEXT_PUBLIC_ALLOWED_ORIGIN || "*" },
+          { key: "Access-Control-Allow-Methods", value: "GET,POST,PUT,PATCH,DELETE,OPTIONS" },
+          { key: "Access-Control-Allow-Headers", value: "Content-Type, Authorization" }
+        ]
+      }
+    ];
+  }
 };
 
 export default nextConfig;

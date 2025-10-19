@@ -19,8 +19,6 @@ import React, {
 } from "react";
 import { useAccount, useConnect } from "wagmi";
 
-
-
 type PageId =
   | "landingPage"
   | "dashboard"
@@ -120,16 +118,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // Sync wagmi state with AppContext state
   useEffect(() => {
-    console.log("Wagmi state changed:", { isConnected, address, chainId: wagmiChainId });
-    
+    console.log("Wagmi state changed:", {
+      isConnected,
+      address,
+      chainId: wagmiChainId,
+    });
+
     setIsWalletConnected(isConnected);
-    
+
     if (isConnected && address) {
       const hexChainId = `0x${wagmiChainId?.toString(16)}`;
       setCurrentChainId(hexChainId);
-      setCurrentUser(u => ({ 
-        ...u, 
-        address: `${address.slice(0, 6)}...${address.slice(-4)}` 
+      setCurrentUser((u) => ({
+        ...u,
+        address: `${address.slice(0, 6)}...${address.slice(-4)}`,
       }));
     } else {
       // Disconnected
@@ -175,13 +177,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     appData.walletProviders.forEach((w) => {
       const isAvailable = connectors.find((connector) => connector.id === w.id);
-      
-      base.push({ 
-        ...w, 
-        available: !!isAvailable // ← Set available cho object copy
+
+      base.push({
+        ...w,
+        available: !!isAvailable, // ← Set available cho object copy
       });
     });
-    
+
     console.log("Detected wallets:", base); // ← Debug
     setAvailableWallets(base);
   }, [connectors]);
@@ -216,7 +218,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   //     showPage,
   //   ]
   // );
-    const handleNavigation = (path: string) => {
+  const handleNavigation = (path: string) => {
     // console.log("Navigating to:", path);
     // console.log(isWalletConnected);
     if (!isWalletConnected && path !== "/") {
