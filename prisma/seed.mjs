@@ -56,12 +56,48 @@ async function main() {
       kyc_status: "pending"
     },
   });
+  const charlie = await prisma.user.upsert({
+    where: { wallet_address: "0x3333333333333333333333333333333333333333" },
+    update: {},
+    create: {
+      wallet_address: "0x3333333333333333333333333333333333333333",
+      username: "charlie",
+      credit_score: 600,
+      streak_days: 10,
+      total_points: BigInt(300),
+      social_points: BigInt(0),
+      financial_points: BigInt(0),
+      education_points: BigInt(0),
+      tier_level: "gold",
+      kyc_status: "verified"
+    },
+  });
+  const diana = await prisma.user.upsert({
+    where: { wallet_address: "0x4444444444444444444444444444444444444444" },
+    update: {},
+    create: {
+      wallet_address: "0x4444444444444444444444444444444444444444",
+      username: "diana",
+      credit_score: 500,
+      streak_days: 7,
+      total_points: BigInt(200),
+      social_points: BigInt(0),
+      financial_points: BigInt(0),
+      education_points: BigInt(0),
+      tier_level: "platinum",
+      kyc_status: "verified"
+    },
+  });
 
   // 3) Achievements
   console.log("🏆 Creating achievements...");
   const achievements = [
     { id: "first_steps", name: "First Steps", description: "Complete your first challenge", icon: "🚀" },
     { id: "week_warrior", name: "Week Warrior", description: "Complete 7 challenges", icon: "💪" },
+    { id: "social_butterfly", name: "Social Butterfly", description: "Engage with 10 community posts", icon: "🦋" },
+    { id: "saver_streak", name: "Saver Streak", description: "Save consistently for 14 days", icon: "💰" },
+    { id: "scholar", name: "Scholar", description: "Complete 5 education items", icon: "🎓" },
+    { id: "community_helper", name: "Community Helper", description: "Answer 5 questions in forums", icon: "🤝" },
   ];
   for (const a of achievements) {
     await prisma.achievement.upsert({ where: { id: a.id }, update: {}, create: a });
@@ -72,6 +108,9 @@ async function main() {
   const eduItems = [
     { title: "What is Creditcoin?", description: "Learn about Creditcoin blockchain and its benefits", duration: 5, points: 25 },
     { title: "Understanding Credit Scores", description: "Learn how credit scores work and what affects them", duration: 10, points: 50 },
+    { title: "Budgeting Basics", description: "Principles of budgeting and how to allocate income", duration: 15, points: 40 },
+    { title: "Savings Strategies", description: "Tips and tactics to build a consistent savings habit", duration: 8, points: 30 },
+    { title: "Intro to DeFi", description: "Overview of decentralized finance and common use cases", duration: 12, points: 60 },
   ];
   for (const e of eduItems) {
     const found = await prisma.education.findFirst({ where: { title: e.title } });
@@ -85,7 +124,12 @@ async function main() {
   const challenges = [
     { type: "daily", category: "onboarding", name: "Daily Check-in", description: "Login every day", points: 10, credit_impact: 1, xp: 0, rules: {} },
     { type: "education", category: "education", name: "Complete Financial Course", description: "Finish a course", points: 100, credit_impact: 5, xp: 10, rules: {} },
-
+    { type: "habit", category: "budgeting", name: "Budgeting Sprint", description: "Plan your weekly budget", points: 40, credit_impact: 2, xp: 5, rules: { required_steps: 1 } },
+    { type: "streak", category: "savings", name: "7-Day Saver", description: "Save at least once a day for 7 days", points: 60, credit_impact: 3, xp: 8, rules: { days: 7 } },
+    { type: "referral", category: "growth", name: "Refer a Friend", description: "Refer a friend who signs up", points: 150, credit_impact: 4, xp: 20, rules: { max_rewards_per_user: 5 } },
+    { type: "social", category: "community", name: "Community Post", description: "Create 3 helpful posts", points: 30, credit_impact: 1, xp: 5, rules: { required_posts: 3 } },
+    { type: "help", category: "community", name: "Answer Questions", description: "Help 5 users in the forum", points: 45, credit_impact: 2, xp: 8, rules: { required_answers: 5 } },
+    { type: "education", category: "defi", name: "DeFi Explorer", description: "Complete an introductory DeFi tutorial", points: 80, credit_impact: 5, xp: 15, rules: {} },
   ];
   for (const c of challenges) {
     const found = await prisma.challenge.findFirst({ where: { name: c.name } });
@@ -173,6 +217,21 @@ async function main() {
         role: "owner",
         member_points: BigInt(0),
       },
+      data: {
+        club_id: fc.id,
+        user_id: bob.id,
+        role: "member",
+      },
+      data: {
+        club_id: fc.id,
+        user_id: charlie.id,
+        role: "member",
+      },
+      data: {
+        club_id: fc.id,
+        user_id: diana.id,
+        role: "member",
+      },  
     });
     console.log("✅ Fan club and membership created");
   } else {
@@ -213,6 +272,27 @@ async function main() {
       source: "seed",
     },
   });
+
+  // tạo các challenge trong club
+  console.log("🎯 Creating club-specific challenges...");
+  const club = await prisma.fanClub.findFirst({ where: { name: "Savings Savvy Club" } });
+  if (club) {
+    const clubChallenges = [
+      {
+        title: "Save $100",
+        description: "Challenge yourself to save $100 this month.",
+        club_id: club.id,
+        reward: BigInt(100),
+      },
+      {
+        title: "No Spend Week",
+        description: "Participate in a no-spend week and share your experience.",
+        club_id: club.id,
+        reward: BigInt(50),
+      },
+    ];
+    await prisma.challenge.createMany({ data: clubChallenges });
+  }
 
   console.log("✅ Database seeding completed successfully!");
   await prisma.$disconnect();
