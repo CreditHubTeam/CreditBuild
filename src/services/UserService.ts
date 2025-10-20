@@ -110,7 +110,7 @@ export const UsersService = {
             tier_level: "bronze",
             reputation_score: 0,
             referral_code: referralCode ?? undefined,
-            kyc_status: "pending",
+            kyc_status: "verified",
             registered_at: new Date(),
             last_activity: new Date(),
         });
@@ -147,7 +147,27 @@ export const UsersService = {
                 isCompleted: userChallenge.status !== "PENDING",
             })
         }
-        console.log("result", result)
+        // console.log("result", result);
+        if( result.length === 0 ) {
+            //== nếu user chưa có challenge nào => lay cac challenge co club_id la null
+            const allChallenges = await challengeRepo.findAll();
+            for (const challenge of allChallenges) {
+                if (challenge.club_id === null) {
+                    result.push({
+                        id: challenge.id,
+                        type: challenge.type,
+                        category: challenge.category!,
+                        name: challenge.name,
+                        description: challenge.description!,
+                        points: challenge.points,
+                        creditImpact: challenge.credit_impact,
+                        // icon: challenge.icon!,
+                        // estimatedTimeMinutes: challenge.estimated_time_minutes!,
+                        isCompleted: false,
+                    });
+                }
+            }
+        }
         return result;
     },
 
