@@ -127,45 +127,39 @@ export const UsersService = {
         const userId = user.id;
         // console.log("walletAddress", walletAddress); //dung
         console.log("username", user.username); //sai
-        // Lấy userChallenges từ repository
-        const userChallenges = await userChallengeRepo.getByUserId(userId);
-        //duyệt qua các userChallenges
-        for (const userChallenge of userChallenges) {
-            //== duyệt thông tin của challenge
-            const challenge = await challengeRepo.findById(userChallenge.challenge_id);
-            // console.log(challenge);
-            result.push({
-                id: challenge!.id,
-                type: challenge!.type,
-                category: challenge!.category!,
-                name: challenge!.name,
-                description: challenge!.description!,
-                points: challenge!.points,
-                creditImpact: challenge!.credit_impact,
-                // icon: challenge!.icon!,
-                // estimatedTimeMinutes: challenge!.estimated_time_minutes!,
-                isCompleted: userChallenge.status !== "PENDING",
-            })
-        }
-        // console.log("result", result);
-        if( result.length === 0 ) {
-            //== nếu user chưa có challenge nào => lay cac challenge co club_id la null
-            const allChallenges = await challengeRepo.findAll();
-            for (const challenge of allChallenges) {
-                if (challenge.club_id === null) {
-                    result.push({
-                        id: challenge.id,
-                        type: challenge.type,
-                        category: challenge.category!,
-                        name: challenge.name,
-                        description: challenge.description!,
-                        points: challenge.points,
-                        creditImpact: challenge.credit_impact,
-                        // icon: challenge.icon!,
-                        // estimatedTimeMinutes: challenge.estimated_time_minutes!,
-                        isCompleted: false,
-                    });
-                }
+        // // Lấy userChallenges từ repository
+        // const userChallenges = await userChallengeRepo.getByUserId(userId);
+        // lấy tất cả challenges
+        const challenges = await challengeRepo.findAll();
+        // lặp qua từng challenge, cái nào không có trong userChallenges thì thêm vào result thì isCompleted là false
+        for (const challenge of challenges) {
+            const userChallenge = userChallengeRepo.getByUserIdAndChallengeId(userId, challenge.id);
+            if (await userChallenge) {
+                result.push({
+                    id: challenge.id,
+                    type: challenge.type,
+                    category: challenge.category!,
+                    name: challenge.name,
+                    description: challenge.description!,
+                    points: challenge.points,
+                    creditImpact: challenge.credit_impact,
+                    // icon: challenge.icon,
+                    // estimatedTimeMinutes: challenge.estimated_time_minutes,
+                    isCompleted: true, //== vì đã có trong userChallenges
+                });
+            } else {
+                result.push({
+                    id: challenge.id,
+                    type: challenge.type,
+                    category: challenge.category!,
+                    name: challenge.name,
+                    description: challenge.description!,
+                    points: challenge.points,
+                    creditImpact: challenge.credit_impact,
+                    // icon: challenge.icon,
+                    // estimatedTimeMinutes: challenge.estimated_time_minutes,
+                    isCompleted: false,
+                });
             }
         }
         return result;
