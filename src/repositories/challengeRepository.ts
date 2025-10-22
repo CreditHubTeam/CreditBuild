@@ -44,4 +44,11 @@ export class challengeRepository {
             where: { id },
         });
     }
+
+    // các challenge common (không thuộc club nào)
+    async findCommonChallenges(): Promise<Challenge[]> {
+        return await prisma.challenge.findMany({
+            where: { club_id: null },
+        });
+    }
 }

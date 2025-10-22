@@ -129,9 +129,10 @@ export const UsersService = {
         console.log("username", user.username); //sai
         // // Lấy userChallenges từ repository
         // const userChallenges = await userChallengeRepo.getByUserId(userId);
-        // lấy tất cả challenges
-        const challenges = await challengeRepo.findAll();
-        // lặp qua từng challenge, cái nào không có trong userChallenges thì thêm vào result thì isCompleted là false
+        // lấy tất cả challenges có club_id là null (challenges chung)
+        const challenges = await challengeRepo.findCommonChallenges();
+        // console.log("Challenges common:", challenges); //dung
+        // lặp qua từng challenge chung, cái nào có club_id khác null thì bỏ qua, cái nào không có trong userChallenges thì thêm vào result thì isCompleted là false
         for (const challenge of challenges) {
             const userChallenge = userChallengeRepo.getByUserIdAndChallengeId(userId, challenge.id);
             if (await userChallenge) {
@@ -160,6 +161,42 @@ export const UsersService = {
                     // estimatedTimeMinutes: challenge.estimated_time_minutes,
                     isCompleted: false,
                 });
+            }
+        }
+        //tìm các club mà user đã tham gia
+        const memberships = await fanClubMembershipRepo.findAllByUserId(userId);
+        for(const membership of memberships){
+            //tìm các challenge theo club_id
+            const clubChallenges = await challengeRepo.findByClubId(membership.club_id);
+            for(const challenge of clubChallenges){
+                const userChallenge = userChallengeRepo.getByUserIdAndChallengeId(userId, challenge.id);
+                if (await userChallenge) {
+                    result.push({
+                        id: challenge.id,
+                        type: challenge.type,
+                        category: challenge.category!,
+                        name: challenge.name,
+                        description: challenge.description!,
+                        points: challenge.points,
+                        creditImpact: challenge.credit_impact,
+                        // icon: challenge.icon,
+                        // estimatedTimeMinutes: challenge.estimated_time_minutes,
+                        isCompleted: true,
+                    });
+                } else {
+                    result.push({
+                        id: challenge.id,
+                        type: challenge.type,
+                        category: challenge.category!,
+                        name: challenge.name,
+                        description: challenge.description!,
+                        points: challenge.points,
+                        creditImpact: challenge.credit_impact,
+                        // icon: challenge.icon,
+                        // estimatedTimeMinutes: challenge.estimated_time_minutes,
+                        isCompleted: false,
+                    });
+                }
             }
         }
         return result;
