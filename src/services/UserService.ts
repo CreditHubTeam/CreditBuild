@@ -346,9 +346,12 @@ export const UsersService = {
             const club = await fanClubRepo.findById(fanclub.id);
             // tim user la owner cua club
             const owner = await userRepo.getById(club!.owner_id);
+            const wallet = owner?.wallet_address ?? "Unknown";
+            const maskedWallet = wallet !== "Unknown" ? `${wallet.slice(0, 4)}${wallet.slice(-4)}` : "Unknown";
+
             result.push({
                 id: club!.id,
-                kolName: owner?.username || "Unknown",
+                kolName: maskedWallet,
                 kolVerified: owner?.kyc_status !== "pending", //==kyc la verified
                 // kolSubtitle: owner?.specialization || "",
                 title: club!.name,
@@ -357,15 +360,14 @@ export const UsersService = {
                 challenges: 2, //== temporary placeholder
                 avgEarnings: 15, //== temporary placeholder
                 socials: { //== update to include owner's username
-                    twitter: "twitter.com/" + owner?.username || "test",
-                    instagram: "instagram.com/" + owner?.username || "test",
-                    youtube: "youtube.com/" + owner?.username || "test",
+                    twitter: maskedWallet ? `twitter.com/${maskedWallet}` : "twitter.com/test",
+                    instagram: maskedWallet ? `instagram.com/${maskedWallet}` : "instagram.com/test",
+                    youtube: maskedWallet ? `youtube.com/${maskedWallet}` : "youtube.com/test",
                 },
                 priceLabel: (club!.membership_fee ?? 0) > 0 ? `${club!.membership_fee} MOCA` : "Free",
                 image: club!.image_url || "https://via.placeholder.com/300x150.png?text=Fan+Club",
                 isJoined: isJoined,
                 isOwner: isOwner
-
             });
         }
         return result;
@@ -393,21 +395,32 @@ export const UsersService = {
         if (!existingMembership) throw new Error("User has not joined this club");
         //kiem tra user co phai owner khong
         const isOwner = club.owner_id === user.id;
-        const owner = await userRepo.getById(club.owner_id);
+        // tim user la owner cua club
+        const owner = await userRepo.getById(club!.owner_id);
+        const wallet = owner?.wallet_address ?? "Unknown";
+        const maskedWallet = wallet !== "Unknown" ? `${wallet.slice(0, 4)}${wallet.slice(-4)}` : "Unknown";
+
+        //lấy số challenge hiện tại của club
+        const clubChallenges = await challengeRepo.findByClubId(clubId);
+        const numberOfChallenges = clubChallenges.length;
+
+        //lay so thanh vien hien tai
+        const members = await fanClubMembershipRepo.getByClubId(clubId);
+        const membersCount = members!.length;
 
         return {
             id: club.id,
-            kolName: owner?.username || "Unknown",
+            kolName: maskedWallet || "Unknown",
             kolVerified: owner?.kyc_status !== "pending",
             title: club.name,
             description: club.description,
-            members: club.current_members || 0,
-            challenges: 2, //== temporary placeholder
+            members: membersCount,
+            challenges: numberOfChallenges, //== temporary placeholder
             avgEarnings: 15, //== temporary placeholder
             socials: {
-                twitter: owner?.username ? `twitter.com/${owner.username}` : "twitter.com/test",
-                instagram: owner?.username ? `instagram.com/${owner.username}` : "instagram.com/test",
-                youtube: owner?.username ? `youtube.com/${owner.username}` : "youtube.com/test",
+                twitter: maskedWallet ? `twitter.com/${maskedWallet}` : "twitter.com/test",
+                instagram: maskedWallet ? `instagram.com/${maskedWallet}` : "instagram.com/test",
+                youtube: maskedWallet ? `youtube.com/${maskedWallet}` : "youtube.com/test",
             },
             priceLabel: (club.membership_fee ?? 0) > 0 ? `${club.membership_fee} MOCA` : "Free",
             image: club.image_url || "https://via.placeholder.com/300x150.png?text=Fan+Club",
