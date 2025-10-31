@@ -16,21 +16,19 @@ export default function Header() {
 
   const [renderKey, setRenderKey] = useState(0);
 
-  // console.log("=== HEADER STATE ===");
-  // console.log("chainId:", chainId);
-  // console.log("networkOk:", networkOk);
-  // console.log("isConnected:", isConnected);
-  // console.log("renderKey:", renderKey);
-
   useEffect(() => {
-    console.log("🔄 Header: State changed, forcing re-render");
+    if (process.env.NODE_ENV === "development") {
+      console.log("🔄 Header: State changed, forcing re-render");
+    }
     setRenderKey((prev) => prev + 1);
   }, [chainId, networkOk, isConnected]);
 
   useEffect(() => {
     const handleChainChanged = (newChainId: string) => {
-      console.log("🔄 Header: Chain changed event received");
-      console.log("New chainId:", parseInt(newChainId, 16));
+      if (process.env.NODE_ENV === "development") {
+        console.log("🔄 Header: Chain changed event received");
+        console.log("New chainId:", parseInt(newChainId, 16));
+      }
 
       setTimeout(() => {
         setRenderKey((prev) => prev + 1);
@@ -48,11 +46,6 @@ export default function Header() {
 
   const isReallyOnCreditcoin = chainId === 102031;
   const displayNetworkOk = networkOk && isReallyOnCreditcoin;
-
-  // console.log("=== HEADER DISPLAY LOGIC ===");
-  // console.log("chainId === 102031:", chainId === 102031);
-  // console.log("networkOk from wallet:", networkOk);
-  // console.log("displayNetworkOk (final):", displayNetworkOk);
 
   return (
     <header
@@ -74,7 +67,9 @@ export default function Header() {
           {!isConnected ? (
             <button
               onClick={() => {
-                console.log("Connect Wallet button clicked");
+                if (process.env.NODE_ENV === "development") {
+                  console.log("Connect Wallet button clicked");
+                }
                 open("walletSelection");
               }}
               className="pixel-btn pixel-btn--primary text-[8px] sm:text-[12px] px-2 sm:px-4 py-1 sm:py-2"

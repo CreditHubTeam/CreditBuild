@@ -85,9 +85,10 @@ export default function WalletSelectionModal() {
   const handleWalletClick = async (wallet: WalletProvider) => {
     if (wallet.available) {
       try {
-        console.log("🔗 Connecting to:", wallet.name);
+        if (process.env.NODE_ENV === "development") {
+          console.log("🔗 Connecting to:", wallet.name);
+        }
 
-        // Find the appropriate connector
         let connector;
 
         if (
@@ -104,7 +105,6 @@ export default function WalletSelectionModal() {
 
         if (connector) {
           await connect({ connector });
-          // useEffect sẽ handle network check
         } else {
           notify(
             `${wallet.name} connector not found. Please install the wallet first.`,
@@ -112,7 +112,9 @@ export default function WalletSelectionModal() {
           );
         }
       } catch (error) {
-        console.error("Connection error:", error);
+        if (process.env.NODE_ENV === "development") {
+          console.error("Connection error:", error);
+        }
         notify("Failed to connect wallet. Please try again.", "error");
       }
     } else {

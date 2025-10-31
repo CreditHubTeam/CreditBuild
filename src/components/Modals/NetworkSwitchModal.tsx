@@ -15,16 +15,18 @@ export default function NetworkSwitchModal() {
 
   const handleSwitchNetwork = async () => {
     try {
-      console.log("🔄 Attempting to switch to Creditcoin Testnet");
+      if (process.env.NODE_ENV === "development") {
+        console.log("🔄 Attempting to switch to Creditcoin Testnet");
+      }
       await switchChain({ chainId: creditcoinTestnet.id });
 
       notify("Switched to Creditcoin Testnet ⛓️", "success");
       close();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.log("❌ Switch failed:", error);
-
-      // Khi ví chưa có chain, Wagmi sẽ tự động gọi wallet_addEthereumChain,
+      if (process.env.NODE_ENV === "development") {
+        console.log("❌ Switch failed:", error);
+      } // Khi ví chưa có chain, Wagmi sẽ tự động gọi wallet_addEthereumChain,
       // nên nếu user từ chối hoặc có lỗi RPC -> chỉ cần xử lý notify
       if (error?.message?.includes("rejected")) {
         notify("Network switch cancelled by user", "warning");
