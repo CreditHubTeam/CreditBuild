@@ -1,5 +1,5 @@
 "use client";
-import { useApp } from "@/context/AppContext";
+import { useUI } from "@/state/ui";
 import { formatAddress, useWallet } from "@/state/wallet";
 import { useEffect, useState } from "react";
 
@@ -12,7 +12,7 @@ export default function Header() {
     disconnect,
     ensureCreditcoin,
   } = useWallet();
-  const { showModal } = useApp();
+  const { open } = useUI();
 
   const [renderKey, setRenderKey] = useState(0);
 
@@ -75,7 +75,7 @@ export default function Header() {
             <button
               onClick={() => {
                 console.log("Connect Wallet button clicked");
-                showModal("walletSelectionModal");
+                open("walletSelection");
               }}
               className="pixel-btn pixel-btn--primary text-[8px] sm:text-[12px] px-2 sm:px-4 py-1 sm:py-2"
             >

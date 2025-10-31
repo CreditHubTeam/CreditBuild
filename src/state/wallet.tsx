@@ -1,5 +1,4 @@
 "use client";
-import { useApp } from "@/context/AppContext";
 import { creditcoinTestnet } from "@/lib/chains";
 import { usePathname, useRouter } from "next/navigation";
 import React, {
@@ -35,10 +34,10 @@ export function formatAddress(address?: string) {
 const WalletContext = createContext<WalletCtx | null>(null);
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {
-  const { address, isConnected, connector } = useAccount();
+  const { address, isConnected } = useAccount();
   const [realChainId, setRealChainId] = useState<number | null>(null);
   const [isValidating, setIsValidating] = useState(false);
-  const { showModal, closeModals } = useApp();
+  const { notify, close, open } = useUI();
 
   // ✅ More robust chain detection
   useEffect(() => {
@@ -109,7 +108,6 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
   const { connectors, connectAsync } = useConnect();
   const { disconnect } = useDisconnect();
-  const { showLoading, hideLoading, notify, close } = useUI();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -178,8 +176,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
         // ✅ Auto show network switch modal
         setTimeout(() => {
-          // Trigger modal từ AppContext
-          // showModal("networkSwitchModal"); // Nếu có access
+          open("networkSwitch");
         }, 500);
       }
 
@@ -189,7 +186,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
         notify("Please switch to Creditcoin Testnet to continue!", "warning");
       }
     }
-  }, [isConnected, chainId, networkOk, pathname, notify]);
+  }, [isConnected, chainId, networkOk, pathname, notify, open]);
 
   const ensureCreditcoin = useCallback(async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -197,53 +194,10 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       notify("No injected wallet found", "warning");
       return;
     }
-    // // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // const provider = (window as any).ethereum;
-    // const hexId = "0x" + creditcoinTestnet.id.toString(16);
 
-    // showLoading("Switching network...");
-    showModal("networkSwitchModal");
-
-    // try {
-    //   await provider.request({
-    //     method: "wallet_switchEthereumChain",
-    //     params: [{ chainId: hexId }],
-    //   });
-    //   hideLoading();
-    //   notify("Switched to Creditcoin Testnet ⛓️", "success");
-    //   close();
-    // } catch {
-    //   // add chain then switch
-    //   try {
-    //     await provider.request({
-    //       method: "wallet_addEthereumChain",
-    //       params: [
-    //         {
-    //           chainId: hexId,
-    //           chainName: creditcoinTestnet.name,
-    //           nativeCurrency: creditcoinTestnet.nativeCurrency,
-    //           rpcUrls: creditcoinTestnet.rpcUrls.default.http,
-    //           blockExplorerUrls: [
-    //             creditcoinTestnet.blockExplorers!.default!.url,
-    //           ],
-    //         },
-    //       ],
-    //     });
-    //     await provider.request({
-    //       method: "wallet_switchEthereumChain",
-    //       params: [{ chainId: hexId }],
-    //     });
-    //     hideLoading();
-    //     // notify("Creditcoin Testnet added & switched ✅", "success");
-    //     notify("Creditcoin Testnet added & switched ✅", "success");
-    //     // window.location.reload(); //==
-    //     close();
-    //   } catch {
-    //     hideLoading();
-    //     notify("Network switch rejected", "error");
-    //   }
-    // }
-  }, [showModal]);
+    // Show network switch modal
+    open("networkSwitch");
+  }, [open, notify]);
 
   const handleDisconnect = useCallback(() => {
     console.log("🔌 Disconnecting wallet...");
