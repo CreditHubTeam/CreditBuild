@@ -20,13 +20,13 @@ export function Providers({
   return (
     <WagmiProvider config={config} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
-        <AppProvider>
-          <UIProvider>
-            <WalletProvider>
-              <DataProvider>{children}</DataProvider>
-            </WalletProvider>
-          </UIProvider>
-        </AppProvider>
+        <UIProvider>
+          <WalletProvider>
+            <DataProvider>
+              <AppProvider>{children}</AppProvider>
+            </DataProvider>
+          </WalletProvider>
+        </UIProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

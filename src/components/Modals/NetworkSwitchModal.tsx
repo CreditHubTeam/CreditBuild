@@ -1,13 +1,11 @@
 "use client";
-import { useApp } from "@/context/AppContext";
 import { creditcoinTestnet } from "@/lib/chains";
 import { useUI } from "@/state/ui";
 import { useSwitchChain } from "wagmi";
 import PixelModal from "@/components/Modals/PixelModal";
 
 export default function NetworkSwitchModal() {
-  const { openModal, closeModals } = useApp();
-  const { notify } = useUI();
+  const { modal, close, notify } = useUI();
 
   const {
     switchChain,
@@ -17,16 +15,18 @@ export default function NetworkSwitchModal() {
 
   const handleSwitchNetwork = async () => {
     try {
-      console.log("🔄 Attempting to switch to Creditcoin Testnet");
+      if (process.env.NODE_ENV === "development") {
+        console.log("🔄 Attempting to switch to Creditcoin Testnet");
+      }
       await switchChain({ chainId: creditcoinTestnet.id });
 
       notify("Switched to Creditcoin Testnet ⛓️", "success");
-      closeModals();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      close();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.log("❌ Switch failed:", error);
-
-      // Khi ví chưa có chain, Wagmi sẽ tự động gọi wallet_addEthereumChain,
+      if (process.env.NODE_ENV === "development") {
+        console.log("❌ Switch failed:", error);
+      } // Khi ví chưa có chain, Wagmi sẽ tự động gọi wallet_addEthereumChain,
       // nên nếu user từ chối hoặc có lỗi RPC -> chỉ cần xử lý notify
       if (error?.message?.includes("rejected")) {
         notify("Network switch cancelled by user", "warning");
@@ -38,9 +38,9 @@ export default function NetworkSwitchModal() {
 
   return (
     <PixelModal
-      open={openModal === "networkSwitchModal"}
+      open={modal === "networkSwitch"}
       title="Switch Network"
-      onClose={closeModals}
+      onClose={close}
     >
       <div className="text-center">
         <h3 className="text-lg mb-4">⚠️ Wrong Network</h3>
@@ -53,7 +53,9 @@ export default function NetworkSwitchModal() {
         <div className="bg-mc-stone border-2 border-mc-darkstone p-4 text-left text-[10px] mb-4">
           <div className="flex justify-between mb-2">
             <span className="opacity-80">Network:</span>
-            <span className="font-bold text-white">{creditcoinTestnet.name}</span>
+            <span className="font-bold text-white">
+              {creditcoinTestnet.name}
+            </span>
           </div>
           <div className="flex justify-between mb-2">
             <span className="opacity-80">Chain ID:</span>
@@ -83,7 +85,7 @@ export default function NetworkSwitchModal() {
           </button>
 
           <button
-            onClick={closeModals}
+            onClick={close}
             disabled={isSwitching}
             className="pixel-btn pixel-btn--secondary"
           >
@@ -92,9 +94,7 @@ export default function NetworkSwitchModal() {
         </div>
 
         {isSwitching && (
-          <div className="mt-4 text-xs opacity-60">
-            🔄 Switching network...
-          </div>
+          <div className="mt-4 text-xs opacity-60">🔄 Switching network...</div>
         )}
       </div>
     </PixelModal>

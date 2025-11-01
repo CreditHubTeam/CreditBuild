@@ -192,26 +192,28 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     },
     onSuccess: (data, walletAddress) => {
       notify("Welcome! Account created successfully! 🎉", "success");
-      console.log("User registered:", data);
+      if (process.env.NODE_ENV === "development") {
+        console.log("User registered:", data);
+      }
       setHasWelcomed(walletAddress);
-      // Refresh user data
       qc.invalidateQueries({ queryKey: ["currentUser"] });
     },
     onError: (error: Error, walletAddress) => {
-      // If user already exists, it's not really an error for UX
       if (
         error.message.includes("USER_ALREADY_EXISTS") ||
         error.message.includes("already exists")
       ) {
         notify("Welcome back! 👋", "info");
-        console.log("User already exists, continuing...");
+        if (process.env.NODE_ENV === "development") {
+          console.log("User already exists, continuing...");
+        }
         setHasWelcomed(walletAddress);
-        // Still refresh user data
         qc.invalidateQueries({ queryKey: ["currentUser"] });
       } else {
-        console.error("Registration failed:", error);
+        if (process.env.NODE_ENV === "development") {
+          console.error("Registration failed:", error);
+        }
         notify("Registration failed. Please try again.", "error");
-        // Don't retry automatically on real errors
       }
     },
   });
@@ -233,7 +235,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       !mAutoRegister.isPending &&
       !registrationAttempted.has(address)
     ) {
-      console.log("User not found, auto-registering for address:", address);
+      if (process.env.NODE_ENV === "development") {
+        console.log("User not found, auto-registering for address:", address);
+      }
       mAutoRegister.mutate(address);
     }
   }, [address, qCurrentUser.isError, mAutoRegister, registrationAttempted]);
@@ -246,7 +250,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       !qCurrentUser.isLoading &&
       hasWelcomed !== address
     ) {
-      console.log("Welcome back user:", qCurrentUser.data);
+      if (process.env.NODE_ENV === "development") {
+        console.log("Welcome back user:", qCurrentUser.data);
+      }
       notify("Welcome back! 👋", "info");
       setHasWelcomed(address);
     }

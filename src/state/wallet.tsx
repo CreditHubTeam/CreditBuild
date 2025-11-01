@@ -1,5 +1,4 @@
 "use client";
-import { useApp } from "@/context/AppContext";
 import { creditcoinTestnet } from "@/lib/chains";
 import { usePathname, useRouter } from "next/navigation";
 import React, {
@@ -35,10 +34,10 @@ export function formatAddress(address?: string) {
 const WalletContext = createContext<WalletCtx | null>(null);
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {
-  const { address, isConnected, connector } = useAccount();
+  const { address, isConnected } = useAccount();
   const [realChainId, setRealChainId] = useState<number | null>(null);
   const [isValidating, setIsValidating] = useState(false);
-  const { showModal, closeModals } = useApp();
+  const { notify, close, open } = useUI();
 
   // ✅ More robust chain detection
   useEffect(() => {
@@ -58,16 +57,20 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
         });
         const chainIdDecimal = parseInt(chainId, 16);
 
-        console.log("=== CHAIN VALIDATION ===");
-        console.log("Retrieved chainId:", chainIdDecimal);
-        console.log("Is Base Sepolia (84532):", chainIdDecimal === 84532);
-        console.log("Is Creditcoin (102031):", chainIdDecimal === 102031);
+        if (process.env.NODE_ENV === "development") {
+          console.log("=== CHAIN VALIDATION ===");
+          console.log("Retrieved chainId:", chainIdDecimal);
+          console.log("Is Base Sepolia (84532):", chainIdDecimal === 84532);
+          console.log("Is Creditcoin (102031):", chainIdDecimal === 102031);
+        }
 
         if (isMounted) {
           setRealChainId(chainIdDecimal);
         }
       } catch (error) {
-        console.error("Chain validation failed:", error);
+        if (process.env.NODE_ENV === "development") {
+          console.error("Chain validation failed:", error);
+        }
         if (isMounted) setRealChainId(null);
       } finally {
         if (isMounted) setIsValidating(false);
@@ -80,7 +83,9 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     const handleChainChanged = (newChainId: string) => {
       if (isMounted) {
         const chainIdDecimal = parseInt(newChainId, 16);
-        console.log("🔄 Chain changed to:", chainIdDecimal);
+        if (process.env.NODE_ENV === "development") {
+          console.log("🔄 Chain changed to:", chainIdDecimal);
+        }
         setRealChainId(chainIdDecimal);
       }
     };
@@ -102,14 +107,8 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const chainId = realChainId;
   const networkOk = chainId === creditcoinTestnet.id && !isValidating;
 
-  // console.log("=== FINAL STATE ===");
-  // console.log("chainId:", chainId);
-  // console.log("networkOk:", networkOk);
-  // console.log("isValidating:", isValidating);
-
   const { connectors, connectAsync } = useConnect();
   const { disconnect } = useDisconnect();
-  const { showLoading, hideLoading, notify, close } = useUI();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -127,22 +126,18 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       const isProtectedRoute = protectedRoutes.includes(pathname);
 
       if (!isConnected && isProtectedRoute) {
-        console.log("🔄 Wallet disconnected - redirecting to home");
+        if (process.env.NODE_ENV === "development") {
+          console.log("🔄 Wallet disconnected - redirecting to home");
+        }
         notify("Wallet disconnected. Redirecting to home...", "info");
         router.push("/");
         return;
       }
 
-      // ✅ Chỉ log nếu thực sự wrong network
       if (isConnected && isProtectedRoute && chainId !== null && !networkOk) {
-        // console.log("=== NETWORK CHECK DEBUG ===");
-        // console.log("chainId:", chainId);
-        // console.log("creditcoinTestnet.id:", creditcoinTestnet.id);
-        // console.log("networkOk:", networkOk);
-        // console.log("isProtectedRoute:", isProtectedRoute);
-        // console.log("pathname:", pathname);
-
-        console.log("⚠️ Wrong network detected on protected route");
+        if (process.env.NODE_ENV === "development") {
+          console.log("⚠️ Wrong network detected on protected route");
+        }
         notify("Please switch to Creditcoin Testnet to continue!", "warning");
       }
     }, 100); // ✅ Delay 100ms để đợi chainChanged complete
@@ -162,34 +157,28 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       ];
       const isProtectedRoute = protectedRoutes.includes(pathname);
 
-      // console.log("=== POST-CONNECTION CHECK ===");
-      // console.log("isConnected:", isConnected);
-      // console.log("chainId:", chainId);
-      // console.log("networkOk:", networkOk);
-      // console.log("pathname:", pathname);
-
-      // ✅ Nếu đăng nhập thành công nhưng sai network
       if (isConnected && !networkOk && pathname === "/") {
-        console.log("🚨 Connected but wrong network - showing switch modal");
+        if (process.env.NODE_ENV === "development") {
+          console.log("🚨 Connected but wrong network - showing switch modal");
+        }
         notify(
           "Wrong network detected! Please switch to Creditcoin Testnet.",
           "warning"
         );
 
-        // ✅ Auto show network switch modal
         setTimeout(() => {
-          // Trigger modal từ AppContext
-          // showModal("networkSwitchModal"); // Nếu có access
+          open("networkSwitch");
         }, 500);
       }
 
-      // ✅ Nếu đang ở protected route mà sai network
       if (isConnected && isProtectedRoute && !networkOk) {
-        console.log("⚠️ Wrong network on protected route");
+        if (process.env.NODE_ENV === "development") {
+          console.log("⚠️ Wrong network on protected route");
+        }
         notify("Please switch to Creditcoin Testnet to continue!", "warning");
       }
     }
-  }, [isConnected, chainId, networkOk, pathname, notify]);
+  }, [isConnected, chainId, networkOk, pathname, notify, open]);
 
   const ensureCreditcoin = useCallback(async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -197,56 +186,15 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       notify("No injected wallet found", "warning");
       return;
     }
-    // // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // const provider = (window as any).ethereum;
-    // const hexId = "0x" + creditcoinTestnet.id.toString(16);
 
-    // showLoading("Switching network...");
-    showModal("networkSwitchModal");
-
-    // try {
-    //   await provider.request({
-    //     method: "wallet_switchEthereumChain",
-    //     params: [{ chainId: hexId }],
-    //   });
-    //   hideLoading();
-    //   notify("Switched to Creditcoin Testnet ⛓️", "success");
-    //   close();
-    // } catch {
-    //   // add chain then switch
-    //   try {
-    //     await provider.request({
-    //       method: "wallet_addEthereumChain",
-    //       params: [
-    //         {
-    //           chainId: hexId,
-    //           chainName: creditcoinTestnet.name,
-    //           nativeCurrency: creditcoinTestnet.nativeCurrency,
-    //           rpcUrls: creditcoinTestnet.rpcUrls.default.http,
-    //           blockExplorerUrls: [
-    //             creditcoinTestnet.blockExplorers!.default!.url,
-    //           ],
-    //         },
-    //       ],
-    //     });
-    //     await provider.request({
-    //       method: "wallet_switchEthereumChain",
-    //       params: [{ chainId: hexId }],
-    //     });
-    //     hideLoading();
-    //     // notify("Creditcoin Testnet added & switched ✅", "success");
-    //     notify("Creditcoin Testnet added & switched ✅", "success");
-    //     // window.location.reload(); //==
-    //     close();
-    //   } catch {
-    //     hideLoading();
-    //     notify("Network switch rejected", "error");
-    //   }
-    // }
-  }, [showModal]);
+    // Show network switch modal
+    open("networkSwitch");
+  }, [open, notify]);
 
   const handleDisconnect = useCallback(() => {
-    console.log("🔌 Disconnecting wallet...");
+    if (process.env.NODE_ENV === "development") {
+      console.log("🔌 Disconnecting wallet...");
+    }
     disconnect();
 
     close(); // Close any open modals

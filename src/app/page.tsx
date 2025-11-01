@@ -4,14 +4,9 @@ import { useWallet } from "@/state/wallet";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-//==appContext chưa tách
-import { useApp } from "@/context/AppContext";
-
 export default function LandingPage() {
-  const { isConnected, networkOk, connectors, connect, ensureCreditcoin } =
-    useWallet();
-  const { notify } = useUI();
-  const { showModal, closeModals } = useApp();
+  const { isConnected, networkOk, ensureCreditcoin } = useWallet();
+  const { open } = useUI();
 
   const router = useRouter();
 
@@ -24,7 +19,7 @@ export default function LandingPage() {
 
   const handleGetStarted = async () => {
     if (!isConnected) {
-      showModal("walletSelectionModal");
+      open("walletSelection");
     } else if (!networkOk) {
       // Switch network
       await ensureCreditcoin();
